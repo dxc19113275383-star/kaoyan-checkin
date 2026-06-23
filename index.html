@@ -1347,8 +1347,8 @@
     $('resEditor').style.display = '';
   });
 
-  $('#resFilterSubject').addEventListener('change', renderResources);
-  $('#resFilterType').addEventListener('change', renderResources);
+  $('resFilterSubject').addEventListener('change', renderResources);
+  $('resFilterType').addEventListener('change', renderResources);
 
   // Update resource progress manually
   window._updateResourceProgress = function(id, pct, note) {
@@ -1618,57 +1618,81 @@
   }
 
   // ===== INIT =====
-  // --- startup self-check ---
-  function startupCheck() {
+  load();
+  if (state.startDate) {
+    try {
+      const pos = calcPosition(state.startDate);
+      if (pos && typeof pos.p === 'number') {
+        state.p = pos.p;
+        state.wk = pos.wk;
+        state.day = pos.day;
+      }
+    } catch(e) { console.warn('[auto-position] failed, keeping manual position'); }
+  }
+
+  // --- data self-check ---
+  (function() {
     const issues = [];
     if (!state || typeof state !== 'object') issues.push('state 未加载');
     else {
-      if (typeof state.p !== 'number' || state.p < 0 || state.p > 1) { state.p = 0; issues.push('state.p 异常，已重置为0'); }
-      if (typeof state.wk !== 'number' || state.wk < 1) { state.wk = 1; issues.push('state.wk 异常，已重置为1'); }
-      if (typeof state.day !== 'number' || state.day < 0 || state.day > 6) { state.day = 0; issues.push('state.day 异常，已重置为0'); }
-      if (!state.examDate || typeof state.examDate !== 'string') { state.examDate = '2027-12-25'; issues.push('examDate 缺失'); }
-      if (!state.data || typeof state.data !== 'object') { state.data = {}; issues.push('data 缺失'); }
-      if (!Array.isArray(state.resources)) { state.resources = []; issues.push('resources 不是数组'); }
-      if (!Array.isArray(state.studySessions)) { state.studySessions = []; issues.push('studySessions 不是数组'); }
-      if (!Array.isArray(state.aiChats)) { state.aiChats = []; issues.push('aiChats 不是数组'); }
-      if (!state.notes || typeof state.notes !== 'object') { state.notes = {}; issues.push('notes 缺失'); }
-      const ph = PHASES[state.p];
-      if (!ph || !ph.months) issues.push('phase config 缺失');
-      else {
-        const mi = monthIdxFor(state.p, state.wk);
-        if (!ph.months[mi]) issues.push('month['+mi+'] 缺失 p='+state.p+' wk='+state.wk);
-      }
-      const tasks = effectiveTasks(state.p, state.wk, state.day);
-      if (!tasks || tasks.length === 0) issues.push('effectiveTasks 返回空数组 p='+state.p+' wk='+state.wk+' day='+state.day);
+      if (typeof state.p !== 'number' || state.p < 0 || state.p > 1) { state.p = 0; issues.push('state.p→0'); }
+      if (typeof state.wk !== 'number' || state.wk < 1) { state.wk = 1; issues.push('state.wk→1'); }
+      if (typeof state.day !== 'number' || state.day < 0 || state.day > 6) { state.day = 0; issues.push('state.day→0'); }
+      if (!state.examDate) { state.examDate = '2027-12-25'; issues.push('examDate→default'); }
+      if (!state.data) { state.data = {}; issues.push('data→{}'); }
+      if (!Array.isArray(state.resources)) { state.resources = []; issues.push('resources→[]'); }
+      if (!Array.isArray(state.studySessions)) { state.studySessions = []; issues.push('sessions→[]'); }
+      if (!Array.isArray(state.aiChats)) { state.aiChats = []; issues.push('aiChats→[]'); }
+      if (!state.notes) { state.notes = {}; issues.push('notes→{}'); }
     }
-    if (issues.length) console.warn('[启动自检]', issues.join('; '));
-    else console.log('[启动自检] 全部通过');
+    if (issues.length) console.warn('[数据自检]', issues.join('; '));
+    else console.log('[数据自检] OK');
     save();
-    return issues.length === 0 || (issues.length === 1 && issues[0].includes('effectiveTasks 返回空数组') && state.wk === 1 && state.day === 0);
+  })();
+
+  // --- render with DOM self-check ---
+  try { render(); } catch(e) {
+    console.error('[渲染失败]', e);
+    document.querySelector('.wrap').innerHTML =
+      '<div class="card" style="text-align:center;padding:2rem;color:#c44;">'+
+      '<h3>渲染失败</h3><p>'+e.message+'</p>'+
+      '<p class="tiny">请导出数据后联系修复</p></div>';
   }
 
-  load();
-  if (state.startDate) {
-    const pos = calcPosition(state.startDate);
-    if (pos && typeof pos.p === 'number') {
-      state.p = pos.p;
-      state.wk = pos.wk;
-      state.day = pos.day;
-    }
-  }
-  startupCheck();
-  // Render checkin page directly (NOT via showPage, to avoid DOM manipulation issues)
-  try { render(); } catch(e) {
-    console.error('[渲染失败]', e.message, e.stack);
-    document.querySelector('.wrap').innerHTML =
-      '<div class="card" style="text-align:center;padding:2rem;">'+
-      '<h3 style="color:#c44;">页面渲染失败</h3>'+
-      '<p class="tiny muted">请先<a href="#" onclick="exportData()">导出数据</a>，然后联系修复。</p>'+
-      '<p class="tiny muted" style="margin-top:8px;">错误：'+e.message+'</p>'+
-      '</div>';
-  }
+  // --- DOM self-check (runs after render) ---
+  setTimeout(function() {
+    const results = [];
+    const bt = document.body.innerText || '';
+    const tasks = effectiveTasks(state.p, state.wk, state.day);
+    const boxes = document.querySelectorAll('#taskList .box');
+    const labels = document.querySelectorAll('#taskList .label');
+
+    if (bt.includes('距2027年初试')) results.push('✅ 倒计时区域');
+    else results.push('❌ 倒计时区域缺失');
+    if (!bt.includes('— 天')) results.push('✅ 倒计时有数字');
+    else results.push('❌ 倒计时仍为"—"');
+    if (bt.includes('本月目标')) results.push('✅ 本月目标');
+    else results.push('❌ 本月目标空白');
+    DAYS.forEach(function(d) { if (bt.includes(d)) results.push('✅ tab:'+d); else results.push('❌ tab:'+d+' 缺失'); });
+    if (boxes.length === tasks.length) results.push('✅ checkbox:'+boxes.length);
+    else results.push('❌ checkbox:'+boxes.length+'/期望'+tasks.length);
+    if (labels.length === tasks.length) results.push('✅ 任务label:'+labels.length);
+    else results.push('❌ 任务label:'+labels.length+'/期望'+tasks.length);
+    if (document.getElementById('prevWk')) results.push('✅ 上一周按钮');
+    else results.push('❌ 上一周按钮缺失');
+    if (document.getElementById('nextWk')) results.push('✅ 下一周按钮');
+    else results.push('❌ 下一周按钮缺失');
+    if (document.querySelector('#phaseToggle button')) results.push('✅ 阶段切换');
+    else results.push('❌ 阶段切换缺失');
+
+    console.log('[DOM自检]', results.join(' | '));
+    var failCount = results.filter(function(r){return r.indexOf('❌')>=0;}).length;
+    if (failCount === 0) console.log('[DOM自检] ✅ 全部通过 ('+results.length+'项)');
+    else console.error('[DOM自检] ❌ '+failCount+'/'+results.length+' 项失败');
+  }, 100);
+
   // Hide resource/AI pages on startup
-  ['pageResources','pageAI'].forEach(id => { const el = $(id); if(el) el.style.display = 'none'; });
+  ['pageResources','pageAI'].forEach(function(id) { var el = $(id); if(el) el.style.display = 'none'; });
 })();
 </script>
 </body>
