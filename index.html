@@ -1929,7 +1929,7 @@
 
   // ===== PUSH SUBSCRIPTION =====
   // WARNING: public key can be in frontend; private key MUST stay in Netlify env vars
-  var VAPID_PUBLIC_KEY = 'MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEWhqG_tj1qBEYC0n3GcXzfcDVRyO8r-LOPS6nLT8PnL2CF_R_u6elXyvrL0dq7CB-pDPmRSbhw_vNFrdMStroUA';
+  var VAPID_PUBLIC_KEY = 'BHwC671vfXxT-fGcH82fO2ZGxSWaYN9uSBXy5o-8ufWY4RuIVwvXY1xpspo6-imuwryTkeqzNZXeXrSDwnJTFqE';
 
   function isPushSupported() {
     return 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
@@ -2002,11 +2002,26 @@
   }
 
   async function subscribePush() {
+    if (!('serviceWorker' in navigator)) throw new Error('当前浏览器不支持 Service Worker');
+    if (!('PushManager' in window)) throw new Error('当前浏览器不支持 PushManager');
+
+    var publicKey = VAPID_PUBLIC_KEY;
+    if (!publicKey || publicKey.includes('YOUR_') || publicKey.length < 50) {
+      throw new Error('VAPID_PUBLIC_KEY 未配置，请先生成并配置 Web Push 公钥。');
+    }
+    publicKey = publicKey.trim();
+    var applicationServerKey = urlBase64ToUint8Array(publicKey);
+    console.log('[push] public key length:', publicKey.length, 'bytes:', applicationServerKey.byteLength);
+
+    if (applicationServerKey.byteLength !== 65) {
+      throw new Error('VAPID_PUBLIC_KEY 格式不正确（解码后 ' + applicationServerKey.byteLength + ' bytes，应为 65 bytes），请使用 npx web-push generate-vapid-keys 重新生成。');
+    }
+
     var reg = await navigator.serviceWorker.ready;
-    var sub = await reg.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
-    });
+    var existing = await reg.pushManager.getSubscription();
+    if (existing) { console.log('[push] existing subscription'); return existing; }
+
+    var sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: applicationServerKey });
     console.log('[push] subscription:', sub);
     await savePushSubscription(sub);
     state.notificationSettings.subscriptionSaved = true;
