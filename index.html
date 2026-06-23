@@ -142,6 +142,19 @@
   .res-progress-bar { flex: 1; height: 4px; background: var(--color-background-secondary); border-radius: 2px; overflow: hidden; }
   .res-progress-fill { height: 100%; background: var(--color-text-info); border-radius: 2px; }
   .res-filter { padding: 5px 8px; border-radius: 6px; border: 0.5px solid var(--color-border-secondary); background: var(--color-background-secondary); color: var(--color-text-primary); font-size: 12px; font-family: var(--font-sans); }
+  /* 学习中心 hub */
+  .learn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .learn-card { position: relative; text-align: left; background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 14px 12px; cursor: pointer; font-family: var(--font-sans); display: flex; flex-direction: column; gap: 4px; min-height: 92px; transition: transform .08s; }
+  .learn-card:active { transform: scale(.97); }
+  .learn-card .lc-icon { font-size: 24px; line-height: 1; }
+  .learn-card .lc-title { font-size: 15px; font-weight: 600; color: var(--color-text-primary); }
+  .learn-card .lc-sub { font-size: 11px; color: var(--color-text-secondary); line-height: 1.3; }
+  .learn-card.lc-ready { border-color: var(--color-text-info); }
+  .learn-card .lc-badge { position: absolute; top: 8px; right: 8px; font-size: 10px; padding: 1px 6px; border-radius: 8px; }
+  .lc-badge.soon { background: var(--color-background-secondary); color: var(--color-text-tertiary); }
+  .lc-badge.ready { background: var(--color-text-info); color: #fff; }
+  .learn-soon { text-align: center; color: var(--color-text-tertiary); padding: 28px 0; font-size: 15px; }
+  .learn-back { background: var(--color-background-secondary); }
   /* AI chat */
   .ai-msg { font-size: 15px; line-height: 1.8; color: var(--color-text-primary); word-break: break-word; white-space: normal; }
   .ai-msg.user { background: var(--color-background-info); border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; text-align: right; color: var(--color-text-info); }
@@ -340,11 +353,31 @@
     <a href="#" id="resetBtn">重置全部进度</a>
   </div>
 
-  <!-- ====== 资料包页面 ====== -->
+  <!-- ====== 学习中心 hub ====== -->
+  <div id="pageLearn" style="display:none;">
+    <div class="card">
+      <h2 style="margin-bottom:4px;">学习</h2>
+      <p class="tiny muted" style="margin:0;">选一个模块开始今天的学习</p>
+    </div>
+    <div id="learnGrid" class="learn-grid"></div>
+  </div>
+
+  <!-- ====== 学习子模块占位（敬请期待，逐个填充） ====== -->
+  <div id="pageLearnTodo" style="display:none;">
+    <div class="card">
+      <button class="btn-sm learn-back" onclick="showLearnView('hub')">← 返回学习</button>
+      <h2 id="learnTodoTitle" style="margin:10px 0 4px;"></h2>
+      <p id="learnTodoDesc" class="muted" style="margin:0 0 12px;"></p>
+      <div class="learn-soon">🚧 敬请期待</div>
+    </div>
+  </div>
+
+  <!-- ====== 资料/网课页面 ====== -->
   <div id="pageResources" style="display:none;">
     <div class="card">
+      <button class="btn-sm learn-back" onclick="showLearnView('hub')" style="margin-bottom:8px;">← 返回学习</button>
       <div class="row" style="justify-content:space-between;margin-bottom:8px;">
-        <h2>资料包</h2>
+        <h2>资料/网课</h2>
         <button class="btn-sm" id="addResourceBtn" style="background:var(--color-text-info);color:#fff;border-color:var(--color-text-info);">+ 新增</button>
       </div>
       <div class="row" style="gap:6px;margin-bottom:8px;flex-wrap:wrap;">
@@ -435,8 +468,8 @@
     <span>打卡</span>
   </button>
   <button class="bn-btn" data-page="1">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-    <span>资料包</span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+    <span>学习</span>
   </button>
   <button class="bn-btn" data-page="2">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
@@ -546,6 +579,16 @@
   const sTotal = $('sTotal');
 
   // ===== STATE =====
+  // v7: 学习中心默认结构。内容(词库/题库)走静态JSON，这里只存进度/设置。
+  function defaultLearn() {
+    return {
+      vocab:   { list: 'kaoyan-syllabus', progress: {}, settings: { dailyNew: 20 } },
+      reading: { progress: {} },
+      math:    { wrongBook: [], progress: {} },
+      exams:   { progress: {} },
+      mock:    { history: [] }
+    };
+  }
   let state = {
     p: 0, wk: 1, day: 0, data: {},
     startDate: null,
@@ -570,7 +613,8 @@
       reminderTime: "20:30",
       tone: "normal"
     },
-    version: 6
+    learn: defaultLearn(), // v7: 学习中心（背单词/阅读/数学/真题/模拟考进度）
+    version: 7
   };
 
   // ===== PERSISTENCE =====
@@ -609,6 +653,14 @@
       loaded.notificationSettings = loaded.notificationSettings || { enabled: false, permission: "default", subscriptionSaved: false, reminderTime: "20:30", tone: "normal" };
       loaded.version = 6;
     }
+    if (loaded.version === 6) {
+      loaded.learn = loaded.learn || defaultLearn();
+      loaded.version = 7;
+    }
+    // 防御：任何情况下 learn 都要存在，子字段缺失补齐
+    if (!loaded.learn) loaded.learn = defaultLearn();
+    const dl = defaultLearn();
+    Object.keys(dl).forEach(function(k){ if (!loaded.learn[k]) loaded.learn[k] = dl[k]; });
     return loaded;
   }
 
@@ -1304,32 +1356,66 @@
     } else {
       exportData();
     }
-    state = { p:0, wk:1, day:0, data:{}, startDate:null, examDate:'2027-12-25', customTasks:{}, deletedDefaults:{}, notes:{}, resources:[], studySessions:[], aiChats:[], reminderSettings:{enabled:true,tone:"normal",quietHours:{start:"23:30",end:"08:00"},systemNotificationEnabled:false}, reminderLog:{}, notificationSettings:{enabled:false,permission:"default",subscriptionSaved:false,reminderTime:"20:30",tone:"normal"}, version:6 };
+    state = { p:0, wk:1, day:0, data:{}, startDate:null, examDate:'2027-12-25', customTasks:{}, deletedDefaults:{}, notes:{}, resources:[], studySessions:[], aiChats:[], reminderSettings:{enabled:true,tone:"normal",quietHours:{start:"23:30",end:"08:00"},systemNotificationEnabled:false}, reminderLog:{}, notificationSettings:{enabled:false,permission:"default",subscriptionSaved:false,reminderTime:"20:30",tone:"normal"}, learn:defaultLearn(), version:7 };
     save();
     render();
   }
 
   // ===== PAGE SWITCHING =====
+  // ===== 学习中心 =====
+  const LEARN_MODULES = [
+    { key:'today',     icon:'📋', title:'今日学习', sub:'今天该背/读/做的清单',     ready:false, todo:'引擎齐了后，这里会聚合今日的背单词、阅读、数学任务，一键直达。' },
+    { key:'vocab',     icon:'📚', title:'背单词',   sub:'考研大纲词 · 艾宾浩斯',     ready:false, todo:'下一个开发：考研大纲词库 + 间隔重复闪卡，每日新词 + 复习队列。' },
+    { key:'reading',   icon:'📖', title:'阅读',     sub:'真题/外刊精读 · 点词查义',  ready:false, todo:'真题/外刊精读，点生词即查释义、一键加入背单词队列。' },
+    { key:'math',      icon:'➗', title:'数学',     sub:'真题分类 · 错题本 · AI讲解', ready:false, todo:'真题分类练习 + 错题本 + AI 步骤讲解（AI 仅辅助，注意核对）。' },
+    { key:'exams',     icon:'📝', title:'真题题库', sub:'按年份/科目/题型',         ready:false, todo:'结构化真题库，作为模拟考与数学练习的内容底座。' },
+    { key:'mock',      icon:'🤖', title:'AI模拟考', sub:'作文/翻译批改 · 模拟卷',    ready:false, todo:'AI 作文与专业英语翻译批改 + 模拟卷自测。' },
+    { key:'resources', icon:'🎬', title:'资料/网课', sub:'视频/PDF/文档在线观看',    ready:true,  todo:'' }
+  ];
+
+  function renderLearnHub() {
+    let html = '';
+    LEARN_MODULES.forEach(function(m){
+      const badge = m.ready ? '<span class="lc-badge ready">可用</span>' : '<span class="lc-badge soon">敬请期待</span>';
+      html += '<button class="learn-card'+(m.ready?' lc-ready':'')+'" onclick="showLearnView(\''+m.key+'\')">' +
+        badge +
+        '<span class="lc-icon">'+m.icon+'</span>' +
+        '<span class="lc-title">'+m.title+'</span>' +
+        '<span class="lc-sub">'+m.sub+'</span>' +
+      '</button>';
+    });
+    $('learnGrid').innerHTML = html;
+  }
+
+  const LEARN_PAGES = ['pageLearn','pageLearnTodo','pageResources'];
+  window.showLearnView = function(name) {
+    LEARN_PAGES.forEach(function(id){ const el=$(id); if(el) el.style.display='none'; });
+    window._learnView = name;
+    if (name === 'hub') { $('pageLearn').style.display=''; renderLearnHub(); return; }
+    if (name === 'resources') { $('pageResources').style.display=''; renderResources(); return; }
+    const m = LEARN_MODULES.find(function(x){ return x.key===name; });
+    $('learnTodoTitle').textContent = m ? (m.icon+' '+m.title) : '敬请期待';
+    $('learnTodoDesc').textContent = m ? m.todo : '';
+    $('pageLearnTodo').style.display='';
+  };
+
   function showPage(idx) {
     window._page = idx;
-    const pages = [null, 'pageResources', 'pageAI'];
     // Show/hide checkin cards
     const checkinCards = document.querySelectorAll('.wrap > .card, .wrap > .phaseToggle, .wrap > .tiny');
-    const bottomNav = document.querySelector('.bottom-nav');
     checkinCards.forEach(el => { el.style.display = idx === 0 ? '' : 'none'; });
+    const bottomNav = document.querySelector('.bottom-nav');
     if (bottomNav) bottomNav.style.display = ''; // Always show nav
-    // Show/hide phase toggle
     const pt = $('phaseToggle');
     if (pt) pt.style.display = idx === 0 ? '' : 'none';
-    // Hide all pages, show target
-    ['pageResources','pageAI'].forEach(id => { const el = $(id); if(el) el.style.display = 'none'; });
-    if (idx > 0) { const p = $(pages[idx]); if(p) p.style.display = ''; }
+    // Hide all secondary pages
+    ['pageLearn','pageLearnTodo','pageResources','pageAI'].forEach(id => { const el = $(id); if(el) el.style.display = 'none'; });
     // Update nav
     document.querySelectorAll('.bn-btn').forEach(b => { b.className = 'bn-btn' + (b.dataset.page == idx ? ' on' : ''); });
-    // Render page content
-    if (idx === 1) renderResources();
-    if (idx === 2) renderAI();
-    if (idx === 0) render();
+    // Render target
+    if (idx === 1) { showLearnView('hub'); }
+    else if (idx === 2) { $('pageAI').style.display = ''; renderAI(); }
+    else { render(); }
   }
 
   // ===== RESOURCES =====
@@ -2506,8 +2592,8 @@
     else console.error('[DOM自检] ❌ '+failCount+'/'+results.length+' 项失败');
   }, 100);
 
-  // Hide resource/AI pages on startup
-  ['pageResources','pageAI'].forEach(function(id) { var el = $(id); if(el) el.style.display = 'none'; });
+  // Hide learn/resource/AI pages on startup
+  ['pageLearn','pageLearnTodo','pageResources','pageAI'].forEach(function(id) { var el = $(id); if(el) el.style.display = 'none'; });
 })();
 </script>
 </body>
