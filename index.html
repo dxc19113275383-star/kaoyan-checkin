@@ -1972,8 +1972,22 @@
   updateReminderStatusLine();
 
   // Notification settings — modal
-  $('notifySettingsBtn').addEventListener('click', function() { showNotifySettings(); });
-  $('notifySettingsClose').addEventListener('click', function() { $('notifySettingsModal').style.display = 'none'; });
+  var notifySettingsBtn = $('notifySettingsBtn');
+  if (notifySettingsBtn) {
+    notifySettingsBtn.addEventListener('click', function() { showNotifySettings(); });
+  } else { console.error('[notify] notifySettingsBtn not found'); }
+
+  var notifySettingsClose = $('notifySettingsClose');
+  if (notifySettingsClose) {
+    notifySettingsClose.addEventListener('click', function() { $('notifySettingsModal').style.display = 'none'; });
+  }
+
+  var modalNotifyBtn = $('modalNotifyBtn');
+  if (modalNotifyBtn) {
+    console.log('[notify] modalNotifyBtn found, attaching handler');
+  } else {
+    console.error('[notify] modalNotifyBtn NOT FOUND in DOM!');
+  }
 
   function showNotifySettings() {
     // Sync homepage → modal
@@ -1995,8 +2009,21 @@
     save();
   });
 
-  $('modalNotifyBtn').addEventListener('click', function() {
-    fullPushSubscribeFlow().then(function() { updateNotificationUI(); updateReminderStatusLine(); });
+  $('modalNotifyBtn').addEventListener('click', async function() {
+    console.log('[notify] modalNotifyBtn clicked');
+    var btn = $('modalNotifyBtn');
+    btn.disabled = true;
+    btn.textContent = '处理中…';
+    try {
+      await fullPushSubscribeFlow();
+      updateNotificationUI();
+      updateReminderStatusLine();
+    } catch(e) {
+      console.error('[notify]', e);
+      alert('操作失败：' + e.message);
+    }
+    btn.disabled = false;
+    updateNotificationUI();
   });
   $('modalTestBtn').addEventListener('click', function() { testNotification(); });
 
@@ -2067,8 +2094,12 @@
       btn.style.display = '';
       testBtn.style.display = 'none';
     }
-    if (perm === 'denied') { btn.disabled = true; statusEl.textContent = '已拒绝 ❌ 请在 iPhone 设置中手动开启'; }
-    else { btn.disabled = false; }
+    if (perm === 'denied') {
+      btn.disabled = true; statusEl.textContent = '已拒绝 ❌ 请在 iPhone 设置中手动开启';
+    } else {
+      btn.disabled = false;
+      btn.style.display = '';
+    }
 
     // Advanced panel
     $('advEnv').textContent = isStandalone ? 'standalone ✅' : '浏览器';
