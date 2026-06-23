@@ -2068,6 +2068,8 @@
         state.notificationSettings.enabled = false;
         save();
         updateNotificationUI();
+      } else if (data.hasPublicKey === false || data.hasPrivateKey === false) {
+        alert('Netlify 后端缺少 VAPID_PUBLIC_KEY / VAPID_PRIVATE_KEY，请在 Environment variables 中配置后重新 Deploy。');
       } else {
         alert('发送失败：' + (data.error || JSON.stringify(data)));
       }

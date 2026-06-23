@@ -13,12 +13,12 @@
 
 exports.handler = async function(event) {
   try {
-    const vapidPrivate = process.env.VAPID_PRIVATE_KEY;
     const vapidPublic = process.env.VAPID_PUBLIC_KEY;
+    const vapidPrivate = process.env.VAPID_PRIVATE_KEY;
     const vapidSubject = process.env.VAPID_SUBJECT || "mailto:kaoyan@example.com";
 
-    if (!vapidPrivate || !vapidPublic) {
-      console.log("[push-scheduled] VAPID keys not configured, skipping");
+    if (!vapidPublic || !vapidPrivate) {
+      console.log("[push-scheduled] VAPID keys missing — hasPublic:", Boolean(vapidPublic), "hasPrivate:", Boolean(vapidPrivate));
       return { statusCode: 200, body: "VAPID keys not configured" };
     }
 
