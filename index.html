@@ -155,6 +155,26 @@
   .lc-badge.ready { background: var(--color-text-info); color: #fff; }
   .learn-soon { text-align: center; color: var(--color-text-tertiary); padding: 28px 0; font-size: 15px; }
   .learn-back { background: var(--color-background-secondary); }
+  /* 背单词 */
+  .vocab-stat { display: flex; gap: 8px; margin: 10px 0; }
+  .vocab-stat .vs-box { flex: 1; text-align: center; background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 10px 4px; }
+  .vocab-stat .vs-num { font-size: 20px; font-weight: 700; color: var(--color-text-primary); }
+  .vocab-stat .vs-lbl { font-size: 11px; color: var(--color-text-secondary); margin-top: 2px; }
+  .vocab-progbar { height: 6px; background: var(--color-background-secondary); border-radius: 3px; overflow: hidden; margin: 8px 0; }
+  .vocab-progbar > i { display: block; height: 100%; background: var(--color-text-info); }
+  .vocab-card { text-align: center; padding: 18px 12px 8px; }
+  .vocab-word { font-size: 34px; font-weight: 700; letter-spacing: .5px; color: var(--color-text-primary); }
+  .vocab-ph { font-size: 14px; color: var(--color-text-secondary); margin-top: 4px; }
+  .vocab-speak { display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 50%; border: 0.5px solid var(--color-border-secondary); background: var(--color-background-secondary); cursor: pointer; font-size: 18px; margin-top: 10px; }
+  .vocab-opts { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
+  .vocab-opt { text-align: left; padding: 12px 14px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-tertiary); background: var(--color-background-primary); cursor: pointer; font-size: 15px; color: var(--color-text-primary); font-family: var(--font-sans); transition: background .1s; }
+  .vocab-opt:active { background: var(--color-background-secondary); }
+  .vocab-opt.correct { background: #16a34a22; border-color: #16a34a; color: #15803d; }
+  .vocab-opt.wrong { background: #dc262622; border-color: #dc2626; color: #b91c1c; }
+  .vocab-opt:disabled { cursor: default; }
+  .vocab-feedback { margin-top: 14px; padding: 12px; border-radius: var(--border-radius-md); background: var(--color-background-secondary); text-align: left; font-size: 13px; line-height: 1.6; }
+  .vocab-known { display: block; text-align: center; margin-top: 14px; font-size: 13px; color: var(--color-text-tertiary); cursor: pointer; }
+  .vocab-libsel { width: 100%; padding: 8px 10px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: var(--color-background-secondary); color: var(--color-text-primary); font-size: 14px; font-family: var(--font-sans); }
   /* AI chat */
   .ai-msg { font-size: 15px; line-height: 1.8; color: var(--color-text-primary); word-break: break-word; white-space: normal; }
   .ai-msg.user { background: var(--color-background-info); border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; text-align: right; color: var(--color-text-info); }
@@ -372,6 +392,25 @@
     </div>
   </div>
 
+  <!-- ====== 背单词 ====== -->
+  <div id="pageLearnVocab" style="display:none;">
+    <div id="vocabHome"></div>
+    <div id="vocabSession" style="display:none;"></div>
+    <!-- 导入词库 -->
+    <div class="modal-overlay" id="vocabImport" style="display:none;">
+      <div class="modal" style="max-width:440px;max-height:90vh;overflow-y:auto;">
+        <h3>导入词库</h3>
+        <p class="tiny muted" style="margin:4px 0 8px;">粘贴 JSON：可为词条数组，或 <code>{"name":"...","words":[...]}</code>。词条字段：<code>w</code>(单词必填)、<code>def</code>(释义)、可选 <code>ph</code>(音标)/<code>ex</code>(例句)/<code>exCn</code>(译文)。</p>
+        <input id="vocabImpName" placeholder="词库名称（如：我的专业英语词单）" maxlength="40"><br>
+        <textarea id="vocabImpJson" placeholder='[{"w":"tariff","def":"n. 关税","ph":"/ˈtærɪf/","ex":"...","exCn":"..."}]' style="width:100%;min-height:160px;font-family:monospace;font-size:12px;"></textarea>
+        <div class="row" style="justify-content:flex-end;gap:8px;margin-top:8px;">
+          <button class="btn-sm" id="vocabImpCancel">取消</button>
+          <button class="btn-sm" id="vocabImpSave" style="background:var(--color-text-info);color:#fff;border-color:var(--color-text-info);">导入</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ====== 资料/网课页面 ====== -->
   <div id="pageResources" style="display:none;">
     <div class="card">
@@ -582,7 +621,7 @@
   // v7: 学习中心默认结构。内容(词库/题库)走静态JSON，这里只存进度/设置。
   function defaultLearn() {
     return {
-      vocab:   { list: 'kaoyan-syllabus', progress: {}, settings: { dailyNew: 20 } },
+      vocab:   { active: 'kaoyan', settings: { dailyNew: 20 }, progress: {}, wrongBook: [], daily: { date:'', newDone:0, reviewDone:0 }, userLibs: [] },
       reading: { progress: {} },
       math:    { wrongBook: [], progress: {} },
       exams:   { progress: {} },
@@ -1365,7 +1404,7 @@
   // ===== 学习中心 =====
   const LEARN_MODULES = [
     { key:'today',     icon:'📋', title:'今日学习', sub:'今天该背/读/做的清单',     ready:false, todo:'引擎齐了后，这里会聚合今日的背单词、阅读、数学任务，一键直达。' },
-    { key:'vocab',     icon:'📚', title:'背单词',   sub:'考研大纲词 · 艾宾浩斯',     ready:false, todo:'下一个开发：考研大纲词库 + 间隔重复闪卡，每日新词 + 复习队列。' },
+    { key:'vocab',     icon:'📚', title:'背单词',   sub:'多词库 · 斩词 · 艾宾浩斯',   ready:true,  todo:'' },
     { key:'reading',   icon:'📖', title:'阅读',     sub:'真题/外刊精读 · 点词查义',  ready:false, todo:'真题/外刊精读，点生词即查释义、一键加入背单词队列。' },
     { key:'math',      icon:'➗', title:'数学',     sub:'真题分类 · 错题本 · AI讲解', ready:false, todo:'真题分类练习 + 错题本 + AI 步骤讲解（AI 仅辅助，注意核对）。' },
     { key:'exams',     icon:'📝', title:'真题题库', sub:'按年份/科目/题型',         ready:false, todo:'结构化真题库，作为模拟考与数学练习的内容底座。' },
@@ -1387,16 +1426,235 @@
     $('learnGrid').innerHTML = html;
   }
 
-  const LEARN_PAGES = ['pageLearn','pageLearnTodo','pageResources'];
+  const LEARN_PAGES = ['pageLearn','pageLearnTodo','pageResources','pageLearnVocab'];
   window.showLearnView = function(name) {
     LEARN_PAGES.forEach(function(id){ const el=$(id); if(el) el.style.display='none'; });
     window._learnView = name;
     if (name === 'hub') { $('pageLearn').style.display=''; renderLearnHub(); return; }
     if (name === 'resources') { $('pageResources').style.display=''; renderResources(); return; }
+    if (name === 'vocab') { $('pageLearnVocab').style.display=''; openVocab(); return; }
     const m = LEARN_MODULES.find(function(x){ return x.key===name; });
     $('learnTodoTitle').textContent = m ? (m.icon+' '+m.title) : '敬请期待';
     $('learnTodoDesc').textContent = m ? m.todo : '';
     $('pageLearnTodo').style.display='';
+  };
+
+  // ===== 背单词引擎（百词斩底层逻辑：斩词识别 + 艾宾浩斯间隔 + 每日配额）=====
+  const VOCAB_INTERVALS = [0, 1, 2, 4, 7, 15, 30, 90, 180]; // 记忆曲线间隔(天)
+  const VOCAB_MASTER_STAGE = 7;                              // 达到此阶段=已掌握
+  let _vocabLibs = null;      // 注册表缓存
+  const _vocabCache = {};     // libId -> words[]
+  let _vsession = null;       // 当前学习会话
+
+  function _vshuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=a[i];a[i]=a[j];a[j]=t;} return a; }
+  function vAddDays(dateStr, days){ const d=new Date((dateStr||todayStr())+'T00:00:00'); d.setDate(d.getDate()+days); const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),da=String(d.getDate()).padStart(2,'0'); return y+'-'+m+'-'+da; }
+  function vKey(lib,w){ return lib+':'+w; }
+  function vSpeak(t){ try{ if(!('speechSynthesis' in window))return; const u=new SpeechSynthesisUtterance(t); u.lang='en-US'; u.rate=0.9; speechSynthesis.cancel(); speechSynthesis.speak(u);}catch(e){} }
+  window._vSpeak = vSpeak;
+
+  function ensureVocab(){
+    const v = state.learn.vocab = state.learn.vocab || {};
+    if(!v.active) v.active='kaoyan';
+    if(!v.settings) v.settings={dailyNew:20};
+    if(typeof v.settings.dailyNew!=='number') v.settings.dailyNew=20;
+    if(!v.progress) v.progress={};
+    if(!Array.isArray(v.wrongBook)) v.wrongBook=[];
+    if(!Array.isArray(v.userLibs)) v.userLibs=[];
+    if(!v.daily) v.daily={date:'',newDone:0,reviewDone:0};
+    const t=todayStr();
+    if(v.daily.date!==t) v.daily={date:t,newDone:0,reviewDone:0};
+    return v;
+  }
+
+  function loadVocabLibs(){
+    return new Promise(function(res){
+      const v=ensureVocab();
+      const userLibs=(v.userLibs||[]).map(function(l){return {id:l.id,name:l.name,desc:'我的词库 · '+l.count+'词',tag:'自建',user:true};});
+      if(_vocabLibs){ res(_vocabLibs.concat(userLibs)); return; }
+      fetch('data/words/index.json').then(function(r){return r.json();}).then(function(j){
+        _vocabLibs=(j.libraries||[]); res(_vocabLibs.concat(userLibs));
+      }).catch(function(){ _vocabLibs=[]; res(userLibs); });
+    });
+  }
+
+  function loadVocabWords(libId){
+    return new Promise(function(res){
+      if(_vocabCache[libId]){ res(_vocabCache[libId]); return; }
+      try{ const raw=localStorage.getItem('vocab_lib_'+libId); if(raw){ const w=JSON.parse(raw); _vocabCache[libId]=w; res(w); return; } }catch(e){}
+      const lib=(_vocabLibs||[]).find(function(l){return l.id===libId;});
+      if(!lib||!lib.file){ res(null); return; }
+      fetch('data/words/'+lib.file).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(j){
+        const words=j.words||j; _vocabCache[libId]=words; res(words);
+      }).catch(function(){ res(null); });
+    });
+  }
+
+  window.openVocab = function(){
+    ensureVocab();
+    $('vocabSession').style.display='none';
+    $('vocabHome').style.display='';
+    loadVocabLibs().then(renderVocabHome);
+  };
+
+  function renderVocabHome(libs){
+    const v=ensureVocab(); libs=libs||[];
+    let opts='';
+    libs.forEach(function(l){ opts+='<option value="'+l.id+'"'+(l.id===v.active?' selected':'')+'>'+escAttr(l.name)+(l.placeholder?' (待导入)':'')+'</option>'; });
+    loadVocabWords(v.active).then(function(words){
+      const t=todayStr();
+      let learned=0, due=0, mastered=0, total=words?words.length:0;
+      if(words){ words.forEach(function(wd){ const p=v.progress[vKey(v.active,wd.w)]; if(p){ learned++; if(p.stage>=VOCAB_MASTER_STAGE) mastered++; else if((p.due||t)<=t) due++; } }); }
+      const remainNew=Math.max(0, v.settings.dailyNew - v.daily.newDone);
+      const newAvail=words?Math.min(remainNew, total-learned):0;
+      const pct=total?Math.round(mastered/total*100):0;
+      let html='<div class="card">';
+      html+='<button class="btn-sm learn-back" onclick="showLearnView(\'hub\')" style="margin-bottom:10px;">← 返回学习</button>';
+      html+='<div class="row" style="justify-content:space-between;align-items:center;gap:8px;"><h2 style="margin:0;">背单词</h2><button class="btn-sm" onclick="vocabOpenImport()">＋导入词库</button></div>';
+      html+='<select class="vocab-libsel" style="margin-top:10px;" onchange="vocabSwitchLib(this.value)">'+opts+'</select>';
+      if(!words){
+        html+='<div class="learn-soon" style="padding:20px 0;">该词库还没有内容<br><span class="tiny muted">用上方「导入词库」粘贴 JSON，或换一个词库</span></div></div>';
+        $('vocabHome').innerHTML=html; return;
+      }
+      html+='<div class="vocab-stat">';
+      html+='<div class="vs-box"><div class="vs-num">'+newAvail+'</div><div class="vs-lbl">今日新词</div></div>';
+      html+='<div class="vs-box"><div class="vs-num">'+due+'</div><div class="vs-lbl">待复习</div></div>';
+      html+='<div class="vs-box"><div class="vs-num">'+mastered+'</div><div class="vs-lbl">已掌握</div></div>';
+      html+='</div>';
+      html+='<div class="vocab-progbar"><i style="width:'+pct+'%"></i></div>';
+      html+='<div class="tiny muted">词库进度 '+mastered+' / '+total+'（'+pct+'%）· 今日已学 '+v.daily.newDone+' 新 / '+v.daily.reviewDone+' 复习</div>';
+      const canStart=newAvail>0||due>0;
+      html+='<button class="btn-sm" style="width:100%;margin-top:12px;background:var(--color-text-info);color:#fff;border-color:var(--color-text-info);padding:10px;'+(canStart?'':'opacity:.5;')+'" onclick="'+(canStart?'startVocab(\'today\')':'')+'">'+(canStart?'开始学习（'+(newAvail+due)+'）':'今日已完成 🎉')+'</button>';
+      html+='<div class="row" style="gap:8px;margin-top:8px;">';
+      html+='<button class="btn-sm" style="flex:1;" onclick="vocabSetDaily()">每日新词：'+v.settings.dailyNew+'</button>';
+      html+='<button class="btn-sm" style="flex:1;" onclick="startVocab(\'wrong\')">错词本（'+v.wrongBook.filter(function(k){return k.indexOf(v.active+':')===0;}).length+'）</button>';
+      html+='</div></div>';
+      $('vocabHome').innerHTML=html;
+    });
+  }
+
+  window.vocabSwitchLib=function(id){ const v=ensureVocab(); v.active=id; save(); loadVocabLibs().then(renderVocabHome); };
+  window.vocabSetDaily=function(){ const v=ensureVocab(); const n=prompt('每日新词数量', v.settings.dailyNew); if(n===null)return; const num=parseInt(n,10); if(num>0&&num<=200){ v.settings.dailyNew=num; save(); openVocab(); } else alert('请输入 1–200 之间的数字'); };
+
+  function buildVocabQueue(words, mode){
+    const v=ensureVocab(), lib=v.active, t=todayStr();
+    let items=[];
+    if(mode==='wrong'){
+      v.wrongBook.forEach(function(k){ if(k.indexOf(lib+':')===0){ const w=k.slice(lib.length+1); const wd=words.find(function(x){return x.w===w;}); if(wd) items.push({wd:wd, mode:'review'}); } });
+    } else {
+      const reviews=[], news=[];
+      words.forEach(function(wd){ const p=v.progress[vKey(lib,wd.w)]; if(!p){ news.push(wd); } else if(p.stage<VOCAB_MASTER_STAGE && (p.due||t)<=t){ reviews.push(wd); } });
+      const remainNew=Math.max(0, v.settings.dailyNew - v.daily.newDone);
+      reviews.forEach(function(wd){ items.push({wd:wd, mode:'review'}); });
+      news.slice(0, remainNew).forEach(function(wd){ items.push({wd:wd, mode:'new'}); });
+    }
+    return _vshuffle(items);
+  }
+
+  window.startVocab=function(mode){
+    const v=ensureVocab();
+    loadVocabWords(v.active).then(function(words){
+      if(!words){ alert('该词库暂无内容'); return; }
+      const queue=buildVocabQueue(words, mode);
+      if(!queue.length){ alert(mode==='wrong'?'错词本是空的 👍':'今天没有要学的了 🎉'); return; }
+      _vsession={ words:words, lib:v.active, queue:queue, idx:0, mode:mode, correct:0, total:queue.length };
+      $('vocabHome').style.display='none'; $('vocabSession').style.display='';
+      renderVocabCard();
+    });
+  };
+
+  function vDistractors(wd, words, n){
+    const pool=words.filter(function(x){return x.w!==wd.w && x.def;}); _vshuffle(pool);
+    return pool.slice(0,n).map(function(x){return x.def;});
+  }
+
+  function renderVocabCard(){
+    const s=_vsession; if(!s) return;
+    if(s.idx>=s.queue.length){ renderVocabDone(); return; }
+    const item=s.queue[s.idx], wd=item.wd;
+    const opts=_vshuffle([wd.def].concat(vDistractors(wd, s.words, 3)));
+    s._answered=false;
+    let html='<div class="card">';
+    html+='<div class="row" style="justify-content:space-between;align-items:center;"><button class="btn-sm learn-back" onclick="quitVocab()">← 退出</button><span class="tiny muted">'+(s.idx+1)+' / '+s.total+(item.mode==='new'?' · 新词':' · 复习')+'</span></div>';
+    html+='<div class="vocab-progbar" style="margin-top:8px;"><i style="width:'+Math.round(s.idx/s.total*100)+'%"></i></div>';
+    html+='<div class="vocab-card"><div class="vocab-word">'+escAttr(wd.w)+'</div>';
+    if(wd.ph) html+='<div class="vocab-ph">'+escAttr(wd.ph)+'</div>';
+    html+='<div class="vocab-speak" onclick="_vSpeak(\''+escAttr(wd.w).replace(/'/g,"\\'")+'\')">🔊</div></div>';
+    html+='<div class="vocab-opts" id="vocabOpts">';
+    opts.forEach(function(d){ html+='<button class="vocab-opt" onclick="vocabPick(this)" data-def="'+escAttr(d)+'">'+escAttr(d)+'</button>'; });
+    html+='</div>';
+    html+='<span class="vocab-known" onclick="vocabKnown()">我已认识这个词，标记掌握 →</span>';
+    html+='<div id="vocabFb"></div></div>';
+    $('vocabSession').innerHTML=html;
+    setTimeout(function(){ vSpeak(wd.w); }, 250);
+  }
+
+  window.vocabPick=function(btn){
+    const s=_vsession; if(!s||s._answered) return;
+    s._answered=true;
+    const correct=(btn.getAttribute('data-def')===s.queue[s.idx].wd.def);
+    document.querySelectorAll('#vocabOpts .vocab-opt').forEach(function(b){ b.disabled=true; if(b.getAttribute('data-def')===s.queue[s.idx].wd.def) b.classList.add('correct'); else if(b===btn) b.classList.add('wrong'); });
+    gradeVocab(s.queue[s.idx], correct);
+    if(correct) s.correct++;
+    showVocabFeedback(correct);
+  };
+
+  function gradeVocab(item, correct){
+    const v=ensureVocab(), lib=v.active, wd=item.wd, k=vKey(lib,wd.w);
+    const wasNew=!v.progress[k];
+    let p=v.progress[k] || {stage:0, due:todayStr(), wrong:0};
+    if(correct){ p.stage=Math.min(VOCAB_MASTER_STAGE, p.stage+1); const wi=v.wrongBook.indexOf(k); if(p.stage>=VOCAB_MASTER_STAGE && wi>=0) v.wrongBook.splice(wi,1); }
+    else { p.stage=Math.max(0, p.stage-2); p.wrong=(p.wrong||0)+1; if(v.wrongBook.indexOf(k)<0) v.wrongBook.push(k); }
+    p.due=vAddDays(todayStr(), VOCAB_INTERVALS[Math.min(p.stage, VOCAB_INTERVALS.length-1)]);
+    p.seenAt=new Date().toISOString();
+    v.progress[k]=p;
+    if(_vsession && _vsession.mode!=='wrong'){ if(item.mode==='new' && wasNew) v.daily.newDone++; else if(item.mode==='review') v.daily.reviewDone++; }
+    save();
+  }
+
+  function showVocabFeedback(correct){
+    const wd=_vsession.queue[_vsession.idx].wd;
+    let fb='<div class="vocab-feedback"><strong>'+(correct?'✅ 正确':'❌ 再记一次')+'</strong> &nbsp; '+escAttr(wd.w)+(wd.ph?' '+escAttr(wd.ph):'')+'<br><span style="color:var(--color-text-info);">'+escAttr(wd.def)+'</span>';
+    if(wd.ex){ fb+='<br>'+escAttr(wd.ex); if(wd.exCn) fb+='<br><span class="muted">'+escAttr(wd.exCn)+'</span>'; }
+    fb+='</div><button class="btn-sm" style="width:100%;margin-top:10px;background:var(--color-text-info);color:#fff;border-color:var(--color-text-info);padding:10px;" onclick="vocabNext()">下一个 →</button>';
+    $('vocabFb').innerHTML=fb;
+  }
+
+  window.vocabKnown=function(){
+    const s=_vsession; if(!s||s._answered) return; s._answered=true;
+    const v=ensureVocab(), item=s.queue[s.idx], wd=item.wd, k=vKey(v.active,wd.w);
+    const wasNew=!v.progress[k];
+    v.progress[k]={stage:VOCAB_MASTER_STAGE, due:vAddDays(todayStr(),180), wrong:0, known:true, seenAt:new Date().toISOString()};
+    const wi=v.wrongBook.indexOf(k); if(wi>=0) v.wrongBook.splice(wi,1);
+    if(s.mode!=='wrong'){ if(item.mode==='new'&&wasNew) v.daily.newDone++; else if(item.mode==='review') v.daily.reviewDone++; }
+    save(); vocabNext();
+  };
+
+  window.vocabNext=function(){ const s=_vsession; if(!s)return; s.idx++; renderVocabCard(); };
+
+  function renderVocabDone(){
+    const s=_vsession;
+    $('vocabSession').innerHTML='<div class="card" style="text-align:center;"><div style="font-size:40px;">🎉</div><h2 style="margin:8px 0;">本组完成</h2><p class="muted">答对 '+s.correct+' / '+s.total+'</p><button class="btn-sm" style="width:100%;margin-top:12px;background:var(--color-text-info);color:#fff;border-color:var(--color-text-info);padding:10px;" onclick="openVocab()">返回</button></div>';
+    _vsession=null;
+  }
+
+  window.quitVocab=function(){ _vsession=null; openVocab(); };
+
+  window.vocabOpenImport=function(){ $('vocabImpName').value=''; $('vocabImpJson').value=''; $('vocabImport').style.display=''; };
+  $('vocabImpCancel').onclick=function(){ $('vocabImport').style.display='none'; };
+  $('vocabImpSave').onclick=function(){
+    const name=$('vocabImpName').value.trim()||'我的词库';
+    let parsed;
+    try{ parsed=JSON.parse($('vocabImpJson').value.trim()); }catch(e){ alert('JSON 格式错误：'+e.message); return; }
+    let words=Array.isArray(parsed)?parsed:(parsed.words||null);
+    if(!Array.isArray(words)||!words.length){ alert('没有解析到词条数组'); return; }
+    words=words.filter(function(x){return x&&x.w;}).map(function(x){return {w:String(x.w).trim(), ph:x.ph||'', def:x.def||x.meaning||'', ex:x.ex||x.sentence||'', exCn:x.exCn||x.trans||''};});
+    if(!words.length){ alert('词条需至少包含 w（单词）字段'); return; }
+    const v=ensureVocab(), id='user_'+Date.now().toString(36);
+    try{ localStorage.setItem('vocab_lib_'+id, JSON.stringify(words)); }catch(e){ alert('保存失败（可能超出本地存储上限）：'+e.message); return; }
+    v.userLibs.push({id:id, name:name, count:words.length});
+    v.active=id; _vocabCache[id]=words; save();
+    $('vocabImport').style.display='none';
+    loadVocabLibs().then(renderVocabHome);
   };
 
   function showPage(idx) {
@@ -1409,7 +1667,7 @@
     const pt = $('phaseToggle');
     if (pt) pt.style.display = idx === 0 ? '' : 'none';
     // Hide all secondary pages
-    ['pageLearn','pageLearnTodo','pageResources','pageAI'].forEach(id => { const el = $(id); if(el) el.style.display = 'none'; });
+    ['pageLearn','pageLearnTodo','pageResources','pageLearnVocab','pageAI'].forEach(id => { const el = $(id); if(el) el.style.display = 'none'; });
     // Update nav
     document.querySelectorAll('.bn-btn').forEach(b => { b.className = 'bn-btn' + (b.dataset.page == idx ? ' on' : ''); });
     // Render target
@@ -2593,7 +2851,7 @@
   }, 100);
 
   // Hide learn/resource/AI pages on startup
-  ['pageLearn','pageLearnTodo','pageResources','pageAI'].forEach(function(id) { var el = $(id); if(el) el.style.display = 'none'; });
+  ['pageLearn','pageLearnTodo','pageResources','pageLearnVocab','pageAI'].forEach(function(id) { var el = $(id); if(el) el.style.display = 'none'; });
 })();
 </script>
 </body>
