@@ -143,12 +143,18 @@
   .res-progress-fill { height: 100%; background: var(--color-text-info); border-radius: 2px; }
   .res-filter { padding: 5px 8px; border-radius: 6px; border: 0.5px solid var(--color-border-secondary); background: var(--color-background-secondary); color: var(--color-text-primary); font-size: 12px; font-family: var(--font-sans); }
   /* AI chat */
-  .ai-msg { padding: .6rem .8rem; border-radius: var(--border-radius-md); margin-bottom: 6px; font-size: 14px; line-height: 1.55; }
-  .ai-msg.user { background: var(--color-background-info); color: var(--color-text-info); text-align: right; }
-  .ai-msg.bot { background: var(--color-background-secondary); }
-  .ai-msg.bot h4 { margin: 0 0 4px; font-size: 14px; font-weight: 600; }
-  .ai-msg.bot ul { margin: 4px 0; padding-left: 16px; }
-  .ai-msg.bot li { margin-bottom: 2px; }
+  .ai-msg { font-size: 15px; line-height: 1.8; color: var(--color-text-primary); word-break: break-word; white-space: normal; }
+  .ai-msg.user { background: var(--color-background-info); border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; text-align: right; color: var(--color-text-info); }
+  .ai-msg.bot { background: var(--color-background-primary); border-radius: 10px; padding: 14px 14px; margin-bottom: 12px; border: 1px solid var(--color-border-tertiary); }
+  .ai-msg.bot h3 { font-size: 16px; font-weight: 700; margin: 16px 0 8px; color: var(--color-text-primary); }
+  .ai-msg.bot h3:first-child { margin-top: 0; }
+  .ai-msg.bot p { margin: 0 0 12px; }
+  .ai-msg.bot ul, .ai-msg.bot ol { margin: 6px 0 12px; padding-left: 20px; }
+  .ai-msg.bot li { margin: 4px 0; }
+  @media (max-width: 480px) {
+    .ai-msg { font-size: 15px; line-height: 1.8; }
+    .ai-msg.bot h3 { font-size: 16px; margin-top: 14px; }
+  }
   /* Session confirm */
   .session-btn { font-size: 12px; padding: 5px 10px; border-radius: 14px; border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-primary); cursor: pointer; }
   .session-btn:active { background: var(--color-background-secondary); }
@@ -1421,14 +1427,47 @@
     plan: '描述当前进度和困难，AI 帮你重排明日计划。'
   };
 
+  function escapeHTML(str) {
+    return String(str || '')
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  function renderAIReply(text) {
+    let safe = escapeHTML(text);
+    // Headings
+    safe = safe.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+    // Bullet lists
+    safe = safe.replace(/^- (.+)$/gm, '<li>$1</li>');
+    // Numbered lists
+    safe = safe.replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
+    // Double newline → paragraph break
+    safe = safe.replace(/\n\n+/g, '</p><p>');
+    // Single newline → line break
+    safe = safe.replace(/\n/g, '<br>');
+    // Wrap in paragraph
+    safe = '<p>' + safe + '</p>';
+    // Clean up: remove empty paragraphs
+    safe = safe.replace(/<p><\/p>/g, '');
+    // Wrap consecutive <li> in <ul>
+    safe = safe.replace(/((?:<li>.*?<\/li>)+)/g, '<ul>$1</ul>');
+    // Fix <h3> inside <p>
+    safe = safe.replace(/<p><h3/g, '<h3').replace(/<\/h3><\/p>/g, '</h3>');
+    // Merge adjacent <ul>
+    safe = safe.replace(/<\/ul>\s*<ul>/g, '');
+    // Remove leading </p> artifacts
+    safe = safe.replace(/^<\/p>/, '');
+    return safe;
+  }
+
   function renderAI() {
     const history = $('aiChatHistory');
     if (state.aiChats.length === 0) {
       history.innerHTML = '<div class="tiny muted" style="text-align:center;padding:1rem;">向 AI 提问学习问题，获得针对性解答</div>';
     } else {
       history.innerHTML = state.aiChats.slice(-10).map(c =>
-        '<div class="ai-msg user">' + c.q.replace(/</g,'&lt;') + '</div>' +
-        '<div class="ai-msg bot">' + c.a + '</div>'
+        '<div class="ai-msg user">' + escapeHTML(c.q) + '</div>' +
+        '<div class="ai-msg bot">' + renderAIReply(c.a) + '</div>'
       ).join('');
     }
   }
