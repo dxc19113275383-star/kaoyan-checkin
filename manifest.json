@@ -1,7 +1,7 @@
 {
-  "name": "考研备考打卡",
-  "short_name": "考研打卡",
-  "description": "在职/全职双阶段考研备考每日打卡工具",
+  "name": "燕燕考研助手",
+  "short_name": "燕燕考研",
+  "description": "在职/全职双阶段考研备考 · 打卡 + 资料包 + AI助手",
   "start_url": "./index.html",
   "display": "standalone",
   "orientation": "portrait",
