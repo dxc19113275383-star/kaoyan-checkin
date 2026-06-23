@@ -597,7 +597,9 @@
 
   // ===== COUNTDOWN =====
   function daysUntil(dateStr) {
+    if (!dateStr || typeof dateStr !== 'string') return null;
     const target = new Date(dateStr + 'T00:00:00');
+    if (isNaN(target.getTime())) return null;
     const now = new Date();
     now.setHours(0,0,0,0);
     return Math.ceil((target - now) / 86400000);
@@ -847,10 +849,18 @@
     // Countdown
     const remaining = daysUntil(state.examDate);
     const cd = $('countdownDays');
-    cd.textContent = remaining >= 0 ? remaining : '—';
-    if (remaining > 180) cd.style.color = 'var(--color-text-info)';
-    else if (remaining > 90) cd.style.color = '#d97706';
-    else if (remaining >= 0) cd.style.color = '#dc2626';
+    if (remaining === null || remaining === undefined) {
+      cd.textContent = '未设置';
+      cd.style.color = 'var(--color-text-secondary)';
+    } else if (remaining < 0) {
+      cd.textContent = '已过';
+      cd.style.color = 'var(--color-text-tertiary)';
+    } else {
+      cd.textContent = remaining;
+      if (remaining > 180) cd.style.color = 'var(--color-text-info)';
+      else if (remaining > 90) cd.style.color = '#d97706';
+      else cd.style.color = '#dc2626';
+    }
 
     // Start date auto-position
     const jumpBtn = $('jumpToday');
@@ -1608,16 +1618,57 @@
   }
 
   // ===== INIT =====
+  // --- startup self-check ---
+  function startupCheck() {
+    const issues = [];
+    if (!state || typeof state !== 'object') issues.push('state 未加载');
+    else {
+      if (typeof state.p !== 'number' || state.p < 0 || state.p > 1) { state.p = 0; issues.push('state.p 异常，已重置为0'); }
+      if (typeof state.wk !== 'number' || state.wk < 1) { state.wk = 1; issues.push('state.wk 异常，已重置为1'); }
+      if (typeof state.day !== 'number' || state.day < 0 || state.day > 6) { state.day = 0; issues.push('state.day 异常，已重置为0'); }
+      if (!state.examDate || typeof state.examDate !== 'string') { state.examDate = '2027-12-25'; issues.push('examDate 缺失'); }
+      if (!state.data || typeof state.data !== 'object') { state.data = {}; issues.push('data 缺失'); }
+      if (!Array.isArray(state.resources)) { state.resources = []; issues.push('resources 不是数组'); }
+      if (!Array.isArray(state.studySessions)) { state.studySessions = []; issues.push('studySessions 不是数组'); }
+      if (!Array.isArray(state.aiChats)) { state.aiChats = []; issues.push('aiChats 不是数组'); }
+      if (!state.notes || typeof state.notes !== 'object') { state.notes = {}; issues.push('notes 缺失'); }
+      const ph = PHASES[state.p];
+      if (!ph || !ph.months) issues.push('phase config 缺失');
+      else {
+        const mi = monthIdxFor(state.p, state.wk);
+        if (!ph.months[mi]) issues.push('month['+mi+'] 缺失 p='+state.p+' wk='+state.wk);
+      }
+      const tasks = effectiveTasks(state.p, state.wk, state.day);
+      if (!tasks || tasks.length === 0) issues.push('effectiveTasks 返回空数组 p='+state.p+' wk='+state.wk+' day='+state.day);
+    }
+    if (issues.length) console.warn('[启动自检]', issues.join('; '));
+    else console.log('[启动自检] 全部通过');
+    save();
+    return issues.length === 0 || (issues.length === 1 && issues[0].includes('effectiveTasks 返回空数组') && state.wk === 1 && state.day === 0);
+  }
+
   load();
-  // Auto-position to today if startDate is set
   if (state.startDate) {
     const pos = calcPosition(state.startDate);
-    state.p = pos.p;
-    state.wk = pos.wk;
-    state.day = pos.day;
+    if (pos && typeof pos.p === 'number') {
+      state.p = pos.p;
+      state.wk = pos.wk;
+      state.day = pos.day;
+    }
   }
-  // Show checkin page explicitly
-  showPage(0);
+  startupCheck();
+  // Render checkin page directly (NOT via showPage, to avoid DOM manipulation issues)
+  try { render(); } catch(e) {
+    console.error('[渲染失败]', e.message, e.stack);
+    document.querySelector('.wrap').innerHTML =
+      '<div class="card" style="text-align:center;padding:2rem;">'+
+      '<h3 style="color:#c44;">页面渲染失败</h3>'+
+      '<p class="tiny muted">请先<a href="#" onclick="exportData()">导出数据</a>，然后联系修复。</p>'+
+      '<p class="tiny muted" style="margin-top:8px;">错误：'+e.message+'</p>'+
+      '</div>';
+  }
+  // Hide resource/AI pages on startup
+  ['pageResources','pageAI'].forEach(id => { const el = $(id); if(el) el.style.display = 'none'; });
 })();
 </script>
 </body>
