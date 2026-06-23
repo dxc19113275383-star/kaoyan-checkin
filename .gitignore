@@ -12,3 +12,6 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
+
+# Netlify 手动拖拽部署用的临时干净目录（构建产物，不入库）
+_deploy/
