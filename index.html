@@ -1489,36 +1489,67 @@
     }
   }
 
-  // IMPORTANT: For production, replace mockChat with API call through a backend proxy.
-  // Example Cloudflare Worker:
-  //   const resp = await fetch('/api/chat', { method:'POST', body:JSON.stringify({ctx, mode, question}) });
-  //   const data = await resp.json();
-  //   return data.reply;
-  // The backend reads DEEPSEEK_API_KEY from environment variables and calls DeepSeek API.
-  // NEVER hardcode the API key in this frontend file.
-
-  function sendAIMsg() {
+  // ===== AI SEND (real API with mock fallback) =====
+  async function sendAIMsg() {
     const input = $('aiInput');
     const question = input.value.trim();
     if (!question) return;
     const ctx = buildAIContext(aiMode, question);
-    const reply = mockChat(ctx);
-    state.aiChats.push({ q: question, a: reply, mode: aiMode, ts: new Date().toISOString() });
+
+    // Show loading
+    $('aiStatus').textContent = '思考中…';
+    $('aiSend').disabled = true;
+    $('aiInput').disabled = true;
+
+    let reply;
+    let fromApi = false;
+
+    try {
+      const resp = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode: aiMode, question, context: ctx })
+      });
+      if (resp.ok) {
+        const data = await resp.json();
+        if (data.reply) { reply = data.reply; fromApi = true; }
+      }
+      if (!reply) {
+        const data = await resp.json().catch(() => ({}));
+        if (data.error) console.warn('[AI API]', data.error);
+      }
+    } catch(e) {
+      console.warn('[AI] API unreachable, using offline demo:', e.message);
+    }
+
+    // Fallback to mock if API failed
+    if (!reply) {
+      reply = mockChat(ctx);
+      $('aiMockNote').style.display = '';
+    } else {
+      $('aiMockNote').style.display = 'none';
+    }
+
+    state.aiChats.push({ q: question, a: reply, mode: aiMode, ts: new Date().toISOString(), fromApi });
     if (state.aiChats.length > 50) state.aiChats = state.aiChats.slice(-50);
     save();
     input.value = '';
     renderAI();
+
+    $('aiStatus').textContent = fromApi ? 'DeepSeek · 已连接' : '离线演示模式 · 再次提问';
+    $('aiSend').disabled = false;
+    $('aiInput').disabled = false;
+    $('aiInput').focus();
   }
 
   $('aiSend').onclick = sendAIMsg;
   $('aiInput').addEventListener('keydown', function(e) {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendAIMsg(); }
   });
-  // Enable AI input (disabled HTML for graceful degradation, enabled via JS)
   $('aiInput').disabled = false;
   $('aiSend').disabled = false;
   $('aiMockNote').style.display = '';
-  $('aiStatus').textContent = '离线演示模式 · 正式部署需配置后端代理';
+  $('aiStatus').textContent = '等待提问…';
 
   document.querySelectorAll('#aiModeSeg button').forEach(b => {
     b.onclick = () => {
