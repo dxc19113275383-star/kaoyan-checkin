@@ -1,7 +1,7 @@
 // Service Worker for 考研备考打卡 PWA
 // Cache-first strategy: app shell pre-cached, HTML stale-while-revalidate
 
-const CACHE_NAME = 'kaoyan-pwa-v4-003';
+const CACHE_NAME = 'kaoyan-pwa-v5';
 const APP_SHELL = [
   './index.html',
   './manifest.json',
@@ -72,6 +72,42 @@ self.addEventListener('fetch', (event) => {
         // Offline fallback for non-critical assets — just fail gracefully
         return new Response('', { status: 408 });
       });
+    })
+  );
+});
+
+// ===== Web Push =====
+self.addEventListener("push", function(event) {
+  let data = {};
+  try {
+    data = event.data ? event.data.json() : {};
+  } catch (e) {
+    data = { title: "该学习了", body: "先完成一个保底任务，今天就不算断线。" };
+  }
+  const title = data.title || "该学习了";
+  const options = {
+    body: data.body || "先完成一个保底任务，今天就不算断线。",
+    icon: "./icon.svg",
+    badge: "./icon.svg",
+    data: { url: data.url || "./#checkin" }
+  };
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener("notificationclick", function(event) {
+  event.notification.close();
+  const url = event.notification.data && event.notification.data.url ? event.notification.data.url : "./#checkin";
+  event.waitUntil(
+    clients.matchAll({ type: "window", includeUncontrolled: true }).then(function(clientList) {
+      for (var i = 0; i < clientList.length; i++) {
+        var client = clientList[i];
+        if ("focus" in client) {
+          client.focus();
+          client.navigate(url);
+          return;
+        }
+      }
+      if (clients.openWindow) return clients.openWindow(url);
     })
   );
 });

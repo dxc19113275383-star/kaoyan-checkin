@@ -286,7 +286,8 @@
         </select>
       </div>
       <div class="tiny muted" style="margin-top:4px;">静音时段：23:30–08:00 · 同类型每天最多一次</div>
-      <button class="btn-sm" id="notifyPermBtn" style="margin-top:6px;">开启系统通知（实验）</button>
+      <div id="notifyStatus" class="tiny muted" style="margin-top:6px;line-height:1.6;"></div>
+      <button class="btn-sm" id="notifyPermBtn" style="margin-top:4px;">开启系统通知</button>
     </div>
   </div>
 
@@ -503,12 +504,19 @@
     aiChats: [],            // v4: AI对话记录
     reminderSettings: {     // v5: 学习提醒
       enabled: true,
-      tone: "normal",       // soft | normal | strict
+      tone: "normal",
       quietHours: { start: "23:30", end: "08:00" },
       systemNotificationEnabled: false
     },
-    reminderLog: {},        // v5: 提醒日志 "2026-06-23" → { startToday: false, ... }
-    version: 5
+    reminderLog: {},        // v5: 提醒日志
+    notificationSettings: { // v6: Web Push
+      enabled: false,
+      permission: "default",
+      subscriptionSaved: false,
+      reminderTime: "20:30",
+      tone: "normal"
+    },
+    version: 6
   };
 
   // ===== PERSISTENCE =====
@@ -543,6 +551,10 @@
       loaded.reminderLog = loaded.reminderLog || {};
       loaded.version = 5;
     }
+    if (v === 5) {
+      loaded.notificationSettings = loaded.notificationSettings || { enabled: false, permission: "default", subscriptionSaved: false, reminderTime: "20:30", tone: "normal" };
+      loaded.version = 6;
+    }
     return loaded;
   }
 
@@ -560,6 +572,7 @@
     if (!state.aiChats) state.aiChats = [];
     if (!state.reminderSettings) state.reminderSettings = { enabled: true, tone: "normal", quietHours: { start: "23:30", end: "08:00" }, systemNotificationEnabled: false };
     if (!state.reminderLog) state.reminderLog = {};
+    if (!state.notificationSettings) state.notificationSettings = { enabled: false, permission: "default", subscriptionSaved: false, reminderTime: "20:30", tone: "normal" };
   }
 
   function save() {
@@ -1237,7 +1250,7 @@
     } else {
       exportData();
     }
-    state = { p:0, wk:1, day:0, data:{}, startDate:null, examDate:'2027-12-25', customTasks:{}, deletedDefaults:{}, notes:{}, resources:[], studySessions:[], aiChats:[], reminderSettings:{enabled:true,tone:"normal",quietHours:{start:"23:30",end:"08:00"},systemNotificationEnabled:false}, reminderLog:{}, version:5 };
+    state = { p:0, wk:1, day:0, data:{}, startDate:null, examDate:'2027-12-25', customTasks:{}, deletedDefaults:{}, notes:{}, resources:[], studySessions:[], aiChats:[], reminderSettings:{enabled:true,tone:"normal",quietHours:{start:"23:30",end:"08:00"},systemNotificationEnabled:false}, reminderLog:{}, notificationSettings:{enabled:false,permission:"default",subscriptionSaved:false,reminderTime:"20:30",tone:"normal"}, version:6 };
     save();
     render();
   }
@@ -1903,7 +1916,164 @@
     state.reminderSettings.tone = this.value;
     save();
   });
-  $('notifyPermBtn').addEventListener('click', requestNotificationPermission);
+  $('notifyPermBtn').addEventListener('click', function() {
+    if (state.notificationSettings.enabled) {
+      // Already enabled — send test notification
+      testNotification();
+    } else {
+      // Full flow: check standalone → request permission → subscribe → save
+      fullPushSubscribeFlow();
+    }
+  });
+  updateNotificationUI();
+
+  // ===== PUSH SUBSCRIPTION =====
+  // WARNING: public key can be in frontend; private key MUST stay in Netlify env vars
+  var VAPID_PUBLIC_KEY = 'MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEWhqG_tj1qBEYC0n3GcXzfcDVRyO8r-LOPS6nLT8PnL2CF_R_u6elXyvrL0dq7CB-pDPmRSbhw_vNFrdMStroUA';
+
+  function isPushSupported() {
+    return 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
+  }
+
+  function updateNotificationUI() {
+    var ns = state.notificationSettings;
+    var isStandalone = isStandalonePWA();
+    var pushOk = isPushSupported();
+    var btn = $('notifyPermBtn');
+    var statusEl = document.getElementById('notifyStatus');
+    if (!statusEl) return;
+
+    var perm = ns.permission;
+    if (pushOk && Notification.permission) perm = Notification.permission;
+
+    var lines = [];
+    lines.push('当前环境：' + (isStandalone ? 'standalone ✅' : '浏览器 ⚠️'));
+    lines.push('推送支持：' + (pushOk ? '支持 ✅' : '不支持 ❌'));
+    lines.push('通知权限：' + (perm === 'granted' ? '已授权 ✅' : perm === 'denied' ? '已拒绝 ❌' : '未请求'));
+
+    if (ns.enabled && ns.subscriptionSaved) {
+      lines.push('订阅状态：已订阅 ✅');
+      btn.textContent = '发送测试通知';
+      btn.className = 'btn-sm';
+    } else if (ns.enabled && perm === 'granted') {
+      lines.push('订阅状态：待保存');
+      btn.textContent = '保存订阅';
+      btn.className = 'btn-sm';
+    } else {
+      lines.push('订阅状态：未订阅');
+      btn.textContent = '开启系统通知';
+      btn.className = 'btn-sm';
+    }
+
+    if (perm === 'denied') {
+      lines.push('提示：请到 iPhone 设置里找到该 Web App，手动打开通知权限。');
+      btn.textContent = '权限已拒绝';
+      btn.disabled = true;
+    }
+
+    statusEl.innerHTML = lines.map(function(l){ return '<div>'+l+'</div>'; }).join('');
+  }
+
+  async function fullPushSubscribeFlow() {
+    if (!isStandalonePWA()) {
+      alert('iOS 上请先用 Safari 添加到主屏幕后，再开启系统通知。\n\n应用内弹窗提醒不受影响。');
+      return;
+    }
+    if (!isPushSupported()) {
+      alert('当前浏览器不支持 Web Push。应用内弹窗提醒仍可用。');
+      return;
+    }
+    try {
+      var perm = await Notification.requestPermission();
+      state.notificationSettings.permission = perm;
+      state.notificationSettings.enabled = perm === 'granted';
+      save();
+      updateNotificationUI();
+
+      if (perm !== 'granted') {
+        alert('通知权限未授权。应用内弹窗提醒不受影响。');
+        return;
+      }
+      await subscribePush();
+    } catch(e) {
+      console.error('[push]', e);
+      alert('订阅失败：' + e.message);
+    }
+  }
+
+  async function subscribePush() {
+    var reg = await navigator.serviceWorker.ready;
+    var sub = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+    });
+    console.log('[push] subscription:', sub);
+    await savePushSubscription(sub);
+    state.notificationSettings.subscriptionSaved = true;
+    state.notificationSettings.enabled = true;
+    state.notificationSettings.permission = 'granted';
+    save();
+    updateNotificationUI();
+    alert('系统通知已开启！');
+  }
+
+  async function savePushSubscription(subscription) {
+    var resp = await fetch('https://inquisitive-chimera-50c9e9.netlify.app/.netlify/functions/push-subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ subscription: subscription.toJSON() })
+    });
+    var data = await resp.json();
+    console.log('[push] saved:', data);
+  }
+
+  async function testNotification() {
+    if (!state.notificationSettings.subscriptionSaved) {
+      alert('请先完成订阅流程。');
+      return;
+    }
+    try {
+      var reg = await navigator.serviceWorker.ready;
+      var sub = await reg.pushManager.getSubscription();
+      if (!sub) { alert('未找到订阅，请重新开启系统通知。'); return; }
+      var resp = await fetch('https://inquisitive-chimera-50c9e9.netlify.app/.netlify/functions/push-send-test', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          subscription: sub.toJSON(),
+          title: '该动一下了',
+          body: '今天还没开始。先背20个单词，别让热力图空着。'
+        })
+      });
+      var data = await resp.json();
+      if (data.ok) alert('测试通知已发送！请查看通知栏。');
+      else if (data.unsubscribed) {
+        alert('订阅已过期，请重新开启系统通知。');
+        state.notificationSettings.subscriptionSaved = false;
+        state.notificationSettings.enabled = false;
+        save();
+        updateNotificationUI();
+      } else {
+        alert('发送失败：' + (data.error || JSON.stringify(data)));
+      }
+    } catch(e) {
+      alert('发送失败：' + e.message);
+    }
+  }
+
+  function urlBase64ToUint8Array(base64String) {
+    var padding = '='.repeat((4 - base64String.length % 4) % 4);
+    var base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+    var rawData = atob(base64);
+    var outputArray = new Uint8Array(rawData.length);
+    for (var i = 0; i < rawData.length; ++i) { outputArray[i] = rawData.charCodeAt(i); }
+    return outputArray;
+  }
+
+  // Sync notification permission state on load
+  if (isPushSupported() && Notification.permission !== 'default') {
+    state.notificationSettings.permission = Notification.permission;
+  }
 
   // Bottom navigation
   document.querySelectorAll('.bn-btn').forEach(b => {
