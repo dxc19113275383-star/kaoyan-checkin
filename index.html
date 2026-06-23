@@ -1462,32 +1462,39 @@
   }
 
   // ===== AI SEND =====
+  const API_ENDPOINT = 'https://inquisitive-chimera-50c9e9.netlify.app/.netlify/functions/chat';
+
   async function sendAIMsg() {
     const input = $('aiInput');
     const question = input.value.trim();
     if (!question) return;
     const ctx = buildAIContext(aiMode, question);
 
+    console.log('[AI] endpoint:', API_ENDPOINT);
     $('aiStatus').textContent = '思考中…';
     $('aiSend').disabled = true;
     $('aiInput').disabled = true;
 
     let reply = '';
     try {
-      const resp = await fetch('/.netlify/functions/chat', {
+      const resp = await fetch(API_ENDPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ mode: aiMode, question, context: ctx })
       });
+      console.log('[AI] response status:', resp.status);
       if (resp.ok) {
         const data = await resp.json();
         if (data.reply) reply = data.reply;
         else if (data.error) reply = '【错误】' + data.error;
       } else {
-        reply = '【请求失败】HTTP ' + resp.status + '，请检查网络或后端配置。';
+        const errText = await resp.text();
+        console.error('[AI] error body:', errText);
+        reply = '【请求失败】HTTP ' + resp.status + ': ' + errText.slice(0, 200);
       }
     } catch(e) {
-      reply = '【网络异常】无法连接到 AI 服务，请检查网络后重试。';
+      console.error('[AI] fetch error:', e.message);
+      reply = '【网络异常】' + e.message;
     }
 
     state.aiChats.push({ q: question, a: reply, mode: aiMode, ts: new Date().toISOString() });
