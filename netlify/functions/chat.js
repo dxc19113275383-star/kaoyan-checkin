@@ -46,20 +46,26 @@ const SYSTEM_PROMPT = `你是一个考研执行型学习助手，只服务于用
 【原因】`;
 
 exports.handler = async (event) => {
-  // CORS
+  const corsHeaders = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type'
+  };
+
+  // CORS preflight
   if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 204, headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Content-Type' } };
+    return { statusCode: 204, headers: corsHeaders };
   }
 
   if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: 'Method Not Allowed' };
+    return { statusCode: 405, headers: corsHeaders, body: 'Method Not Allowed' };
   }
 
   const apiKey = process.env.DEEPSEEK_API_KEY;
   if (!apiKey) {
     return {
       statusCode: 500,
-      headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' },
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       body: JSON.stringify({ error: 'DEEPSEEK_API_KEY not configured in Netlify environment' })
     };
   }
@@ -93,7 +99,7 @@ exports.handler = async (event) => {
       const err = await resp.text();
       return {
         statusCode: resp.status,
-        headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' },
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         body: JSON.stringify({ error: `DeepSeek API error ${resp.status}: ${err.slice(0,200)}` })
       };
     }
