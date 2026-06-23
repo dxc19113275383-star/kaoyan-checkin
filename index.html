@@ -363,12 +363,25 @@
         <select id="resType"><option value="video">视频</option><option value="pdf">PDF</option><option value="doc">文档</option><option value="link">链接</option><option value="image">图片</option><option value="folder">文件夹</option></select><br>
         <input id="resCategory" placeholder="分类标签（如：网课、真题、讲义）"><br>
         <input id="resProvider" placeholder="提供方（如：B站、百度网盘）"><br>
+        <input id="resPan" placeholder="提取码（网盘链接可选，如：a1b2）" maxlength="16"><br>
         <input id="resProgressNote" placeholder="进度备注（如：看到第3节）"><br>
         <div class="row" style="justify-content:flex-end;gap:8px;margin-top:8px;">
           <button class="btn-sm" id="resCancel">取消</button>
           <button class="btn-sm" id="resDelete" style="display:none;color:#c44;">删除</button>
           <button class="btn-sm" id="resSave" style="background:var(--color-text-info);color:#fff;border-color:var(--color-text-info);">保存</button>
         </div>
+      </div>
+    </div>
+    <!-- Resource viewer (in-app player) -->
+    <div class="modal-overlay" id="resViewer" style="display:none;">
+      <div class="modal" style="max-width:96vw;width:820px;max-height:94vh;overflow:auto;padding:10px;">
+        <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:8px;gap:8px;">
+          <strong id="resViewerTitle" style="font-size:14px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></strong>
+          <a id="resViewerExternal" href="#" target="_blank" rel="noopener" class="btn-sm" style="text-decoration:none;">新窗口打开</a>
+          <button class="btn-sm" id="resViewerClose">关闭</button>
+        </div>
+        <div id="resViewerBody" style="min-height:200px;"></div>
+        <div id="resViewerTip" class="tiny muted" style="margin-top:6px;"></div>
       </div>
     </div>
   </div>
@@ -1340,12 +1353,18 @@
       const lastStudied = r.progress && r.progress.lastStudiedAt
         ? new Date(r.progress.lastStudiedAt).toLocaleDateString('zh-CN') : '';
       const pct = r.progress ? r.progress.percent : 0;
+      const mode = detectPlayMode(r);
+      let playBadge = '';
+      if (r.url) playBadge = (mode==='pan'||mode==='link'||mode==='extvideo')
+        ? '<span>↗ 跳转</span>'
+        : '<span style="color:var(--color-text-info);">▶ 在线播放</span>';
       html += '<div class="res-card" onclick="window._openResource(\''+r.id+'\')">' +
         '<div class="res-title">' + (typeNames[r.type]||'') + ' ' + r.title.replace(/</g,'&lt;') + '</div>' +
         '<div class="res-meta">' +
           '<span class="tag t-'+r.subject+'">'+(subNames[r.subject]||r.subject)+'</span>' +
           (r.category ? '<span>'+r.category.replace(/</g,'&lt;')+'</span>' : '') +
           (r.provider ? '<span>'+r.provider.replace(/</g,'&lt;')+'</span>' : '') +
+          playBadge +
           (lastStudied ? '<span>最近：'+lastStudied+'</span>' : '') +
         '</div>' +
         '<div class="res-progress">' +
@@ -1358,6 +1377,119 @@
     $('resourceList').innerHTML = html;
   }
 
+  // ===== In-app viewer =====
+  const PAN_RE = /pan\.baidu\.com|pan\.quark\.cn|alipan\.com|aliyundrive\.com|lanzou|123pan\.com|wenshushu|cloud\.189\.cn|caiyun|drive\.uc\.cn/i;
+  function escAttr(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function fmtTime(s){ s=Math.floor(s||0); const m=Math.floor(s/60), ss=s%60; return m+':'+(ss<10?'0':'')+ss; }
+  // 判断资源链接的播放方式
+  function detectPlayMode(r){
+    const u = (r && r.url || '').trim();
+    if (!u) return 'none';
+    if (PAN_RE.test(u)) return 'pan';
+    if (/bilibili\.com|b23\.tv/i.test(u)) return 'bili';
+    const low = u.toLowerCase().split('?')[0].split('#')[0];
+    if (/\.m3u8$/.test(low)) return 'hls';
+    if (/\.(mp4|webm|ogg|ogv|mov|m4v)$/.test(low)) return 'video';
+    if (/\.pdf$/.test(low)) return 'pdf';
+    if (/\.(docx?|pptx?|xlsx?)$/.test(low)) return 'office';
+    if (/\.(png|jpe?g|gif|webp|svg|bmp|avif)$/.test(low)) return 'image';
+    if (r.type === 'video') return 'extvideo'; // 视频但非直链 → 外部打开
+    return 'link';
+  }
+  function copyText(t){
+    if (!t) return Promise.resolve(false);
+    if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(t).then(()=>true).catch(()=>false);
+    try { const ta=document.createElement('textarea'); ta.value=t; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.focus(); ta.select(); const ok=document.execCommand('copy'); document.body.removeChild(ta); return Promise.resolve(ok); } catch(e){ return Promise.resolve(false); }
+  }
+  let _hlsLoading=null;
+  function loadHls(cb){
+    if (window.Hls) { cb(window.Hls); return; }
+    if (!_hlsLoading){
+      _hlsLoading = new Promise(function(res){
+        const s=document.createElement('script');
+        s.src='https://cdn.jsdelivr.net/npm/hls.js@1/dist/hls.min.js';
+        s.onload=function(){res();}; s.onerror=function(){res();};
+        document.head.appendChild(s);
+      });
+    }
+    _hlsLoading.then(function(){ cb(window.Hls); });
+  }
+  let _viewerVideoEl = null;
+  function _saveViewerProgress(){
+    if (!_viewerVideoEl) return;
+    const r = state.resources.find(x=>x.id===window._viewerResId);
+    if (!r) return;
+    if (!r.progress) r.progress = {status:'not_started',percent:0,lastPositionText:'',lastStudiedAt:null};
+    const v = _viewerVideoEl;
+    if (v.currentTime>0) r.progress.videoTime = v.currentTime;
+    if (v.duration && isFinite(v.duration)) {
+      r.progress.percent = Math.min(100, Math.round(v.currentTime/v.duration*100));
+      if (r.progress.percent>=95) r.progress.status='done';
+      else if (r.progress.percent>0) r.progress.status='studying';
+    }
+    r.updatedAt = new Date().toISOString();
+  }
+  function showSessionConfirm(r){
+    window._pendingSession = { resourceId: r.id, subject: r.subject, title: r.title };
+    $('sessionTitle').textContent = r.title;
+    $('sessionConfirm').style.display = '';
+    $('sessionNote').value = '';
+    $('sessionSyncTask').checked = false;
+  }
+  function openViewer(r, mode){
+    window._viewerResId = r.id;
+    _viewerVideoEl = null;
+    const body = $('resViewerBody'), tip = $('resViewerTip');
+    $('resViewerTitle').textContent = r.title;
+    $('resViewerExternal').href = r.url || '#';
+    tip.textContent = ''; body.innerHTML = '';
+    if (mode==='video' || mode==='hls') {
+      const v = document.createElement('video');
+      v.setAttribute('controls',''); v.setAttribute('playsinline','');
+      v.style.cssText = 'width:100%;max-height:72vh;background:#000;border-radius:8px;';
+      _viewerVideoEl = v; body.appendChild(v);
+      const resumeAt = (r.progress && r.progress.videoTime) || 0;
+      const startPlay = function(){ if (resumeAt>3 && v.duration && resumeAt<v.duration-2){ v.currentTime=resumeAt; tip.textContent='已从上次 '+fmtTime(resumeAt)+' 处续播'; } };
+      if (mode==='video') {
+        v.src = r.url; v.addEventListener('loadedmetadata', startPlay, {once:true});
+      } else if (v.canPlayType('application/vnd.apple.mpegurl')) {
+        v.src = r.url; v.addEventListener('loadedmetadata', startPlay, {once:true});
+      } else {
+        tip.textContent='正在加载播放器…';
+        loadHls(function(Hls){
+          if (Hls && Hls.isSupported()){ const hls=new Hls(); hls.loadSource(r.url); hls.attachMedia(v); hls.on(Hls.Events.MANIFEST_PARSED, startPlay); window._viewerHls=hls; tip.textContent=''; }
+          else { tip.textContent='当前浏览器不支持该视频格式，请点「新窗口打开」。'; }
+        });
+      }
+      let lastSave=0;
+      v.addEventListener('timeupdate', function(){ const now=Date.now(); if (now-lastSave>4000){ lastSave=now; _saveViewerProgress(); save(); } });
+    } else if (mode==='pdf') {
+      body.innerHTML = '<iframe src="'+escAttr(r.url)+'" style="width:100%;height:80vh;border:0;border-radius:8px;"></iframe>';
+    } else if (mode==='office') {
+      const src='https://view.officeapps.live.com/op/view.aspx?src='+encodeURIComponent(r.url);
+      body.innerHTML = '<iframe src="'+escAttr(src)+'" style="width:100%;height:80vh;border:0;border-radius:8px;"></iframe>';
+      tip.textContent='文档须为可公开访问的直链，Office 在线预览才能加载。';
+    } else if (mode==='image') {
+      body.innerHTML = '<img src="'+escAttr(r.url)+'" style="max-width:100%;border-radius:8px;display:block;margin:0 auto;">';
+    } else if (mode==='bili') {
+      const m=(r.url||'').match(/BV[0-9A-Za-z]+/);
+      if (m){ const src='//player.bilibili.com/player.html?bvid='+m[0]+'&page=1&high_quality=1&autoplay=0'; body.innerHTML='<iframe src="'+escAttr(src)+'" scrolling="no" frameborder="0" allowfullscreen="true" style="width:100%;height:62vh;border-radius:8px;"></iframe>'; }
+      else { body.innerHTML='<p class="muted">无法解析 B站视频号，请点「新窗口打开」。</p>'; }
+    }
+    $('resViewer').style.display='';
+  }
+  function closeViewer(){
+    _saveViewerProgress();
+    if (window._viewerHls){ try{window._viewerHls.destroy();}catch(e){} window._viewerHls=null; }
+    if (_viewerVideoEl){ try{_viewerVideoEl.pause();}catch(e){} }
+    _viewerVideoEl=null;
+    $('resViewerBody').innerHTML='';
+    $('resViewer').style.display='none';
+    save(); renderResources();
+    const r = state.resources.find(x=>x.id===window._viewerResId);
+    if (r) showSessionConfirm(r);
+  }
+
   window._openResource = function(id) {
     const r = state.resources.find(x => x.id === id);
     if (!r) return;
@@ -1367,15 +1499,18 @@
     r.progress.lastStudiedAt = new Date().toISOString();
     r.updatedAt = new Date().toISOString();
     save();
-    // Show session confirm
-    window._pendingSession = { resourceId: r.id, subject: r.subject, title: r.title };
-    $('sessionTitle').textContent = r.title;
-    $('sessionConfirm').style.display = '';
-    $('sessionNote').value = '';
-    $('sessionSyncTask').checked = false;
-    // Open URL
-    if (r.url) { window.open(r.url, '_blank'); }
     renderResources();
+    const mode = detectPlayMode(r);
+    if (mode === 'none') { showSessionConfirm(r); return; }
+    // 网盘 / 普通外链 / 非直链视频 → 跳转打开（网盘自动复制提取码）
+    if (mode === 'pan' || mode === 'link' || mode === 'extvideo') {
+      if (r.panCode) { copyText(r.panCode).then(function(ok){ if (ok) alert('提取码 '+r.panCode+' 已复制，打开网盘后粘贴即可'); }); }
+      if (r.url) window.open(r.url, '_blank');
+      showSessionConfirm(r);
+      return;
+    }
+    // 可内嵌 → 应用内查看器
+    openViewer(r, mode);
   };
 
   $('addResourceBtn').onclick = () => {
@@ -1388,6 +1523,7 @@
     $('resType').value = 'video';
     $('resCategory').value = '';
     $('resProvider').value = '';
+    $('resPan').value = '';
     $('resProgressNote').value = '';
     $('resEditor').style.display = '';
   };
@@ -1411,6 +1547,7 @@
       title: title,
       url: $('resUrl').value.trim(),
       provider: $('resProvider').value.trim(),
+      panCode: $('resPan').value.trim(),
       linkedTaskTags: [],
       stage: null, month: null, week: null,
       progress: window._editingResId
@@ -1450,9 +1587,13 @@
     $('resType').value = r.type;
     $('resCategory').value = r.category || '';
     $('resProvider').value = r.provider || '';
+    $('resPan').value = r.panCode || '';
     $('resProgressNote').value = (r.progress && r.progress.lastPositionText) || '';
     $('resEditor').style.display = '';
   });
+
+  $('resViewerClose').onclick = closeViewer;
+  $('resViewer').addEventListener('click', function(e){ if (e.target === this) closeViewer(); });
 
   $('resFilterSubject').addEventListener('change', renderResources);
   $('resFilterType').addEventListener('change', renderResources);
