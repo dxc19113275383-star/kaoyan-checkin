@@ -158,6 +158,18 @@
   /* Session confirm */
   .session-btn { font-size: 12px; padding: 5px 10px; border-radius: 14px; border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-primary); cursor: pointer; }
   .session-btn:active { background: var(--color-background-secondary); }
+  /* Reminder modal */
+  .reminder-mask { position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 200; display: flex; align-items: flex-end; justify-content: center; padding: 1rem; padding-bottom: calc(1rem + var(--bottom-nav-height) + var(--safe-bottom)); }
+  .reminder-modal { background: var(--color-background-primary); border-radius: var(--border-radius-lg); padding: 1.5rem 1.25rem 1.25rem; max-width: 360px; width: 100%; animation: slideUp .3s ease; }
+  @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .reminder-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; color: var(--color-text-primary); }
+  .reminder-text { font-size: 15px; line-height: 1.6; color: var(--color-text-secondary); margin-bottom: 16px; }
+  .reminder-actions { display: flex; gap: 8px; justify-content: flex-end; }
+  .reminder-secondary { padding: 8px 16px; border-radius: 8px; border: 0.5px solid var(--color-border-secondary); background: transparent; color: var(--color-text-secondary); font-size: 14px; cursor: pointer; }
+  .reminder-primary { padding: 8px 20px; border-radius: 8px; border: none; background: var(--color-text-info); color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .reminder-settings { font-size: 13px; color: var(--color-text-secondary); line-height: 1.6; }
+  .reminder-settings label { display: flex; align-items: center; gap: 8px; margin: 4px 0; }
+  .reminder-settings select { padding: 4px 8px; border-radius: 6px; border: 0.5px solid var(--color-border-secondary); background: var(--color-background-secondary); color: var(--color-text-primary); font-size: 13px; }
 </style>
 </head>
 <body>
@@ -254,6 +266,28 @@
     <div id="heatmap" style="margin-top:12px;"></div>
     <!-- 笔记回看 -->
     <div id="notesHistory" style="margin-top:10px;display:none;"></div>
+  </div>
+
+  <!-- 提醒设置 -->
+  <div class="card" style="margin-bottom:1rem;">
+    <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:6px;">
+      <span class="tiny" style="font-weight:500;">学习提醒</span>
+      <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;">
+        <input type="checkbox" id="reminderEnabled" checked> 开启
+      </label>
+    </div>
+    <div class="reminder-settings" id="reminderSettingsPanel">
+      <div class="row" style="gap:8px;">
+        <span>提醒语气：</span>
+        <select id="reminderTone">
+          <option value="soft">温和</option>
+          <option value="normal" selected>正常</option>
+          <option value="strict">严格</option>
+        </select>
+      </div>
+      <div class="tiny muted" style="margin-top:4px;">静音时段：23:30–08:00 · 同类型每天最多一次</div>
+      <button class="btn-sm" id="notifyPermBtn" style="margin-top:6px;">开启系统通知（实验）</button>
+    </div>
   </div>
 
   <!-- 工具栏 -->
@@ -467,7 +501,14 @@
     resources: [],          // v4: 资料包
     studySessions: [],      // v4: 学习会话
     aiChats: [],            // v4: AI对话记录
-    version: 4
+    reminderSettings: {     // v5: 学习提醒
+      enabled: true,
+      tone: "normal",       // soft | normal | strict
+      quietHours: { start: "23:30", end: "08:00" },
+      systemNotificationEnabled: false
+    },
+    reminderLog: {},        // v5: 提醒日志 "2026-06-23" → { startToday: false, ... }
+    version: 5
   };
 
   // ===== PERSISTENCE =====
@@ -497,6 +538,11 @@
       loaded.aiChats = loaded.aiChats || [];
       loaded.version = 4;
     }
+    if (v === 4) {
+      loaded.reminderSettings = loaded.reminderSettings || { enabled: true, tone: "normal", quietHours: { start: "23:30", end: "08:00" }, systemNotificationEnabled: false };
+      loaded.reminderLog = loaded.reminderLog || {};
+      loaded.version = 5;
+    }
     return loaded;
   }
 
@@ -512,6 +558,8 @@
     if (!state.resources) state.resources = [];
     if (!state.studySessions) state.studySessions = [];
     if (!state.aiChats) state.aiChats = [];
+    if (!state.reminderSettings) state.reminderSettings = { enabled: true, tone: "normal", quietHours: { start: "23:30", end: "08:00" }, systemNotificationEnabled: false };
+    if (!state.reminderLog) state.reminderLog = {};
   }
 
   function save() {
@@ -1189,7 +1237,7 @@
     } else {
       exportData();
     }
-    state = { p:0, wk:1, day:0, data:{}, startDate:null, examDate:'2027-12-25', customTasks:{}, deletedDefaults:{}, notes:{}, resources:[], studySessions:[], aiChats:[], version:4 };
+    state = { p:0, wk:1, day:0, data:{}, startDate:null, examDate:'2027-12-25', customTasks:{}, deletedDefaults:{}, notes:{}, resources:[], studySessions:[], aiChats:[], reminderSettings:{enabled:true,tone:"normal",quietHours:{start:"23:30",end:"08:00"},systemNotificationEnabled:false}, reminderLog:{}, version:5 };
     save();
     render();
   }
@@ -1565,6 +1613,214 @@
     };
   });
 
+  // ===== REMINDER SYSTEM =====
+  function isStandalonePWA() {
+    return window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+  }
+
+  function requestNotificationPermission() {
+    if (!('Notification' in window)) {
+      alert('当前浏览器不支持系统通知，但应用内提醒仍可用。');
+      return;
+    }
+    if (!isStandalonePWA()) {
+      alert('iOS 上需要先通过 Safari 添加到主屏幕后，系统通知才更稳定。\n\n当前可使用应用内弹窗提醒。');
+    }
+    Notification.requestPermission().then(function(perm) {
+      if (perm === 'granted') {
+        state.reminderSettings.systemNotificationEnabled = true;
+        save();
+        alert('通知已开启！后续可以接收学习提醒。');
+      } else {
+        alert('通知未授权。应用内弹窗提醒不受影响。');
+      }
+    });
+  }
+
+  function showLocalNotification(title, body) {
+    if (!state.reminderSettings.systemNotificationEnabled) return;
+    if (!('Notification' in window) || Notification.permission !== 'granted') return;
+    try { new Notification(title, { body, icon: './icon.svg', tag: 'kaoyan-reminder' }); } catch(e) {}
+  }
+
+  function todayLogKey() { return todayStr(); }
+
+  function getReminderCandidate() {
+    if (!state.reminderSettings.enabled) return null;
+    var now = new Date();
+    var hh = now.getHours(), mm = now.getMinutes();
+    var time = hh * 60 + mm;
+    var qs = state.reminderSettings.quietHours.start.split(':');
+    var qe = state.reminderSettings.quietHours.end.split(':');
+    var quietStart = parseInt(qs[0])*60 + parseInt(qs[1]);
+    var quietEnd = parseInt(qe[0])*60 + parseInt(qe[1]);
+    // Quiet hours: e.g. 23:30 to 08:00 — wraps across midnight
+    if (quietStart > quietEnd) { if (time >= quietStart || time < quietEnd) return null; }
+    else { if (time >= quietStart && time < quietEnd) return null; }
+
+    var logKey = todayLogKey();
+    var log = state.reminderLog[logKey] || {};
+
+    // Check today's completion
+    var todayTasks = effectiveTasks(state.p, state.wk, state.day);
+    var todayDone = getDone(state.p, state.wk, state.day);
+    var doneCnt = todayDone.filter(Boolean).length;
+    var pct = todayTasks.length ? doneCnt / todayTasks.length : 0;
+
+    // Compute streak
+    var streak = computeStreak();
+
+    // Check today's note
+    var noteKey = dateFor(state.p, state.wk, state.day);
+    var hasNote = noteKey ? !!getNote(noteKey) : false;
+
+    // Candidates in priority order
+    var candidates = [];
+
+    // recoveryMode: 3+ days no check-in
+    if (streak === 0 && !log.recoveryMode) {
+      var allDays = Object.values(state.data);
+      var daysWithData = allDays.filter(function(a){ return a && a.some(function(v){return v;}); }).length;
+      if (daysWithData > 0) { // Not a brand new user
+        candidates.push({ type: 'recoveryMode', priority: 0 });
+      }
+    }
+
+    // eveningRescue: >=20:00 and <50%
+    if (time >= 20*60 && pct < 0.5 && !log.eveningRescue && doneCnt < todayTasks.length) {
+      candidates.push({ type: 'eveningRescue', priority: 1 });
+    }
+
+    // subjectWarning: any exam tag <40% in last 7 days
+    if (!log.subjectWarning) {
+      var tagStats = getTagStats(7);
+      var lowTag = null;
+      EXAM_TAGS.forEach(function(tag) {
+        var s = tagStats[tag];
+        if (s && s.total >= 2 && s.done/s.total < 0.4) { lowTag = lowTag || tag; }
+      });
+      if (lowTag) candidates.push({ type: 'subjectWarning', priority: 2, tag: lowTag });
+    }
+
+    // notePrompt: >=22:30 and no note today
+    if (time >= 22*60+30 && !hasNote && !log.notePrompt) {
+      candidates.push({ type: 'notePrompt', priority: 3 });
+    }
+
+    // startToday: >=12:00 and 0%
+    if (time >= 12*60 && pct === 0 && !log.startToday) {
+      candidates.push({ type: 'startToday', priority: 4 });
+    }
+
+    if (candidates.length === 0) return null;
+    candidates.sort(function(a,b){ return a.priority - b.priority; });
+    return candidates[0];
+  }
+
+  function showReminder(candidate) {
+    var tone = state.reminderSettings.tone || 'normal';
+    var content = REMINDER_CONTENT[candidate.type];
+    if (!content) return;
+    var title = content.title;
+    var text = content[tone] || content.normal || content.text;
+    var primaryText = content.primary || '去看看';
+    var secondaryText = '稍后';
+
+    // Build modal
+    var mask = document.createElement('div');
+    mask.className = 'reminder-mask';
+    mask.innerHTML = '<div class="reminder-modal">' +
+      '<div class="reminder-title">' + title + '</div>' +
+      '<div class="reminder-text">' + text + '</div>' +
+      '<div class="reminder-actions">' +
+        '<button class="reminder-secondary">' + secondaryText + '</button>' +
+        '<button class="reminder-primary">' + primaryText + '</button>' +
+      '</div>' +
+    '</div>';
+    document.body.appendChild(mask);
+
+    var close = function() {
+      mask.remove();
+      var logKey = todayLogKey();
+      if (!state.reminderLog[logKey]) state.reminderLog[logKey] = {};
+      state.reminderLog[logKey][candidate.type] = true;
+      save();
+    };
+
+    mask.querySelector('.reminder-secondary').onclick = close;
+
+    mask.querySelector('.reminder-primary').onclick = function() {
+      close();
+      if (candidate.type === 'notePrompt') {
+        showPage(0);
+        setTimeout(function() { var el = $('dailyNote'); if (el) { el.scrollIntoView({ behavior: 'smooth' }); $('noteInput').focus(); } }, 300);
+      } else {
+        showPage(0);
+        setTimeout(function() { var el = $('taskList'); if (el) el.scrollIntoView({ behavior: 'smooth' }); }, 300);
+        if (candidate.type === 'recoveryMode') {
+          setTimeout(function() {
+            var fb = $('feedback');
+            if (fb) fb.innerHTML = '<div class="good" style="margin-top:8px;">🔄 恢复模式：今天只做保底任务，不补旧账。</div>' + fb.innerHTML;
+          }, 500);
+        }
+      }
+    };
+  }
+
+  function checkAndShowReminder() {
+    var candidate = getReminderCandidate();
+    if (candidate) showReminder(candidate);
+  }
+
+  // Trigger reminder on page visibility change
+  document.addEventListener('visibilitychange', function() {
+    if (document.visibilityState === 'visible') { setTimeout(checkAndShowReminder, 1500); }
+  });
+
+  // Reminder content by type and tone
+  var REMINDER_CONTENT = {
+    startToday: {
+      title: '今天先保底', text: '不用一下补完，先完成一个最小任务，今天就不算断线。',
+      soft: '不用一下补完，先完成一个最小任务，今天就不算断线。',
+      normal: '今天还没开始。先别研究人生，打开单词 APP 30 分钟。',
+      strict: '热力图不会自己变绿。先做 10 分钟，别让今天空着。',
+      primary: '去做第一项'
+    },
+    eveningRescue: {
+      title: '该动一下了', text: '还剩几小时，今天还没过半。随便做一点都行。',
+      soft: '还剩几小时，随便做一点就行，不追求全完成。',
+      normal: '今天快结束了。先打开单词 APP 背 30 分钟，把血条续上。',
+      strict: '今天要断线了。现在立刻做一项，哪怕 10 分钟。',
+      primary: '去完成保底'
+    },
+    notePrompt: {
+      title: '睡前留个证据', text: '写一句今天最薄弱的点。大脑会忘，小程序不会。',
+      primary: '写每日笔记'
+    },
+    subjectWarning: {
+      title: '数学有点掉队', text: '最近 7 天完成率偏低。先做 20 分钟基础题，别硬刚难题。',
+      primary: '查看今日任务'
+    },
+    recoveryMode: {
+      title: '先恢复，不补旧账', text: '连续几天没打卡了。今天只做保底任务，把节奏捡回来。',
+      soft: '几天没来了。不用补旧账，今天做一件小事就算续上。',
+      normal: '断线了。今天只做保底，不补旧账，先把节奏捡回来。',
+      strict: '断线好几天了。别再拖，今天必须完成保底三项。',
+      primary: '进入恢复模式'
+    }
+  };
+
+  // iOS PWA notification hint: shown once
+  (function() {
+    if (isStandalonePWA() && !localStorage.getItem('kaoyan_notify_hint_shown')) {
+      setTimeout(function() {
+        if ('Notification' in window && Notification.permission === 'default') {
+          localStorage.setItem('kaoyan_notify_hint_shown', '1');
+        }
+      }, 3000);
+    }
+  })();
+
   // ===== EVENT BINDINGS =====
   phaseToggle.querySelectorAll('button').forEach(b => {
     b.onclick = () => { state.p = parseInt(b.dataset.p); state.wk = 1; render(); };
@@ -1635,6 +1891,19 @@
       alert('日期格式不正确，请输入 YYYY-MM-DD，如 2027-12-27');
     }
   };
+
+  // Reminder settings
+  $('reminderEnabled').checked = state.reminderSettings.enabled;
+  $('reminderTone').value = state.reminderSettings.tone || 'normal';
+  $('reminderEnabled').addEventListener('change', function() {
+    state.reminderSettings.enabled = this.checked;
+    save();
+  });
+  $('reminderTone').addEventListener('change', function() {
+    state.reminderSettings.tone = this.value;
+    save();
+  });
+  $('notifyPermBtn').addEventListener('click', requestNotificationPermission);
 
   // Bottom navigation
   document.querySelectorAll('.bn-btn').forEach(b => {
