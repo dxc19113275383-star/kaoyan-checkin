@@ -1,0 +1,14 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor
+*.swp
+*.swo
+
+# Old version (keep for reference but don't deploy)
+# 打卡工具.html is kept for local use
+
+# IDE
+.vscode/
+.idea/
