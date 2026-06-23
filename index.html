@@ -270,7 +270,7 @@
 
   <!-- 提醒设置 -->
   <div class="card" style="margin-bottom:1rem;">
-    <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:6px;">
+    <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:4px;">
       <span class="tiny" style="font-weight:500;">学习提醒</span>
       <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;">
         <input type="checkbox" id="reminderEnabled" checked> 开启
@@ -285,9 +285,50 @@
           <option value="strict">严格</option>
         </select>
       </div>
-      <div class="tiny muted" style="margin-top:4px;">静音时段：23:30–08:00 · 同类型每天最多一次</div>
-      <div id="notifyStatus" class="tiny muted" style="margin-top:6px;line-height:1.6;"></div>
-      <button class="btn-sm" id="notifyPermBtn" style="margin-top:4px;">开启系统通知</button>
+      <div class="tiny muted" style="margin-top:4px;" id="reminderStatusLine">应用内提醒已开启，打开小程序时会提醒你。</div>
+      <button class="btn-sm" id="notifySettingsBtn" style="margin-top:6px;">通知设置</button>
+    </div>
+  </div>
+
+  <!-- 通知设置面板 -->
+  <div class="modal-overlay" id="notifySettingsModal" style="display:none;">
+    <div class="modal" style="max-width:400px;max-height:85vh;overflow-y:auto;">
+      <h3 style="margin-bottom:12px;">通知设置</h3>
+
+      <div class="tiny" style="font-weight:500;margin-bottom:4px;">基础设置</div>
+      <div class="reminder-settings" style="margin-bottom:12px;">
+        <label style="display:flex;align-items:center;gap:8px;margin:4px 0;font-size:14px;">
+          <input type="checkbox" id="modalReminderEnabled"> 学习提醒
+        </label>
+        <div class="row" style="gap:8px;margin:4px 0;">
+          <span style="font-size:13px;">语气：</span>
+          <select id="modalReminderTone" style="font-size:13px;">
+            <option value="soft">温和</option><option value="normal">正常</option><option value="strict">严格</option>
+          </select>
+        </div>
+        <div class="tiny muted">静音时段：23:30–08:00 · 同类型每天最多一次</div>
+      </div>
+
+      <div class="tiny" style="font-weight:500;margin-bottom:4px;">系统通知</div>
+      <div style="margin-bottom:12px;">
+        <div class="tiny muted" style="margin-bottom:4px;">状态：<span id="modalNotifyStatus">未开启</span></div>
+        <button class="btn-sm" id="modalNotifyBtn" style="margin-right:6px;">开启系统通知</button>
+        <button class="btn-sm" id="modalTestBtn" style="display:none;">发送测试通知</button>
+      </div>
+
+      <div class="tiny" style="font-weight:500;margin-bottom:4px;cursor:pointer;" id="advancedToggle">高级调试 ▸</div>
+      <div id="advancedPanel" style="display:none;font-size:12px;color:var(--color-text-secondary);line-height:1.8;margin-bottom:12px;">
+        <div>当前环境：<span id="advEnv">-</span></div>
+        <div>推送支持：<span id="advPush">-</span></div>
+        <div>通知权限：<span id="advPerm">-</span></div>
+        <div>订阅状态：<span id="advSub">-</span></div>
+        <button class="btn-sm" id="advResub" style="margin-top:4px;margin-right:4px;font-size:12px;">重新订阅</button>
+        <button class="btn-sm danger" id="advClear" style="margin-top:4px;font-size:12px;">清除订阅</button>
+      </div>
+
+      <div class="row" style="justify-content:flex-end;">
+        <button class="btn-sm" id="notifySettingsClose">关闭</button>
+      </div>
     </div>
   </div>
 
@@ -1905,27 +1946,136 @@
     }
   };
 
-  // Reminder settings
+  // Reminder settings — homepage
+  function updateReminderStatusLine() {
+    var el = $('reminderStatusLine');
+    if (!el) return;
+    if (!state.reminderSettings.enabled) {
+      el.textContent = '学习提醒已关闭。';
+    } else if (state.notificationSettings.enabled && state.notificationSettings.subscriptionSaved) {
+      el.textContent = '学习提醒已开启，今天别让热力图空着。';
+    } else {
+      el.textContent = '应用内提醒已开启，打开小程序时会提醒你。';
+    }
+  }
   $('reminderEnabled').checked = state.reminderSettings.enabled;
   $('reminderTone').value = state.reminderSettings.tone || 'normal';
   $('reminderEnabled').addEventListener('change', function() {
     state.reminderSettings.enabled = this.checked;
     save();
+    updateReminderStatusLine();
   });
   $('reminderTone').addEventListener('change', function() {
     state.reminderSettings.tone = this.value;
     save();
   });
-  $('notifyPermBtn').addEventListener('click', function() {
-    if (state.notificationSettings.enabled) {
-      // Already enabled — send test notification
-      testNotification();
-    } else {
-      // Full flow: check standalone → request permission → subscribe → save
-      fullPushSubscribeFlow();
-    }
+  updateReminderStatusLine();
+
+  // Notification settings — modal
+  $('notifySettingsBtn').addEventListener('click', function() { showNotifySettings(); });
+  $('notifySettingsClose').addEventListener('click', function() { $('notifySettingsModal').style.display = 'none'; });
+
+  function showNotifySettings() {
+    // Sync homepage → modal
+    $('modalReminderEnabled').checked = state.reminderSettings.enabled;
+    $('modalReminderTone').value = state.reminderSettings.tone || 'normal';
+    updateNotificationUI();
+    $('notifySettingsModal').style.display = '';
+  }
+
+  $('modalReminderEnabled').addEventListener('change', function() {
+    state.reminderSettings.enabled = this.checked;
+    $('reminderEnabled').checked = this.checked;
+    save();
+    updateReminderStatusLine();
   });
-  updateNotificationUI();
+  $('modalReminderTone').addEventListener('change', function() {
+    state.reminderSettings.tone = this.value;
+    $('reminderTone').value = this.value;
+    save();
+  });
+
+  $('modalNotifyBtn').addEventListener('click', function() {
+    fullPushSubscribeFlow().then(function() { updateNotificationUI(); updateReminderStatusLine(); });
+  });
+  $('modalTestBtn').addEventListener('click', function() { testNotification(); });
+
+  // Advanced panel toggle
+  $('advancedToggle').addEventListener('click', function() {
+    var panel = $('advancedPanel');
+    var show = panel.style.display === 'none';
+    panel.style.display = show ? '' : 'none';
+    this.textContent = show ? '高级调试 ▾' : '高级调试 ▸';
+  });
+
+  // Advanced: resubscribe
+  $('advResub').addEventListener('click', async function() {
+    if (!confirm('确定重新订阅？将清除旧订阅并重新请求授权。')) return;
+    try {
+      var reg = await navigator.serviceWorker.ready;
+      var old = await reg.pushManager.getSubscription();
+      if (old) await old.unsubscribe();
+      state.notificationSettings.subscriptionSaved = false;
+      state.notificationSettings.enabled = false;
+      save();
+      await fullPushSubscribeFlow();
+    } catch(e) { alert('重新订阅失败：' + e.message); }
+  });
+
+  // Advanced: clear subscription
+  $('advClear').addEventListener('click', async function() {
+    if (!confirm('确定清除订阅？之后需要重新授权。')) return;
+    try {
+      var reg = await navigator.serviceWorker.ready;
+      var sub = await reg.pushManager.getSubscription();
+      if (sub) await sub.unsubscribe();
+      state.notificationSettings.subscriptionSaved = false;
+      state.notificationSettings.enabled = false;
+      state.notificationSettings.permission = Notification.permission;
+      save();
+      updateNotificationUI();
+      updateReminderStatusLine();
+      alert('订阅已清除。');
+    } catch(e) { alert('清除失败：' + e.message); }
+  });
+
+  function updateNotificationUI() {
+    var ns = state.notificationSettings;
+    var isStandalone = isStandalonePWA();
+    var pushOk = isPushSupported();
+    var perm = ns.permission;
+    if (pushOk && Notification.permission) perm = Notification.permission;
+
+    // Modal status
+    var statusEl = $('modalNotifyStatus');
+    var btn = $('modalNotifyBtn');
+    var testBtn = $('modalTestBtn');
+
+    if (ns.enabled && ns.subscriptionSaved) {
+      statusEl.textContent = '已开启 ✅';
+      btn.textContent = '重新授权';
+      btn.style.display = '';
+      testBtn.style.display = '';
+    } else if (ns.enabled && perm === 'granted') {
+      statusEl.textContent = '待保存订阅';
+      btn.textContent = '保存订阅';
+      btn.style.display = '';
+      testBtn.style.display = 'none';
+    } else {
+      statusEl.textContent = '未开启';
+      btn.textContent = perm === 'denied' ? '权限已拒绝' : '开启系统通知';
+      btn.style.display = '';
+      testBtn.style.display = 'none';
+    }
+    if (perm === 'denied') { btn.disabled = true; statusEl.textContent = '已拒绝 ❌ 请在 iPhone 设置中手动开启'; }
+    else { btn.disabled = false; }
+
+    // Advanced panel
+    $('advEnv').textContent = isStandalone ? 'standalone ✅' : '浏览器';
+    $('advPush').textContent = pushOk ? '支持 ✅' : '不支持 ❌';
+    $('advPerm').textContent = perm === 'granted' ? '已授权 ✅' : perm === 'denied' ? '已拒绝 ❌' : '未请求';
+    $('advSub').textContent = ns.subscriptionSaved ? '已订阅 ✅' : '未订阅';
+  }
 
   // ===== PUSH SUBSCRIPTION =====
   // WARNING: public key can be in frontend; private key MUST stay in Netlify env vars
@@ -2029,6 +2179,7 @@
     state.notificationSettings.permission = 'granted';
     save();
     updateNotificationUI();
+    updateReminderStatusLine();
     alert('系统通知已开启！');
   }
 
