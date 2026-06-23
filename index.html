@@ -8,7 +8,7 @@
 <!-- PWA -->
 <link rel="manifest" href="./manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="考研打卡">
 <link rel="apple-touch-icon" href="./icon.svg">
 <meta name="theme-color" content="#1d1c17">
@@ -23,7 +23,9 @@
     --color-border-warning:rgba(133,79,11,.4); --color-border-success:rgba(15,110,86,.4);
     --border-radius-md:8px; --border-radius-lg:12px;
     --font-sans:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;
+    --safe-top: env(safe-area-inset-top, 0px);
     --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --bottom-nav-height: 56px;
   }
   @media (prefers-color-scheme: dark) {
     :root {
@@ -34,7 +36,10 @@
     body { background:#1d1c17; }
   }
   *, *::before, *::after { box-sizing: border-box; }
-  body { background:var(--color-background-tertiary); margin:0; padding:1.5rem 1rem calc(1.5rem + var(--safe-bottom)); color:var(--color-text-primary); }
+  html, body { margin:0; overflow-x:hidden; }
+  body { background:var(--color-background-tertiary); color:var(--color-text-primary);
+    padding: calc(var(--safe-top) + 12px) 1rem calc(var(--bottom-nav-height) + var(--safe-bottom) + 16px) 1rem;
+    min-height:100svh; }
   .wrap { max-width: 640px; margin: 0 auto; font-family: var(--font-sans); }
   .row { display: flex; align-items: center; gap: 10px; }
   .muted { color: var(--color-text-secondary); }
@@ -125,7 +130,7 @@
   .modal p { font-size: 14px; color: var(--color-text-secondary); margin: 0 0 1rem; }
   .modal .row { justify-content: flex-end; gap: 8px; }
   /* Bottom nav */
-  .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; display: flex; background: var(--color-background-primary); border-top: 0.5px solid var(--color-border-tertiary); padding: 4px 0 var(--safe-bottom); z-index: 50; }
+  .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; display: flex; background: var(--color-background-primary); border-top: 0.5px solid var(--color-border-tertiary); padding: 4px 0 var(--safe-bottom); z-index: 50; height: calc(var(--bottom-nav-height) + var(--safe-bottom)); box-sizing: border-box; }
   .bn-btn { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 0; border: none; background: transparent; color: var(--color-text-tertiary); font-size: 11px; cursor: pointer; min-height: 48px; }
   .bn-btn.on { color: var(--color-text-info); }
   .bn-btn svg { width: 22px; height: 22px; }
@@ -147,7 +152,6 @@
   /* Session confirm */
   .session-btn { font-size: 12px; padding: 5px 10px; border-radius: 14px; border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-primary); cursor: pointer; }
   .session-btn:active { background: var(--color-background-secondary); }
-  body { padding-bottom: calc(4.5rem + var(--safe-bottom)); }
 </style>
 </head>
 <body>
@@ -1204,8 +1208,6 @@
     if (idx > 0) { const p = $(pages[idx]); if(p) p.style.display = ''; }
     // Update nav
     document.querySelectorAll('.bn-btn').forEach(b => { b.className = 'bn-btn' + (b.dataset.page == idx ? ' on' : ''); });
-    // Update body padding
-    document.body.style.paddingBottom = idx === 0 ? 'calc(4.5rem + var(--safe-bottom))' : '';
     // Render page content
     if (idx === 1) renderResources();
     if (idx === 2) renderAI();
