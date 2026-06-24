@@ -298,6 +298,66 @@
   /* 滚动入场（IntersectionObserver 触发，轻量克制） */
   .reveal { opacity: 0; transform: translateY(12px); transition: opacity .6s var(--ease), transform .6s var(--ease); }
   .reveal.in { opacity: 1; transform: none; }
+  /* ============================================================
+     P2 — 首页驾驶舱（AppBar / Hero / 快捷 bento / 设置抽屉）
+     ============================================================ */
+  .appbar { display:flex; align-items:center; justify-content:space-between; gap:10px; margin:2px 0 14px; }
+  .ab-brand { display:flex; align-items:center; gap:9px; min-width:0; }
+  .ab-mark { width:30px; height:30px; flex-shrink:0; border-radius:9px; background:var(--brand); color:var(--brand-on); display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:700; box-shadow:var(--shadow-ambient); }
+  .ab-name { font-size:16px; font-weight:600; letter-spacing:-0.02em; display:flex; align-items:baseline; gap:6px; }
+  .ab-name .ab-sub { font-size:11px; font-weight:500; font-style:normal; color:var(--color-text-tertiary); letter-spacing:.04em; }
+  .ab-actions { display:flex; align-items:center; gap:8px; flex-shrink:0; }
+  .ab-chip { display:inline-flex; align-items:center; gap:5px; padding:0 12px; height:40px; border-radius:var(--radius-pill); border:1px solid var(--hair-strong); background:var(--color-background-primary); color:var(--color-text-primary); cursor:pointer; box-shadow:var(--shadow-ambient); transition:transform .15s var(--ease); -webkit-tap-highlight-color:transparent; }
+  .ab-chip:active { transform:scale(.96); }
+  .ab-chip-ico { width:14px; height:14px; opacity:.55; }
+  .ab-chip b { font-size:15px; font-weight:600; letter-spacing:-0.01em; }
+  .ab-chip-u { font-size:11px; color:var(--color-text-tertiary); }
+  .ab-gear { width:40px; height:40px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:var(--radius-pill); border:1px solid var(--hair-strong); background:var(--color-background-primary); color:var(--color-text-secondary); cursor:pointer; box-shadow:var(--shadow-ambient); transition:transform .25s var(--ease); -webkit-tap-highlight-color:transparent; }
+  .ab-gear:active { transform:rotate(40deg) scale(.92); }
+  .ab-gear svg { width:18px; height:18px; }
+
+  /* Hero——唯一的品牌着色焦点（深墨绿，非廉价亮色/紫蓝渐变） */
+  .hero { background:var(--brand); background:linear-gradient(155deg, var(--brand) 0%, var(--brand-strong) 100%); color:#fff; border:none; padding:1.15rem 1.25rem 1.25rem; }
+  .hero .h-greet { font-size:13px; opacity:.78; letter-spacing:.01em; }
+  .hero .h-status { font-size:18.5px; font-weight:600; letter-spacing:-0.02em; line-height:1.42; margin-top:3px; max-width:30ch; text-wrap:balance; }
+  .hero .h-row { display:flex; align-items:center; gap:16px; margin-top:16px; }
+  .hero .h-streak { display:flex; align-items:center; gap:10px; min-width:0; }
+  .hero .h-flame { width:32px; height:32px; flex-shrink:0; }
+  .hero .h-streak .hs-n { font-size:24px; font-weight:700; letter-spacing:-0.02em; line-height:1; font-variant-numeric:tabular-nums; }
+  .hero .h-streak .hs-l { font-size:11.5px; opacity:.82; margin-top:3px; }
+  .hero .h-spacer { flex:1; }
+  .hero .ring-wrap .ring-bg { stroke:rgba(255,255,255,.22); }
+  .hero .ring-wrap .ring-fg { stroke:#fff; }
+  .hero .ring-wrap .ring-label b { color:#fff; }
+  .hero .ring-wrap .ring-label span { color:rgba(255,255,255,.8); font-size:10px; }
+  .hero .h-coach { display:flex; align-items:center; gap:9px; margin-top:15px; padding:11px 13px; border-radius:var(--border-radius-md); background:rgba(255,255,255,.13); font-size:13px; line-height:1.45; cursor:pointer; transition:background .2s var(--ease); -webkit-tap-highlight-color:transparent; }
+  .hero .h-coach:active { background:rgba(255,255,255,.22); }
+  .hero .h-coach .hc-ico { width:17px; height:17px; flex-shrink:0; opacity:.92; }
+  .hero .h-coach .hc-txt { flex:1; min-width:0; }
+  .hero .h-coach .hc-arrow { width:15px; height:15px; opacity:.7; flex-shrink:0; }
+
+  /* 快捷入口 bento */
+  .home-quick { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:.9rem; }
+  .hq-card { position:relative; text-align:left; border:1px solid var(--hair); border-radius:var(--border-radius-lg); padding:14px; background:var(--color-background-primary); box-shadow:var(--shadow-ambient); cursor:pointer; display:flex; flex-direction:column; gap:7px; min-height:74px; transition:transform .18s var(--ease), box-shadow .25s var(--ease); -webkit-tap-highlight-color:transparent; }
+  .hq-card:active { transform:scale(.97); }
+  @media (hover:hover){ .hq-card:hover { box-shadow:var(--shadow-key); transform:translateY(-2px); } }
+  .hq-card.hq-wide { grid-column:1 / -1; flex-direction:row; align-items:center; gap:13px; }
+  .hq-ico { width:34px; height:34px; flex-shrink:0; border-radius:10px; display:flex; align-items:center; justify-content:center; background:var(--brand-soft); color:var(--brand); }
+  .hq-ico svg { width:19px; height:19px; }
+  .hq-tt { font-size:14px; font-weight:600; letter-spacing:-0.01em; }
+  .hq-sub { font-size:11.5px; color:var(--color-text-secondary); line-height:1.3; }
+  .hq-card.hq-wide .hq-text { flex:1; min-width:0; }
+  .hq-card.hq-wide .hq-go { width:18px; height:18px; color:var(--color-text-tertiary); flex-shrink:0; }
+
+  /* 设置抽屉（slide-over） */
+  .drawer-mask { position:fixed; inset:0; background:rgba(20,28,24,.42); z-index:150; display:flex; justify-content:flex-end; -webkit-backdrop-filter:blur(2px); backdrop-filter:blur(2px); animation:fadeIn .2s var(--ease); }
+  .drawer { width:min(87vw,400px); height:100%; background:var(--color-background-tertiary); box-shadow:var(--shadow-key); display:flex; flex-direction:column; padding:calc(var(--safe-top) + 10px) 16px calc(var(--safe-bottom) + 16px); overflow-y:auto; animation:slideInR .32s var(--ease-out); }
+  @keyframes slideInR { from { transform:translateX(100%); } to { transform:translateX(0); } }
+  @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+  .drawer-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+  .drawer-body > .card { margin-bottom:.9rem; }
+  .drawer-body #toolbarRow { text-align:left; line-height:2; }
+
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
     .reveal { opacity: 1; transform: none; }
@@ -311,22 +371,30 @@
 <div class="wrap">
   <h2 class="sr-only">考研备考每日打卡工具，含在职与全职两个阶段</h2>
 
-  <!-- 阶段切换 -->
-  <div class="phaseToggle" id="phaseToggle">
-    <button data-p="0" class="on">在职打基础（约8个月）</button>
-    <button data-p="1">全职冲刺（约11个月）</button>
-  </div>
-
-  <!-- 倒计时 -->
-  <div class="card" id="countdownCard" style="text-align:center;padding:1rem;">
-    <div style="display:flex;align-items:center;justify-content:center;gap:8px;">
-      <span class="tiny muted" style="margin-right:4px;">距2027年初试</span>
-      <span id="countdownDays" style="font-size:28px;font-weight:600;color:var(--color-text-info);">—</span>
-      <span class="tiny muted">天</span>
-      <button class="btn-icon" id="changeExamDate" aria-label="修改考试日期" style="width:28px;height:28px;min-width:28px;min-height:28px;opacity:.5;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+  <!-- ====== 顶栏 AppBar（仅首页） ====== -->
+  <header class="appbar home-only" id="appBar">
+    <div class="ab-brand">
+      <span class="ab-mark">研</span>
+      <span class="ab-name">燕燕考研<i class="ab-sub">备考系统</i></span>
+    </div>
+    <div class="ab-actions">
+      <button class="ab-chip" id="changeExamDate" aria-label="距初试天数，点击修改考试日期">
+        <svg class="ab-chip-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="9"/></svg>
+        <b id="countdownDays">—</b><span class="ab-chip-u">天</span>
+      </button>
+      <button class="ab-gear" id="openSettings" aria-label="设置">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
       </button>
     </div>
+  </header>
+
+  <!-- ====== Hero 问候 / 今日驾驶舱 ====== -->
+  <section class="card hero home-only" id="heroCard"></section>
+
+  <!-- 阶段切换 -->
+  <div class="phaseToggle home-only" id="phaseToggle">
+    <button data-p="0" class="on">在职打基础（约8个月）</button>
+    <button data-p="1">全职冲刺（约11个月）</button>
   </div>
 
   <!-- 周/月导航 -->
@@ -401,8 +469,11 @@
     <div id="notesHistory" style="margin-top:10px;display:none;"></div>
   </div>
 
+  <!-- ====== 快捷入口 bento（仅首页） ====== -->
+  <div class="home-only home-quick" id="homeQuick"></div>
+
   <!-- 提醒设置 -->
-  <div class="card" style="margin-bottom:1rem;">
+  <div class="card" id="reminderCard" style="margin-bottom:1rem;">
     <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:4px;">
       <span class="tiny" style="font-weight:500;">学习提醒</span>
       <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;">
@@ -466,11 +537,24 @@
   </div>
 
   <!-- 工具栏 -->
-  <div class="tiny muted" style="text-align:center; line-height:2;margin-bottom:1rem;">
+  <div class="tiny muted" id="toolbarRow" style="text-align:center; line-height:2;margin-bottom:1rem;">
     数据保存在本浏览器，下次打开继续 ·
     <a href="#" id="exportBtn">导出</a> ·
     <a href="#" id="importBtn">导入</a> ·
     <a href="#" id="resetBtn">重置全部进度</a>
+  </div>
+
+  <!-- ====== 设置抽屉（slide-over，收纳阶段/提醒/数据等配置） ====== -->
+  <div class="drawer-mask" id="settingsMask" style="display:none;">
+    <aside class="drawer" id="settingsDrawer">
+      <div class="drawer-head">
+        <h2>设置</h2>
+        <button class="btn-icon" id="settingsClose" aria-label="关闭设置">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px;"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="drawer-body" id="settingsBody"></div>
+    </aside>
   </div>
 
   <!-- ====== 学习中心 hub ====== -->
@@ -671,6 +755,11 @@
     upload: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-inline"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/></svg>',
     calendar: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-inline"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>',
     clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-inline"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>',
+    book: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>',
+    folder: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5l2 3h7a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2z"/></svg>',
+    coach: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+    spark: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8"/></svg>',
+    flame: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c.5 3-1.5 4.5-3 6.5C7.4 10.7 6 12.6 6 15a6 6 0 0 0 12 0c0-2-1-3.8-2.2-5.2-.4 1-1.1 1.7-2 2 .6-2.2-.3-4.6-1.8-6.3C13 2.9 12.6 2.4 12 2z"/></svg>',
   };
 
   // ===== CONSTANTS =====
@@ -1357,6 +1446,10 @@
     sWeek.textContent = weekPct + '%';
     sStreak.textContent = streak;
     sTotal.textContent = totalDone;
+
+    // Hero 驾驶舱 + 快捷入口（仅首页可见，但渲染开销极小）
+    renderHero({ cnt: cnt, total: tasks.length, streak: streak, weekPct: weekPct });
+    renderHomeQuick();
 
     // Encouraging message when all stats are zero
     let statsHint = $('statsHint');
@@ -2145,10 +2238,92 @@
     $('readingImport').style.display='none'; openReading();
   };
 
+  // ===== P2 首页驾驶舱 =====
+  function greetingByHour(h){
+    if(h<5) return '夜深了';
+    if(h<11) return '早上好';
+    if(h<13) return '中午好';
+    if(h<18) return '下午好';
+    if(h<23) return '晚上好';
+    return '夜深了';
+  }
+  function ringSVG(pct, size){
+    size = size||64; const sw=6, r=(size/2)-sw/2-1, c=2*Math.PI*r;
+    pct = Math.max(0, Math.min(100, pct));
+    const off = c*(1-pct/100);
+    return '<div class="ring-wrap" style="width:'+size+'px;height:'+size+'px;">'+
+      '<svg viewBox="0 0 '+size+' '+size+'">'+
+        '<circle class="ring-bg" cx="'+(size/2)+'" cy="'+(size/2)+'" r="'+r+'" fill="none" stroke-width="'+sw+'"/>'+
+        '<circle class="ring-fg" cx="'+(size/2)+'" cy="'+(size/2)+'" r="'+r+'" fill="none" stroke-width="'+sw+'" stroke-dasharray="'+c.toFixed(1)+'" stroke-dashoffset="'+off.toFixed(1)+'"/>'+
+      '</svg>'+
+      '<div class="ring-label"><b>'+Math.round(pct)+'%</b><span>今日</span></div>'+
+    '</div>';
+  }
+  function heroStatus(cnt, total){
+    if(total===0) return '今天没有安排，给自己留点白也好。';
+    if(cnt===0)   return '今天还没开始 —— 先拿下第一项，势头就有了。';
+    if(cnt<total) return '已完成 '+cnt+' 项，还差 '+(total-cnt)+' 项，今天就算赢。';
+    return '今日任务全清，干得漂亮 —— 这就是上岸的样子。';
+  }
+  function heroCoachTip(){
+    try {
+      const s = getTagStats(7); let worst=null, wp=1;
+      Object.keys(s).forEach(function(tag){ const st=s[tag]; if(st && st.total>=2){ const r=st.done/st.total; if(r<wp){ wp=r; worst=tag; } } });
+      const names={'t-eng':'英语','t-math':'数学','t-major':'专业课','t-logic':'逻辑/写作','t-write':'写作','t-pol':'政治'};
+      if(worst && wp<0.5 && names[worst]) return names[worst]+'最近完成率偏低，问问 AI 教练怎么追回来';
+    } catch(e){}
+    return state.p===0 ? '在职期只抓英语+数学，让 AI 帮你排今天' : '全职冲刺：数学＞434＞英语，让 AI 帮你排今天';
+  }
+  function renderHero(o){
+    const host = $('heroCard'); if(!host) return;
+    const h = new Date().getHours();
+    const pct = o.total ? Math.round(o.cnt/o.total*100) : 0;
+    const flameColor = o.streak>0 ? 'var(--ember)' : 'rgba(255,255,255,.35)';
+    let html='';
+    html+='<div class="h-greet">'+greetingByHour(h)+' · '+(state.p===0?'在职打基础':'全职冲刺')+'</div>';
+    html+='<div class="h-status">'+heroStatus(o.cnt,o.total)+'</div>';
+    html+='<div class="h-row">';
+    html+=  '<div class="h-streak"><span class="h-flame" style="color:'+flameColor+'">'+I.flame+'</span><span><div class="hs-n">'+o.streak+'</div><div class="hs-l">连续打卡</div></span></div>';
+    html+=  '<div class="h-spacer"></div>';
+    html+=  ringSVG(pct, 64);
+    html+='</div>';
+    html+='<div class="h-coach" onclick="showPage(2)"><span class="hc-ico">'+I.coach+'</span><span class="hc-txt">'+heroCoachTip()+'</span><span class="hc-arrow">'+I.arrowRight+'</span></div>';
+    host.innerHTML = html;
+  }
+  function renderHomeQuick(){
+    const host = $('homeQuick'); if(!host) return;
+    host.innerHTML =
+      '<button class="hq-card hq-wide" onclick="showPage(1)">'+
+        '<span class="hq-ico">'+I.book+'</span>'+
+        '<span class="hq-text"><div class="hq-tt">学习中心</div><div class="hq-sub">背单词 · 阅读 · 数学 · 真题</div></span>'+
+        '<span class="hq-go">'+I.arrowRight+'</span>'+
+      '</button>'+
+      '<button class="hq-card" onclick="goResources()">'+
+        '<span class="hq-ico">'+I.folder+'</span>'+
+        '<div class="hq-tt">资料 / 网课</div><div class="hq-sub">视频 · PDF · 真题文档</div>'+
+      '</button>'+
+      '<button class="hq-card" onclick="showPage(2)">'+
+        '<span class="hq-ico">'+I.coach+'</span>'+
+        '<div class="hq-tt">AI 学习教练</div><div class="hq-sub">答疑 · 复盘 · 排计划</div>'+
+      '</button>';
+  }
+  window.goResources = function(){ showPage(1); showLearnView('resources'); };
+
+  // ===== 设置抽屉（收纳阶段以外的配置：提醒 / 数据备份） =====
+  function initSettingsDrawer(){
+    const body = $('settingsBody'), rc = $('reminderCard'), tb = $('toolbarRow');
+    if(body){ if(rc) body.appendChild(rc); if(tb) body.appendChild(tb); }
+    const gear = $('openSettings'); if(gear) gear.onclick = openSettings;
+    const cl = $('settingsClose'); if(cl) cl.onclick = closeSettings;
+    const mask = $('settingsMask'); if(mask) mask.onclick = function(e){ if(e.target===mask) closeSettings(); };
+  }
+  window.openSettings = function(){ const m=$('settingsMask'); if(m) m.style.display=''; };
+  function closeSettings(){ const m=$('settingsMask'); if(m) m.style.display='none'; }
+
   function showPage(idx) {
     window._page = idx;
     // Show/hide checkin cards
-    const checkinCards = document.querySelectorAll('.wrap > .card, .wrap > .phaseToggle, .wrap > .tiny');
+    const checkinCards = document.querySelectorAll('.wrap > .card, .wrap > .phaseToggle, .wrap > .tiny, .wrap > .home-only');
     checkinCards.forEach(el => { el.style.display = idx === 0 ? '' : 'none'; });
     const bottomNav = document.querySelector('.bottom-nav');
     if (bottomNav) bottomNav.style.display = ''; // Always show nav
@@ -2163,6 +2338,7 @@
     else if (idx === 2) { $('pageAI').style.display = ''; renderAI(); }
     else { render(); }
   }
+  window.showPage = showPage;
 
   // ===== RESOURCES =====
   function genId() { return 'r_' + Date.now() + '_' + Math.random().toString(36).slice(2,7); }
@@ -3298,6 +3474,7 @@
   })();
 
   // --- render with DOM self-check ---
+  initSettingsDrawer();
   try { render(); } catch(e) {
     console.error('[渲染失败]', e);
     document.querySelector('.wrap').innerHTML =
