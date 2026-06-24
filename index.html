@@ -175,6 +175,8 @@
   .vocab-feedback { margin-top: 14px; padding: 12px; border-radius: var(--border-radius-md); background: var(--color-background-secondary); text-align: left; font-size: 13px; line-height: 1.6; }
   .vocab-known { display: block; text-align: center; margin-top: 14px; font-size: 13px; color: var(--color-text-tertiary); cursor: pointer; }
   .vocab-libsel { width: 100%; padding: 8px 10px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: var(--color-background-secondary); color: var(--color-text-primary); font-size: 14px; font-family: var(--font-sans); }
+  .math-stem { margin: 14px 0 12px; font-size: 16px; line-height: 1.7; color: var(--color-text-primary); }
+  .math-explain { margin-top: 10px; padding: 10px 12px; border-radius: var(--border-radius-md); background: var(--color-background-primary); border-left: 3px solid var(--color-text-info); font-size: 13px; line-height: 1.7; }
   /* 阅读 */
   .reading-text p { font-size: 16px; line-height: 1.95; margin: 0 0 14px; color: var(--color-text-primary); }
   .rd-word { cursor: pointer; border-radius: 3px; padding: 0 1px; }
@@ -434,6 +436,25 @@
         <div class="row" style="justify-content:flex-end;gap:8px;margin-top:8px;">
           <button class="btn-sm" id="readingImpCancel">取消</button>
           <button class="btn-sm" id="readingImpSave" style="background:var(--color-text-info);color:#fff;border-color:var(--color-text-info);">导入</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== 数学 ====== -->
+  <div id="pageLearnMath" style="display:none;">
+    <div id="mathHome"></div>
+    <div id="mathSession" style="display:none;"></div>
+    <!-- 导入题集 -->
+    <div class="modal-overlay" id="mathImport" style="display:none;">
+      <div class="modal" style="max-width:460px;max-height:90vh;overflow-y:auto;">
+        <h3>导入题集</h3>
+        <p class="tiny muted" style="margin:4px 0 8px;">粘贴 JSON：题目数组，或 <code>{"name":"...","questions":[...]}</code>。每题字段：<code>stem</code>(题干必填)、<code>options</code>(选项数组)、<code>answer</code>(正确项下标,从0起)、可选 <code>explain</code>(步骤讲解)/<code>cat</code>(分类)。</p>
+        <input id="mathImpName" placeholder="题集名称（如：上经贸396真题·微积分）" maxlength="40"><br>
+        <textarea id="mathImpJson" placeholder='[{"stem":"lim(x→0) sin x / x = ?","options":["0","1","∞"],"answer":1,"explain":"重要极限"}]' style="width:100%;min-height:170px;font-family:monospace;font-size:12px;"></textarea>
+        <div class="row" style="justify-content:flex-end;gap:8px;margin-top:8px;">
+          <button class="btn-sm" id="mathImpCancel">取消</button>
+          <button class="btn-sm" id="mathImpSave" style="background:var(--color-text-info);color:#fff;border-color:var(--color-text-info);">导入</button>
         </div>
       </div>
     </div>
@@ -1434,7 +1455,7 @@
     { key:'today',     icon:'📋', title:'今日学习', sub:'今天该背/读/做的清单',     ready:false, todo:'引擎齐了后，这里会聚合今日的背单词、阅读、数学任务，一键直达。' },
     { key:'vocab',     icon:'📚', title:'背单词',   sub:'多词库 · 斩词 · 艾宾浩斯',   ready:true,  todo:'' },
     { key:'reading',   icon:'📖', title:'阅读',     sub:'精读 · 点词查义 · 加入背单词', ready:true,  todo:'' },
-    { key:'math',      icon:'➗', title:'数学',     sub:'真题分类 · 错题本 · AI讲解', ready:false, todo:'真题分类练习 + 错题本 + AI 步骤讲解（AI 仅辅助，注意核对）。' },
+    { key:'math',      icon:'➗', title:'数学',     sub:'分类练习 · 错题本 · AI讲解', ready:true,  todo:'' },
     { key:'exams',     icon:'📝', title:'真题题库', sub:'按年份/科目/题型',         ready:false, todo:'结构化真题库，作为模拟考与数学练习的内容底座。' },
     { key:'mock',      icon:'🤖', title:'AI模拟考', sub:'作文/翻译批改 · 模拟卷',    ready:false, todo:'AI 作文与专业英语翻译批改 + 模拟卷自测。' },
     { key:'resources', icon:'🎬', title:'资料/网课', sub:'视频/PDF/文档在线观看',    ready:true,  todo:'' }
@@ -1454,7 +1475,7 @@
     $('learnGrid').innerHTML = html;
   }
 
-  const LEARN_PAGES = ['pageLearn','pageLearnTodo','pageResources','pageLearnVocab','pageLearnReading'];
+  const LEARN_PAGES = ['pageLearn','pageLearnTodo','pageResources','pageLearnVocab','pageLearnReading','pageLearnMath'];
   window.showLearnView = function(name) {
     LEARN_PAGES.forEach(function(id){ const el=$(id); if(el) el.style.display='none'; });
     window._learnView = name;
@@ -1462,6 +1483,7 @@
     if (name === 'resources') { $('pageResources').style.display=''; renderResources(); return; }
     if (name === 'vocab') { $('pageLearnVocab').style.display=''; openVocab(); return; }
     if (name === 'reading') { $('pageLearnReading').style.display=''; openReading(); return; }
+    if (name === 'math') { $('pageLearnMath').style.display=''; openMath(); return; }
     const m = LEARN_MODULES.find(function(x){ return x.key===name; });
     $('learnTodoTitle').textContent = m ? (m.icon+' '+m.title) : '敬请期待';
     $('learnTodoDesc').textContent = m ? m.todo : '';
@@ -1819,6 +1841,207 @@
     pr.read=!pr.read; if(pr.read) pr.readAt=new Date().toISOString();
     save(); if(_readingCur) renderPassage(_readingCur);
   };
+
+  // ===== 数学引擎（396 数学：分类练习 + 错题本 + 步骤讲解 + AI 辅助）=====
+  const MATH_MASTER = 3;          // 连续答对达到此阶段视为已掌握
+  let _mathSets = null;           // 注册表缓存
+  const _mathCache = {};          // setId -> questions[]
+  let _msession = null;           // 当前练习会话
+
+  function _mshuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=a[i];a[i]=a[j];a[j]=t;} return a; }
+  function mKey(set,qid){ return set+':'+qid; }
+
+  function ensureMath(){
+    const m = state.learn.math = state.learn.math || {};
+    if(!m.progress) m.progress={};
+    if(!Array.isArray(m.wrongBook)) m.wrongBook=[];
+    if(!Array.isArray(m.userSets)) m.userSets=[];
+    if(!m.active) m.active='calc';
+    if(!m.daily) m.daily={date:'',done:0,correct:0};
+    const t=todayStr();
+    if(m.daily.date!==t) m.daily={date:t,done:0,correct:0};
+    return m;
+  }
+
+  function loadMathSets(){
+    return new Promise(function(res){
+      const m=ensureMath();
+      const userSets=(m.userSets||[]).map(function(s){return {id:s.id,name:s.name,desc:'我的题集 · '+s.count+'题',cat:'自建',user:true};});
+      if(_mathSets){ res(_mathSets.concat(userSets)); return; }
+      fetch('data/math/index.json').then(function(r){return r.json();}).then(function(j){
+        _mathSets=(j.sets||[]); res(_mathSets.concat(userSets));
+      }).catch(function(){ _mathSets=[]; res(userSets); });
+    });
+  }
+
+  function loadMathQuestions(setId){
+    return new Promise(function(res){
+      if(_mathCache[setId]){ res(_mathCache[setId]); return; }
+      try{ const raw=localStorage.getItem('math_set_'+setId); if(raw){ const q=JSON.parse(raw); _mathCache[setId]=q; res(q); return; } }catch(e){}
+      const set=(_mathSets||[]).find(function(s){return s.id===setId;});
+      if(!set||!set.file){ res(null); return; }
+      fetch('data/math/'+set.file).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(j){
+        const qs=j.questions||j; _mathCache[setId]=qs; res(qs);
+      }).catch(function(){ res(null); });
+    });
+  }
+
+  window.openMath = function(){
+    ensureMath();
+    $('mathSession').style.display='none';
+    $('mathHome').style.display='';
+    loadMathSets().then(renderMathHome);
+  };
+
+  function renderMathHome(sets){
+    const m=ensureMath(); sets=sets||[];
+    let opts='';
+    sets.forEach(function(s){ opts+='<option value="'+s.id+'"'+(s.id===m.active?' selected':'')+'>'+escAttr(s.name)+(s.placeholder?' (待导入)':'')+'</option>'; });
+    loadMathQuestions(m.active).then(function(qs){
+      let done=0, correct=0, total=qs?qs.length:0, mastered=0;
+      if(qs){ qs.forEach(function(q){ const p=m.progress[mKey(m.active,q.id)]; if(p){ done++; if(p.correct) correct++; if((p.stage||0)>=MATH_MASTER) mastered++; } }); }
+      const wrongCount=m.wrongBook.filter(function(k){return k.indexOf(m.active+':')===0;}).length;
+      const acc=done?Math.round(correct/done*100):0;
+      const pct=total?Math.round(mastered/total*100):0;
+      let html='<div class="card">';
+      html+='<button class="btn-sm learn-back" onclick="showLearnView(\'hub\')" style="margin-bottom:10px;">← 返回学习</button>';
+      html+='<div class="row" style="justify-content:space-between;align-items:center;gap:8px;"><h2 style="margin:0;">数学</h2><button class="btn-sm" onclick="mathOpenImport()">＋导入题集</button></div>';
+      html+='<select class="vocab-libsel" style="margin-top:10px;" onchange="mathSwitchSet(this.value)">'+opts+'</select>';
+      if(!qs){
+        html+='<div class="learn-soon" style="padding:20px 0;">该题集还没有内容<br><span class="tiny muted">用上方「导入题集」粘贴 JSON，或换一个题集</span></div></div>';
+        $('mathHome').innerHTML=html; return;
+      }
+      html+='<div class="vocab-stat">';
+      html+='<div class="vs-box"><div class="vs-num">'+total+'</div><div class="vs-lbl">题目数</div></div>';
+      html+='<div class="vs-box"><div class="vs-num">'+acc+'%</div><div class="vs-lbl">正确率</div></div>';
+      html+='<div class="vs-box"><div class="vs-num">'+mastered+'</div><div class="vs-lbl">已掌握</div></div>';
+      html+='</div>';
+      html+='<div class="vocab-progbar"><i style="width:'+pct+'%"></i></div>';
+      html+='<div class="tiny muted">掌握 '+mastered+' / '+total+'（'+pct+'%）· 已练 '+done+' 题 · 今日做 '+m.daily.done+' 题</div>';
+      html+='<button class="btn-sm" style="width:100%;margin-top:12px;background:var(--color-text-info);color:#fff;border-color:var(--color-text-info);padding:10px;" onclick="startMath(\'practice\')">开始练习（'+total+'）</button>';
+      html+='<div class="row" style="gap:8px;margin-top:8px;">';
+      html+='<button class="btn-sm" style="flex:1;'+(wrongCount?'':'opacity:.5;')+'" onclick="'+(wrongCount?'startMath(\'wrong\')':'')+'">错题本（'+wrongCount+'）</button>';
+      html+='</div></div>';
+      $('mathHome').innerHTML=html;
+    });
+  }
+
+  window.mathSwitchSet=function(id){ const m=ensureMath(); m.active=id; save(); loadMathSets().then(renderMathHome); };
+
+  function buildMathQueue(qs, mode){
+    const m=ensureMath(), set=m.active;
+    let items=[];
+    if(mode==='wrong'){
+      m.wrongBook.forEach(function(k){ if(k.indexOf(set+':')===0){ const qid=k.slice(set.length+1); const q=qs.find(function(x){return x.id===qid;}); if(q) items.push(q); } });
+    } else {
+      items=qs.slice();
+    }
+    return _mshuffle(items);
+  }
+
+  window.startMath=function(mode){
+    const m=ensureMath();
+    loadMathQuestions(m.active).then(function(qs){
+      if(!qs){ alert('该题集暂无内容'); return; }
+      const queue=buildMathQueue(qs, mode);
+      if(!queue.length){ alert(mode==='wrong'?'错题本是空的 👍':'该题集暂无题目'); return; }
+      _msession={ set:m.active, queue:queue, idx:0, mode:mode, correct:0, total:queue.length };
+      $('mathHome').style.display='none'; $('mathSession').style.display='';
+      renderMathCard();
+    });
+  };
+
+  function renderMathCard(){
+    const s=_msession; if(!s) return;
+    if(s.idx>=s.queue.length){ renderMathDone(); return; }
+    const q=s.queue[s.idx];
+    s._answered=false;
+    let html='<div class="card">';
+    html+='<div class="row" style="justify-content:space-between;align-items:center;"><button class="btn-sm learn-back" onclick="quitMath()">← 退出</button><span class="tiny muted">'+(s.idx+1)+' / '+s.total+(s.mode==='wrong'?' · 错题重做':'')+'</span></div>';
+    html+='<div class="vocab-progbar" style="margin-top:8px;"><i style="width:'+Math.round(s.idx/s.total*100)+'%"></i></div>';
+    if(q.cat) html+='<div class="tiny muted" style="margin-top:10px;">'+escAttr(q.cat)+(q.level?' · '+escAttr(q.level):'')+'</div>';
+    html+='<div class="math-stem">'+escAttr(q.stem)+'</div>';
+    html+='<div class="vocab-opts" id="mathOpts">';
+    (q.options||[]).forEach(function(o,i){ html+='<button class="vocab-opt" style="text-align:left;" onclick="mathPick(this)" data-i="'+i+'">'+String.fromCharCode(65+i)+'. '+escAttr(o)+'</button>'; });
+    html+='</div>';
+    html+='<div id="mathFb"></div></div>';
+    $('mathSession').innerHTML=html;
+  }
+
+  window.mathPick=function(btn){
+    const s=_msession; if(!s||s._answered) return;
+    s._answered=true;
+    const q=s.queue[s.idx];
+    const pick=parseInt(btn.getAttribute('data-i'),10);
+    const correct=(pick===q.answer);
+    document.querySelectorAll('#mathOpts .vocab-opt').forEach(function(b){ b.disabled=true; const bi=parseInt(b.getAttribute('data-i'),10); if(bi===q.answer) b.classList.add('correct'); else if(b===btn) b.classList.add('wrong'); });
+    gradeMath(q, correct);
+    if(correct) s.correct++;
+    showMathFeedback(q, correct);
+  };
+
+  function gradeMath(q, correct){
+    const m=ensureMath(), set=m.active, k=mKey(set,q.id);
+    let p=m.progress[k] || {stage:0, correct:false, wrong:0, seen:0};
+    p.seen=(p.seen||0)+1;
+    if(correct){ p.stage=Math.min(MATH_MASTER, (p.stage||0)+1); p.correct=true; const wi=m.wrongBook.indexOf(k); if(p.stage>=MATH_MASTER && wi>=0) m.wrongBook.splice(wi,1); }
+    else { p.stage=0; p.correct=false; p.wrong=(p.wrong||0)+1; if(m.wrongBook.indexOf(k)<0) m.wrongBook.push(k); }
+    p.lastAt=new Date().toISOString();
+    m.progress[k]=p;
+    m.daily.done++; if(correct) m.daily.correct++;
+    save();
+  }
+
+  function showMathFeedback(q, correct){
+    let fb='<div class="vocab-feedback"><strong>'+(correct?'✅ 正确':'❌ 答错了')+'</strong> &nbsp; 正确答案：'+String.fromCharCode(65+q.answer)+'. '+escAttr(q.options[q.answer]);
+    if(q.explain){ fb+='<div class="math-explain"><b>步骤讲解</b><br>'+escAttr(q.explain)+'</div>'; }
+    fb+='</div>';
+    fb+='<div class="row" style="gap:8px;margin-top:10px;">';
+    fb+='<button class="btn-sm" style="flex:1;" onclick="mathAskAI()">🤖 AI 详解</button>';
+    fb+='<button class="btn-sm" style="flex:2;background:var(--color-text-info);color:#fff;border-color:var(--color-text-info);padding:10px;" onclick="mathNext()">下一题 →</button>';
+    fb+='</div>';
+    $('mathFb').innerHTML=fb;
+  }
+
+  window.mathNext=function(){ const s=_msession; if(!s)return; s.idx++; renderMathCard(); };
+
+  window.mathAskAI=function(){
+    const s=_msession; if(!s) return;
+    const q=s.queue[s.idx];
+    const txt='请一步步讲解这道数学题，并指出易错点：\n'+q.stem+'\n选项：'+(q.options||[]).map(function(o,i){return String.fromCharCode(65+i)+'. '+o;}).join('  ')+'\n（正确答案 '+String.fromCharCode(65+q.answer)+'）';
+    showPage(2);
+    aiMode='err';
+    document.querySelectorAll('#aiModeSeg button').forEach(function(x){ x.className=(x.dataset.mode==='err'?'on':''); });
+    const desc=$('aiModeDesc'); if(desc && typeof aiModeDescs!=='undefined') desc.textContent=(aiModeDescs['err']||'');
+    const inp=$('aiInput'); if(inp){ inp.value=txt; inp.focus(); }
+  };
+
+  function renderMathDone(){
+    const s=_msession;
+    const acc=s.total?Math.round(s.correct/s.total*100):0;
+    $('mathSession').innerHTML='<div class="card" style="text-align:center;"><div style="font-size:40px;">'+(acc>=80?'🎉':'💪')+'</div><h2 style="margin:8px 0;">本组完成</h2><p class="muted">答对 '+s.correct+' / '+s.total+'（'+acc+'%）</p><button class="btn-sm" style="width:100%;margin-top:12px;background:var(--color-text-info);color:#fff;border-color:var(--color-text-info);padding:10px;" onclick="openMath()">返回</button></div>';
+    _msession=null;
+  }
+
+  window.quitMath=function(){ _msession=null; openMath(); };
+
+  window.mathOpenImport=function(){ $('mathImpName').value=''; $('mathImpJson').value=''; $('mathImport').style.display=''; };
+  $('mathImpCancel').onclick=function(){ $('mathImport').style.display='none'; };
+  $('mathImpSave').onclick=function(){
+    const name=$('mathImpName').value.trim()||'我的题集';
+    let parsed;
+    try{ parsed=JSON.parse($('mathImpJson').value.trim()); }catch(e){ alert('JSON 格式错误：'+e.message); return; }
+    let qs=Array.isArray(parsed)?parsed:(parsed.questions||null);
+    if(!Array.isArray(qs)||!qs.length){ alert('没有解析到题目数组'); return; }
+    qs=qs.filter(function(x){return x&&x.stem&&Array.isArray(x.options)&&typeof x.answer==='number';}).map(function(x,i){return {id:x.id||('q'+i), cat:x.cat||'', level:x.level||'', stem:String(x.stem), options:x.options.map(String), answer:x.answer, explain:x.explain||''};});
+    if(!qs.length){ alert('题目需含 stem(题干)、options(选项数组)、answer(正确项下标) 字段'); return; }
+    const m=ensureMath(), id='user_'+Date.now().toString(36);
+    try{ localStorage.setItem('math_set_'+id, JSON.stringify(qs)); }catch(e){ alert('保存失败（可能超出本地存储上限）：'+e.message); return; }
+    m.userSets.push({id:id, name:name, count:qs.length});
+    m.active=id; _mathCache[id]=qs; save();
+    $('mathImport').style.display='none';
+    loadMathSets().then(renderMathHome);
+  };
   window.quitReading = function(){ $('readingPop').style.display='none'; _readingCur=null; openReading(); };
 
   window.readingOpenImport=function(){ $('readingImpJson').value=''; $('readingImport').style.display=''; };
@@ -1844,7 +2067,7 @@
     const pt = $('phaseToggle');
     if (pt) pt.style.display = idx === 0 ? '' : 'none';
     // Hide all secondary pages
-    ['pageLearn','pageLearnTodo','pageResources','pageLearnVocab','pageLearnReading','pageAI'].forEach(id => { const el = $(id); if(el) el.style.display = 'none'; });
+    ['pageLearn','pageLearnTodo','pageResources','pageLearnVocab','pageLearnReading','pageLearnMath','pageAI'].forEach(id => { const el = $(id); if(el) el.style.display = 'none'; });
     // Update nav
     document.querySelectorAll('.bn-btn').forEach(b => { b.className = 'bn-btn' + (b.dataset.page == idx ? ' on' : ''); });
     // Render target
@@ -3028,7 +3251,7 @@
   }, 100);
 
   // Hide learn/resource/AI pages on startup
-  ['pageLearn','pageLearnTodo','pageResources','pageLearnVocab','pageLearnReading','pageAI'].forEach(function(id) { var el = $(id); if(el) el.style.display = 'none'; });
+  ['pageLearn','pageLearnTodo','pageResources','pageLearnVocab','pageLearnReading','pageLearnMath','pageAI'].forEach(function(id) { var el = $(id); if(el) el.style.display = 'none'; });
 })();
 </script>
 </body>
