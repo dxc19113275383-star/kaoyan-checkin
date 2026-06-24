@@ -358,6 +358,52 @@
   .drawer-body > .card { margin-bottom:.9rem; }
   .drawer-body #toolbarRow { text-align:left; line-height:2; }
 
+  /* ============================================================
+     P3 — AI 学习教练页（coach head / 快捷 chips / sticky 输入 / 结构化回答）
+     ============================================================ */
+  .coach-head { display:flex; align-items:center; gap:12px; padding:6px 4px 14px; }
+  .ch-avatar { width:44px; height:44px; flex-shrink:0; border-radius:14px; background:var(--brand-soft); color:var(--brand); display:flex; align-items:center; justify-content:center; font-size:22px; box-shadow:var(--shadow-ambient); position:relative; }
+  .ch-avatar::after { content:''; position:absolute; right:-2px; bottom:-2px; width:11px; height:11px; border-radius:50%; background:#22c55e; border:2px solid var(--color-background-tertiary); box-shadow:0 0 0 2px rgba(34,197,94,.18); }
+  .ch-info { min-width:0; }
+  /* AI 消息（覆盖 P1 之前的 ai-msg） */
+  .ai-msg { font-size:14.5px; line-height:1.7; color:var(--color-text-primary); word-break:break-word; }
+  .ai-msg.user { background:var(--brand); color:#fff; border-radius:14px 14px 4px 14px; padding:10px 14px; margin:0 0 10px auto; max-width:85%; width:fit-content; box-shadow:var(--shadow-ambient); }
+  .ai-msg.bot { background:transparent; padding:0; margin-bottom:14px; border:none; }
+  .ai-msg.bot > * { margin: 0 0 9px; }
+  .ai-msg.bot p { margin: 0 0 9px; line-height:1.7; }
+  .ai-msg.bot ul, .ai-msg.bot ol { margin:6px 0 9px; padding-left:18px; }
+  .ai-msg.bot li { margin:3px 0; line-height:1.65; }
+  .ai-msg.bot h3 { font-size:15px; font-weight:600; letter-spacing:-0.01em; margin:14px 0 6px; }
+  .ai-msg.bot h3:first-child { margin-top:0; }
+  /* 结构化分块（结论/今天怎么做/别犯的错/鼓励） */
+  .ai-block { background:var(--color-background-primary); border:1px solid var(--hair); border-radius:var(--border-radius-md); padding:11px 13px 10px 13px; margin:0 0 8px; box-shadow:var(--shadow-ambient); }
+  .ai-block .ab-label { display:inline-flex; align-items:center; gap:5px; font-size:10.5px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--color-text-tertiary); margin-bottom:5px; }
+  .ai-block .ab-label .ab-dot { width:6px; height:6px; border-radius:50%; background:var(--color-text-tertiary); }
+  .ai-block.ab-conclusion { border-color:color-mix(in srgb, var(--brand) 28%, var(--hair)); background:var(--brand-soft); }
+  .ai-block.ab-conclusion .ab-label { color:var(--brand); } .ai-block.ab-conclusion .ab-dot { background:var(--brand); }
+  .ai-block.ab-action { border-left:3px solid var(--brand); }
+  .ai-block.ab-action .ab-label { color:var(--brand); } .ai-block.ab-action .ab-dot { background:var(--brand); }
+  .ai-block.ab-warn { border-left:3px solid var(--ember); }
+  .ai-block.ab-warn .ab-label { color:var(--ember); } .ai-block.ab-warn .ab-dot { background:var(--ember); }
+  .ai-block.ab-cheer { background:var(--ember-soft); border-color:color-mix(in srgb, var(--ember) 30%, var(--hair)); }
+  .ai-block.ab-cheer .ab-label { color:var(--ember); } .ai-block.ab-cheer .ab-dot { background:var(--ember); }
+  .ai-block p { margin:0 0 6px; } .ai-block p:last-child { margin-bottom:0; }
+  .ai-block ul { margin:4px 0 0; padding-left:18px; } .ai-block li { margin:3px 0; }
+  /* Sticky 输入栏 */
+  .ai-input-bar { position:fixed; left:0; right:0; bottom:calc(var(--bottom-nav-height) + var(--safe-bottom)); padding:10px 12px; display:flex; align-items:flex-end; gap:8px; background:color-mix(in srgb, var(--color-background-tertiary) 88%, transparent); -webkit-backdrop-filter:saturate(180%) blur(20px); backdrop-filter:saturate(180%) blur(20px); border-top:1px solid var(--hair); z-index:40; }
+  .ai-input-bar textarea { flex:1; max-height:140px; min-height:44px; padding:11px 14px; border-radius:22px; border:1px solid var(--hair-strong); background:var(--color-background-primary); color:var(--color-text-primary); font-size:15px; font-family:var(--font-sans); line-height:1.4; resize:none; box-sizing:border-box; transition:border-color .2s var(--ease); }
+  .ai-input-bar textarea:focus { outline:none; border-color:var(--brand); }
+  .ai-input-bar .btn-cta { width:auto; padding:0 14px; height:44px; border-radius:22px; flex-shrink:0; gap:6px; font-size:13.5px; }
+  .ai-input-bar .btn-cta .cta-ico { width:22px; height:22px; }
+  .ai-input-bar .btn-cta .cta-ico svg { width:13px; height:13px; }
+  .ai-input-bar .btn-cta:disabled { opacity:.5; }
+  /* AI 输入栏聚焦时（手机软键盘弹起），让浮动栏顶到键盘上沿（iOS PWA viewport 收缩自然完成） */
+  .ai-typing .bottom-nav { transform:translateY(100%); pointer-events:none; }
+  .ai-typing .ai-input-bar { bottom:var(--safe-bottom); }
+  .ai-typing #aiChatHistory { padding-bottom: calc(80px + var(--safe-bottom)) !important; }
+  /* 快捷 chips 容器对齐 */
+  #aiQuickChips { padding:2px 4px; }
+
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
     .reveal { opacity: 1; transform: none; }
@@ -681,24 +727,42 @@
 
   <!-- ====== AI助手页面 ====== -->
   <div id="pageAI" style="display:none;">
-    <div class="card">
-      <h2 style="margin-bottom:8px;">AI 考研助手</h2>
+    <!-- 教练状态头 -->
+    <div class="coach-head">
+      <div class="ch-avatar">🤖</div>
+      <div class="ch-info">
+        <h2 style="margin:0 0 2px;font-size:17px;font-weight:600;letter-spacing:-0.01em;">AI 学习教练</h2>
+        <span class="tiny" id="aiStatus" style="color:var(--color-text-secondary);">准备就绪</span>
+      </div>
+    </div>
+
+    <!-- 模式选择（seg 保留，JS 依赖） -->
+    <div class="card" style="padding:0;overflow:hidden;margin-bottom:10px;">
       <div class="seg" id="aiModeSeg">
         <button data-mode="qa" class="on">今日答疑</button>
         <button data-mode="err">错题讲解</button>
         <button data-mode="plan">计划重排</button>
       </div>
-      <div class="tiny muted" style="margin-top:8px;" id="aiModeDesc">输入学习问题，AI 给出答案和可执行动作。</div>
+      <div class="tiny muted" style="margin:8px 12px 9px;" id="aiModeDesc">输入学习问题，AI 给出答案和可执行动作。</div>
     </div>
-    <div id="aiChatHistory" style="margin-bottom:8px;"></div>
-    <div class="card">
-      <textarea id="aiInput" placeholder="输入你的问题…" rows="2" maxlength="500"
-        style="width:100%;padding:8px;border-radius:8px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-secondary);color:var(--color-text-primary);font-size:14px;font-family:var(--font-sans);resize:none;box-sizing:border-box;" disabled></textarea>
-      <div class="row" style="justify-content:space-between;margin-top:6px;">
-        <span class="tiny muted" id="aiStatus">准备就绪</span>
-        <button class="btn-sm" id="aiSend" style="background:var(--color-text-info);color:#fff;border-color:var(--color-text-info);" disabled>发送</button>
-      </div>
+
+    <!-- 快捷问题 chips -->
+    <div class="chip-row" id="aiQuickChips" style="margin-bottom:10px;"></div>
+
+    <!-- 对话历史 -->
+    <div id="aiChatHistory" style="padding-bottom:calc(var(--bottom-nav-height) + 88px + var(--safe-bottom));"></div>
+
+    <!-- Sticky 输入栏（fixed 于底栏上方） -->
+    <div class="ai-input-bar">
+      <textarea id="aiInput" placeholder="输入你的问题…" rows="1" maxlength="500" disabled></textarea>
+      <button class="btn-cta" id="aiSend" disabled style="padding:11px 18px;font-size:14px;">
+        <span>发送</span>
+        <span class="cta-ico">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 12 14 0"/><path d="m13 18 6-6-6-6"/></svg>
+        </span>
+      </button>
     </div>
+  </div>
   </div>
 
   <!-- ====== 学习会话确认卡片 ====== -->
@@ -2686,8 +2750,27 @@
 
   function renderAIReply(text) {
     let safe = escapeHTML(text);
+    // 结构化分块：识别"结论/当前问题/今天怎么做/别犯的错/鼓励"等标题，包成视觉卡块
+    const blocks = [
+      { kw:['结论','总结','核心要点','一句话'],     cls:'ab-conclusion', lbl:'结论' },
+      { kw:['当前问题','目前情况','诊断','现状'],   cls:'ab-issue',      lbl:'当前问题' },
+      { kw:['今天怎么做','行动','下一步','建议'],   cls:'ab-action',     lbl:'今天怎么做' },
+      { kw:['别犯的错','注意','常见错','避免','坑'], cls:'ab-warn',       lbl:'别犯的错' },
+      { kw:['鼓励','一句鼓励','加油','结尾'],       cls:'ab-cheer',      lbl:'一句鼓励' }
+    ];
+    blocks.forEach(function(b){
+      b.kw.forEach(function(kw){
+        const re = new RegExp('^(?:#{1,4}\\s*)?'+ kw.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') +'\\s*[：:]+\\s*([\\s\\S]+?)(?=\\n\\s*\\n|\\n\\s*(?:#{1,4}|结论|当前问题|今天怎么做|别犯|鼓励)|$)', 'm');
+        if(re.test(safe)){
+          safe = safe.replace(re, function(m, content){
+            return '<div class="ai-block '+b.cls+'"><div class="ab-label"><span class="ab-dot"></span>'+b.lbl+'</div>'+content.trim()+'</div>';
+          });
+        }
+      });
+    });
     // Headings
     safe = safe.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+    safe = safe.replace(/^## (.+)$/gm, '<h3>$1</h3>');
     // Bullet lists
     safe = safe.replace(/^- (.+)$/gm, '<li>$1</li>');
     // Numbered lists
@@ -2702,8 +2785,8 @@
     safe = safe.replace(/<p><\/p>/g, '');
     // Wrap consecutive <li> in <ul>
     safe = safe.replace(/((?:<li>.*?<\/li>)+)/g, '<ul>$1</ul>');
-    // Fix <h3> inside <p>
-    safe = safe.replace(/<p><h3/g, '<h3').replace(/<\/h3><\/p>/g, '</h3>');
+    // Fix block-level elements that ended up inside <p>
+    safe = safe.replace(/<p>\s*(<h3|<ul|<div class="ai-block)/g, '$1').replace(/(<\/h3>|<\/ul>|<\/div>)\s*<\/p>/g, '$1');
     // Merge adjacent <ul>
     safe = safe.replace(/<\/ul>\s*<ul>/g, '');
     // Remove leading </p> artifacts
@@ -2714,13 +2797,49 @@
   function renderAI() {
     const history = $('aiChatHistory');
     if (state.aiChats.length === 0) {
-      history.innerHTML = '<div class="tiny muted" style="text-align:center;padding:1rem;">向 AI 提问学习问题，获得针对性解答</div>';
+      history.innerHTML =
+        '<div class="ai-empty card" style="margin:6px 4px 4px;padding:14px 16px;">' +
+          '<div class="eyebrow" style="margin-bottom:6px;">学习教练在线</div>' +
+          '<div style="font-size:14.5px;line-height:1.65;">嗨，我是你的 AI 学习教练。' +
+          '不只是答疑——你迷茫了、想偷懒了、想复盘了，都可以来找我。</div>' +
+          '<div class="tiny muted" style="margin-top:8px;line-height:1.6;">' +
+          '上方点一个快捷问题开始 · 或在底部直接输入</div>' +
+        '</div>';
     } else {
       history.innerHTML = state.aiChats.slice(-10).map(c =>
         '<div class="ai-msg user">' + escapeHTML(c.q) + '</div>' +
         '<div class="ai-msg bot">' + renderAIReply(c.a) + '</div>'
       ).join('');
+      // Scroll history newest into view (above sticky input)
+      setTimeout(function(){ window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }); }, 60);
     }
+    renderAIQuickChips();
+    updateAIStatus();
+  }
+
+  // 快捷问题 chips —— 按当前模式给出最相关的 5 条
+  const AI_QUICK = {
+    qa:   ['今天该重点学什么？','这个知识点能再讲讲吗？','给我一份本周复习清单','推荐 1 套靠谱资料','3-5-7 法是什么'],
+    err:  ['我做错了一道数学题…','英语阅读总是错 2-3 道','单词背了就忘怎么办','作文卡壳找不到角度','396 数学时间不够'],
+    plan: ['坚持不住了，帮我打气','本周计划没完成怎么办','我落后进度该怎么追','想调整明天的安排','给我做个心态复盘']
+  };
+  function renderAIQuickChips(){
+    const host = $('aiQuickChips'); if(!host) return;
+    const list = AI_QUICK[aiMode] || AI_QUICK.qa;
+    host.innerHTML = list.map(function(q){
+      return '<button class="chip" onclick="aiAskQuick(this)" data-q="'+escAttr(q)+'">'+escAttr(q)+'</button>';
+    }).join('');
+  }
+  window.aiAskQuick = function(btn){
+    const q = btn.getAttribute('data-q'); if(!q) return;
+    const inp = $('aiInput'); inp.value = q;
+    sendAIMsg();
+  };
+
+  function updateAIStatus(){
+    const todayCount = (state.aiChats||[]).filter(function(c){ return (c.ts||'').slice(0,10) === todayStr(); }).length;
+    const el = $('aiStatus'); if(!el) return;
+    el.textContent = todayCount > 0 ? ('在线 · 今天已答 '+todayCount+' 题') : '在线 · 准备好了';
   }
 
   function buildAIContext(mode, question) {
@@ -2767,10 +2886,11 @@
 
     let reply = '';
     try {
+      const formatHint = '回答分块时，按「结论:」「当前问题:」「今天怎么做:」「别犯的错:」「一句鼓励:」五标题格式组织，让手机阅读更友好。';
       const resp = await fetch(API_ENDPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode: aiMode, question, context: ctx })
+        body: JSON.stringify({ mode: aiMode, question, context: ctx, formatHint })
       });
       console.log('[AI] response status:', resp.status);
       if (resp.ok) {
@@ -2793,7 +2913,7 @@
     input.value = '';
     renderAI();
 
-    $('aiStatus').textContent = 'DeepSeek · 已就绪';
+    updateAIStatus();
     $('aiSend').disabled = false;
     $('aiInput').disabled = false;
     $('aiInput').focus();
@@ -2803,9 +2923,17 @@
   $('aiInput').addEventListener('keydown', function(e) {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendAIMsg(); }
   });
+  // Auto-grow textarea as user types
+  $('aiInput').addEventListener('input', function(){
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 140) + 'px';
+  });
+  // 软键盘弹起时让 sticky 输入贴键盘上沿（PWA 视觉调度）
+  $('aiInput').addEventListener('focus', function(){ document.body.classList.add('ai-typing'); });
+  $('aiInput').addEventListener('blur',  function(){ document.body.classList.remove('ai-typing'); });
   $('aiInput').disabled = false;
   $('aiSend').disabled = false;
-  $('aiStatus').textContent = 'DeepSeek · 已就绪';
+  updateAIStatus();
 
   document.querySelectorAll('#aiModeSeg button').forEach(b => {
     b.onclick = () => {
@@ -2813,6 +2941,7 @@
       document.querySelectorAll('#aiModeSeg button').forEach(x => x.className = '');
       b.className = 'on';
       $('aiModeDesc').textContent = aiModeDescs[aiMode] || '';
+      renderAIQuickChips();
     };
   });
 
