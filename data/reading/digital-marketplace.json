@@ -1,0 +1,28 @@
+{
+  "id": "digital-marketplace",
+  "title": "The Rise of the Digital Marketplace",
+  "source": "原创 · 跨境电商",
+  "level": "考研英语二",
+  "intro": "十年前出口要仓库和代理，如今一家小店就能触达全球买家。",
+  "paragraphs": [
+    "A decade ago, selling goods abroad required warehouses, agents, and complex paperwork. Today a small business can reach customers on the other side of the world through a digital marketplace. These online platforms connect buyers and sellers directly, handling payment, logistics, and even customer service.",
+    "For consumers, the benefit is obvious: a wider choice of products at competitive prices. For sellers, the platform lowers the barriers to entering foreign markets, though it also exposes them to fierce global competition.",
+    "Cross-border e-commerce has grown rapidly, yet it raises difficult questions about taxation, data privacy, and consumer protection. Governments are still struggling to design rules that keep pace with technology.",
+    "As the digital economy matures, the firms that succeed will be those that combine efficient logistics with genuine trust."
+  ],
+  "glossary": [
+    { "w": "warehouses", "ph": "/ˈweəhaʊzɪz/", "def": "n. 仓库（warehouse 的复数）", "ex": "to store goods in warehouses", "exCn": "把货物存放在仓库" },
+    { "w": "agents", "ph": "/ˈeɪdʒənts/", "def": "n. 代理商，中间人", "ex": "to sell through local agents", "exCn": "通过当地代理销售" },
+    { "w": "paperwork", "ph": "/ˈpeɪpəwɜːk/", "def": "n. 文书工作，书面手续", "ex": "complex paperwork", "exCn": "繁琐的书面手续" },
+    { "w": "marketplace", "ph": "/ˈmɑːkɪtpleɪs/", "def": "n. 市场，交易平台", "ex": "a digital marketplace", "exCn": "数字交易平台" },
+    { "w": "platforms", "ph": "/ˈplætfɔːmz/", "def": "n. 平台（platform 的复数）", "ex": "online platforms", "exCn": "在线平台" },
+    { "w": "logistics", "ph": "/ləˈdʒɪstɪks/", "def": "n. 物流，后勤", "ex": "efficient logistics", "exCn": "高效的物流" },
+    { "w": "competitive", "ph": "/kəmˈpetətɪv/", "def": "adj. 有竞争力的，价格公道的", "ex": "competitive prices", "exCn": "有竞争力的价格" },
+    { "w": "barriers", "ph": "/ˈbæriəz/", "def": "n. 障碍，壁垒", "ex": "trade barriers", "exCn": "贸易壁垒" },
+    { "w": "fierce", "ph": "/fɪəs/", "def": "adj. 激烈的，凶猛的", "ex": "fierce competition", "exCn": "激烈的竞争" },
+    { "w": "taxation", "ph": "/tækˈseɪʃn/", "def": "n. 税收，征税", "ex": "rules about taxation", "exCn": "关于税收的规则" },
+    { "w": "privacy", "ph": "/ˈprɪvəsi/", "def": "n. 隐私", "ex": "data privacy", "exCn": "数据隐私" },
+    { "w": "matures", "ph": "/məˈtʃʊəz/", "def": "v. 成熟，成长（mature）", "ex": "as the economy matures", "exCn": "随着经济走向成熟" },
+    { "w": "genuine", "ph": "/ˈdʒenjuɪn/", "def": "adj. 真正的，真诚的", "ex": "genuine trust", "exCn": "真正的信任" }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "id": "comparative-advantage",
+  "title": "The Logic of Comparative Advantage",
+  "source": "原创 · 国际贸易",
+  "level": "考研英语二",
+  "intro": "为什么国家之间要贸易，而不是什么都自己生产？比较优势给出了答案。",
+  "paragraphs": [
+    "Why do countries trade with one another instead of producing everything themselves? The principle of comparative advantage offers a clear answer. Even if one nation can produce every good more efficiently than another, both can still gain by specializing in what they do relatively best and exchanging the surplus.",
+    "A country with limited resources should concentrate on the industries where its productivity is highest, and import goods that others can make at lower cost. This division of labor raises total output and lowers prices for consumers everywhere.",
+    "Critics argue that free trade can threaten domestic jobs and widen inequality, and these concerns deserve serious attention. Yet most economists agree that, on balance, open markets accelerate growth and spread innovation across borders.",
+    "The challenge for policymakers is not whether to trade, but how to distribute its gains fairly and cushion those who are displaced."
+  ],
+  "glossary": [
+    { "w": "comparative", "ph": "/kəmˈpærətɪv/", "def": "adj. 比较的，相对的", "ex": "comparative advantage", "exCn": "比较优势" },
+    { "w": "efficiently", "ph": "/ɪˈfɪʃntli/", "def": "adv. 高效地", "ex": "to produce goods more efficiently", "exCn": "更高效地生产商品" },
+    { "w": "specializing", "ph": "/ˈspeʃəlaɪzɪŋ/", "def": "v. 专门从事（specialize 的现在分词）", "ex": "specializing in what they do best", "exCn": "专注于最擅长的事" },
+    { "w": "surplus", "ph": "/ˈsɜːpləs/", "def": "n. 盈余，剩余", "ex": "to export the surplus", "exCn": "出口盈余产品" },
+    { "w": "productivity", "ph": "/ˌprɒdʌkˈtɪvəti/", "def": "n. 生产率，生产力", "ex": "to raise productivity", "exCn": "提高生产率" },
+    { "w": "output", "ph": "/ˈaʊtpʊt/", "def": "n. 产量，产出", "ex": "to increase total output", "exCn": "增加总产量" },
+    { "w": "inequality", "ph": "/ˌɪnɪˈkwɒləti/", "def": "n. 不平等，不均", "ex": "income inequality", "exCn": "收入不平等" },
+    { "w": "accelerate", "ph": "/əkˈseləreɪt/", "def": "vt. 加速，促进", "ex": "to accelerate growth", "exCn": "促进增长" },
+    { "w": "innovation", "ph": "/ˌɪnəˈveɪʃn/", "def": "n. 创新，革新", "ex": "to spread innovation", "exCn": "传播创新" },
+    { "w": "policymakers", "ph": "/ˈpɒləsimeɪkəz/", "def": "n. 政策制定者", "ex": "a challenge for policymakers", "exCn": "对政策制定者的挑战" },
+    { "w": "cushion", "ph": "/ˈkʊʃn/", "def": "vt. 缓和，减轻（冲击）", "ex": "to cushion those who are displaced", "exCn": "缓解失业者的冲击" },
+    { "w": "displaced", "ph": "/dɪsˈpleɪst/", "def": "adj. 被取代的，失业流离的", "ex": "workers displaced by trade", "exCn": "因贸易而失业的工人" }
+  ]
+}
