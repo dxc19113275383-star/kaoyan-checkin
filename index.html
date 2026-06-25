@@ -3292,6 +3292,14 @@
   function _vshuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=a[i];a[i]=a[j];a[j]=t;} return a; }
   function vAddDays(dateStr, days){ const d=new Date((dateStr||todayStr())+'T00:00:00'); d.setDate(d.getDate()+days); const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),da=String(d.getDate()).padStart(2,'0'); return y+'-'+m+'-'+da; }
   function vKey(lib,w){ return lib+':'+w; }
+  /** 统计当前激活词库的未掌握错词数。`startsWith` 比 `indexOf===0` 更直观；
+      同时把 v.active 兜底（防止 active 被意外清空导致计数为 0）。 */
+  function vCountWrong(v){
+    v = v || ensureVocab();
+    const lib = v.active || 'kaoyan';
+    const pfx = lib + ':';
+    return (v.wrongBook || []).filter(function(k){ return typeof k==='string' && k.indexOf(pfx)===0; }).length;
+  }
   function vSpeak(t){ try{ if(!('speechSynthesis' in window))return; const u=new SpeechSynthesisUtterance(t); u.lang='en-US'; u.rate=0.9; speechSynthesis.cancel(); speechSynthesis.speak(u);}catch(e){} }
   window._vSpeak = vSpeak;
 
@@ -3300,6 +3308,7 @@
     if(!v.active) v.active='kaoyan';
     if(!v.settings) v.settings={dailyNew:20};
     if(typeof v.settings.dailyNew!=='number') v.settings.dailyNew=20;
+    if(v.settings.mode!=='spell' && v.settings.mode!=='mcq') v.settings.mode='mcq'; // mcq=斩词 / spell=拼写
     if(!v.progress) v.progress={};
     if(!Array.isArray(v.wrongBook)) v.wrongBook=[];
     if(!Array.isArray(v.userLibs)) v.userLibs=[];
@@ -3354,6 +3363,11 @@
       html+='<button class="btn-sm learn-back" onclick="showLearnView(\'hub\')" style="margin-bottom:10px;">← 返回学习</button>';
       html+='<div class="row" style="justify-content:space-between;align-items:center;gap:8px;"><h2 style="margin:0;">背单词</h2><button class="btn-sm" onclick="vocabOpenImport()">＋导入词库</button></div>';
       html+='<select class="vocab-libsel" style="margin-top:10px;" onchange="vocabSwitchLib(this.value)">'+opts+'</select>';
+      // 模式切换：斩词（MCQ）/ 拼写（看释义默写）
+      html+='<div class="seg" id="vocabModeSeg" style="margin-top:10px;">'
+          +   '<button data-mode="mcq"'   +(v.settings.mode==='mcq'  ?' class="on"':'')+' onclick="vocabSetMode(\'mcq\')">斩词（看选义）</button>'
+          +   '<button data-mode="spell"' +(v.settings.mode==='spell'?' class="on"':'')+' onclick="vocabSetMode(\'spell\')">拼写（看释义默写）</button>'
+          + '</div>';
       if(!words){
         html+='<div class="learn-soon" style="padding:20px 0;">该词库还没有内容<br><span class="tiny muted">用上方「导入词库」粘贴 JSON，或换一个词库</span></div></div>';
         $('vocabHome').innerHTML=html; return;
@@ -3369,7 +3383,7 @@
       html+='<button class="btn-sm" style="width:100%;margin-top:12px;background:var(--color-text-info);color:#fff;border-color:var(--color-text-info);padding:10px;'+(canStart?'':'opacity:.5;')+'" onclick="'+(canStart?'startVocab(\'today\')':'')+'">'+(canStart?'开始学习（'+(newAvail+due)+'）':'今日已完成 🎉')+'</button>';
       html+='<div class="row" style="gap:8px;margin-top:8px;">';
       html+='<button class="btn-sm" style="flex:1;" onclick="vocabSetDaily()">每日新词：'+v.settings.dailyNew+'</button>';
-      html+='<button class="btn-sm" style="flex:1;" onclick="startVocab(\'wrong\')">错词本（'+v.wrongBook.filter(function(k){return k.indexOf(v.active+':')===0;}).length+'）</button>';
+      html+='<button class="btn-sm" style="flex:1;" onclick="startVocab(\'wrong\')">错词本（'+vCountWrong(v)+'）</button>';
       html+='</div></div>';
       $('vocabHome').innerHTML=html;
     });
@@ -3377,6 +3391,7 @@
 
   window.vocabSwitchLib=function(id){ const v=ensureVocab(); v.active=id; save(); loadVocabLibs().then(renderVocabHome); };
   window.vocabSetDaily=function(){ const v=ensureVocab(); const n=prompt('每日新词数量', v.settings.dailyNew); if(n===null)return; const num=parseInt(n,10); if(num>0&&num<=200){ v.settings.dailyNew=num; save(); openVocab(); } else alert('请输入 1–200 之间的数字'); };
+  window.vocabSetMode=function(m){ const v=ensureVocab(); if(m!=='spell'&&m!=='mcq') return; v.settings.mode=m; save(); openVocab(); };
 
   function buildVocabQueue(words, mode){
     const v=ensureVocab(), lib=v.active, t=todayStr();
@@ -3413,11 +3428,20 @@
   function renderVocabCard(){
     const s=_vsession; if(!s) return;
     if(s.idx>=s.queue.length){ renderVocabDone(); return; }
+    // 按模式分发：斩词(MCQ) / 拼写(spell)
+    const mode=(ensureVocab().settings.mode)||'mcq';
+    if(mode==='spell'){ renderVocabSpellCard(); return; }
     const item=s.queue[s.idx], wd=item.wd;
     const opts=_vshuffle([wd.def].concat(vDistractors(wd, s.words, 3)));
     s._answered=false;
+    const wrongCount=vCountWrong();
     let html='<div class="card">';
-    html+='<div class="row" style="justify-content:space-between;align-items:center;"><button class="btn-sm learn-back" onclick="quitVocab()">← 退出</button><span class="tiny muted">'+(s.idx+1)+' / '+s.total+(item.mode==='new'?' · 新词':' · 复习')+'</span></div>';
+    html+='<div class="row" style="justify-content:space-between;align-items:center;">'
+        + '<button class="btn-sm learn-back" onclick="quitVocab()">← 退出</button>'
+        + '<div class="row" style="gap:8px;">'
+        +   '<span class="tag" id="vWrongCnt" title="本词库错词数" style="background:var(--color-accent-soft);color:var(--color-accent);font-weight:600;">错词 '+wrongCount+'</span>'
+        +   '<span class="tiny muted">'+(s.idx+1)+' / '+s.total+(item.mode==='new'?' · 新词':' · 复习')+'</span>'
+        + '</div></div>';
     html+='<div class="vocab-progbar" style="margin-top:8px;"><i style="width:'+Math.round(s.idx/s.total*100)+'%"></i></div>';
     html+='<div class="vocab-card"><div class="vocab-word">'+escAttr(wd.w)+'</div>';
     if(wd.ph) html+='<div class="vocab-ph">'+escAttr(wd.ph)+'</div>';
@@ -3431,6 +3455,109 @@
     setTimeout(function(){ vSpeak(wd.w); }, 250);
   }
 
+  /* —— 拼写模式（看释义默写全词，键盘输入判分）—— */
+  function renderVocabSpellCard(){
+    const s=_vsession; if(!s) return;
+    const item=s.queue[s.idx], wd=item.wd;
+    s._answered=false; s._hintIdx=0;
+    const wrongCount=vCountWrong();
+    const len=(wd.w||'').length;
+    let html='<div class="card">';
+    html+='<div class="row" style="justify-content:space-between;align-items:center;">'
+        + '<button class="btn-sm learn-back" onclick="quitVocab()">← 退出</button>'
+        + '<div class="row" style="gap:8px;">'
+        +   '<span class="tag" id="vWrongCnt" title="本词库错词数" style="background:var(--color-accent-soft);color:var(--color-accent);font-weight:600;">错词 '+wrongCount+'</span>'
+        +   '<span class="tiny muted">'+(s.idx+1)+' / '+s.total+(item.mode==='new'?' · 新词':' · 复习')+' · 拼写</span>'
+        + '</div></div>';
+    html+='<div class="vocab-progbar" style="margin-top:8px;"><i style="width:'+Math.round(s.idx/s.total*100)+'%"></i></div>';
+    // 拼写卡：中文释义 + 音标 + 发音；不显示英文原词
+    html+='<div class="vocab-card" style="padding:14px 12px 8px;">';
+    html+=  '<div class="muted" style="font-size:12px;letter-spacing:.04em;text-transform:uppercase;margin-bottom:6px;">默写英文</div>';
+    html+=  '<div style="font-size:18px;font-weight:500;line-height:1.5;color:var(--color-text-primary);max-width:30ch;margin:0 auto;">'+escAttr(wd.def||'(无释义)')+'</div>';
+    if(wd.ph) html+='<div class="vocab-ph" style="margin-top:8px;">'+escAttr(wd.ph)+'</div>';
+    html+=  '<div class="vocab-speak" onclick="_vSpeak(\''+escAttr(wd.w).replace(/'/g,"\\'")+'\')" title="再听一遍">🔊</div>';
+    html+='</div>';
+    // 输入区
+    html+='<div style="margin-top:10px;">'
+        +   '<input id="vSpellInp" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" '
+        +     'placeholder="共 '+len+' 个字母" '
+        +     'style="width:100%;height:52px;padding:0 16px;border-radius:var(--radius-sm);border:1px solid var(--color-border-strong);background:var(--color-surface-solid);color:var(--color-text-primary);font:600 19px/1 var(--font-num);letter-spacing:.05em;text-align:center;box-sizing:border-box;">'
+        + '</div>';
+    html+='<div class="row" style="gap:8px;margin-top:10px;">'
+        +   '<button class="btn-sm" style="flex:1;" onclick="vocabSpellHint()">提示 1 字母</button>'
+        +   '<button class="btn-cta" style="flex:2;height:44px;padding:0 14px;font-size:14px;" onclick="vocabSpellCheck()"><span>检查</span></button>'
+        + '</div>';
+    html+='<span class="vocab-known" onclick="vocabKnown()">我已认识这个词，标记掌握 →</span>';
+    html+='<div id="vocabFb"></div></div>';
+    $('vocabSession').innerHTML=html;
+    // 自动聚焦 + 听音 + Enter 提交
+    setTimeout(function(){
+      const inp=$('vSpellInp');
+      if(inp){
+        inp.focus();
+        inp.addEventListener('keydown', function(e){
+          if(e.key==='Enter'){ e.preventDefault(); vocabSpellCheck(); }
+        });
+      }
+      vSpeak(wd.w);
+    }, 200);
+  }
+
+  /** 拼写判分：去首尾空格 + 大小写不敏感；多形式（如 "a/an"）任一匹配即对。 */
+  function _vSpellMatch(input, target){
+    const norm = function(s){ return String(s||'').trim().toLowerCase(); };
+    const ans = norm(input);
+    if(!ans) return false;
+    // 多形式：用 / 切分
+    const variants = String(target||'').split('/').map(function(x){return norm(x);}).filter(Boolean);
+    return variants.indexOf(ans) >= 0;
+  }
+
+  window.vocabSpellCheck = function(){
+    const s=_vsession; if(!s||s._answered) return;
+    const wd=s.queue[s.idx].wd;
+    const inp=$('vSpellInp'); if(!inp) return;
+    const ans=inp.value;
+    if(!ans || !ans.trim()){ inp.focus(); return; }
+    s._answered=true;
+    const correct=_vSpellMatch(ans, wd.w);
+    inp.disabled=true;
+    inp.style.borderColor = correct ? 'var(--color-success)' : 'var(--color-danger)';
+    inp.style.background  = correct ? 'rgba(52,199,89,.08)' : 'rgba(255,69,58,.08)';
+    if(correct){ inp.style.color='var(--color-success)'; } else { inp.style.color='var(--color-danger)'; }
+    gradeVocab(s.queue[s.idx], correct);
+    if(correct) s.correct++;
+    const cntEl=$('vWrongCnt'); if(cntEl) cntEl.textContent='错词 '+vCountWrong();
+    showVocabSpellFeedback(correct, ans, wd);
+  };
+
+  window.vocabSpellHint = function(){
+    const s=_vsession; if(!s||s._answered) return;
+    const inp=$('vSpellInp'); if(!inp) return;
+    s._hintIdx = (s._hintIdx||0) + 1;
+    const wd=s.queue[s.idx].wd;
+    inp.value = String(wd.w||'').slice(0, s._hintIdx);
+    inp.focus();
+    // 提示>=半个词时，本题不算"靠自己拼出"——下次判分仍按真实输入，但内部记一笔，让 gradeVocab 当做答错处理
+    if(s._hintIdx >= Math.ceil((wd.w||'').length/2)) s._hintUsedHeavy = true;
+  };
+
+  function showVocabSpellFeedback(correct, userInput, wd){
+    let fb='<div class="vocab-feedback">';
+    if(correct){
+      fb += '<strong>✅ 正确</strong> &nbsp; '+escAttr(wd.w)+(wd.ph?' '+escAttr(wd.ph):'');
+    } else {
+      fb += '<strong>❌ 拼错了</strong>';
+      fb += '<div style="margin-top:6px;">你写的：<span style="color:var(--color-danger);font-family:var(--font-num);">'+escAttr(userInput)+'</span></div>';
+      fb += '<div>正确：<span style="color:var(--color-success);font-family:var(--font-num);font-weight:600;">'+escAttr(wd.w)+'</span>'+(wd.ph?' <span class="muted">'+escAttr(wd.ph):'')+'</span></div>';
+    }
+    fb += '<div style="margin-top:6px;color:var(--color-text-info);">'+escAttr(wd.def||'')+'</div>';
+    if(wd.ex){ fb+='<div style="margin-top:4px;">'+escAttr(wd.ex)+'</div>'; if(wd.exCn) fb+='<div class="muted">'+escAttr(wd.exCn)+'</div>'; }
+    if(!correct){ fb+='<div class="tiny" style="color:var(--color-accent);margin-top:6px;">📌 已加入错词本，下次复习会再考你</div>'; }
+    fb += '</div><button class="btn-cta" style="margin-top:10px;" onclick="vocabNext()"><span>下一个 →</span></button>';
+    $('vocabFb').innerHTML=fb;
+  }
+
   window.vocabPick=function(btn){
     const s=_vsession; if(!s||s._answered) return;
     s._answered=true;
@@ -3438,6 +3565,8 @@
     document.querySelectorAll('#vocabOpts .vocab-opt').forEach(function(b){ b.disabled=true; if(b.getAttribute('data-def')===s.queue[s.idx].wd.def) b.classList.add('correct'); else if(b===btn) b.classList.add('wrong'); });
     gradeVocab(s.queue[s.idx], correct);
     if(correct) s.correct++;
+    // 实时更新顶部错词计数（让用户当场看到"加进去了"）
+    const cntEl=$('vWrongCnt'); if(cntEl) cntEl.textContent='错词 '+vCountWrong();
     showVocabFeedback(correct);
   };
 
@@ -3464,6 +3593,7 @@
     const wd=_vsession.queue[_vsession.idx].wd;
     let fb='<div class="vocab-feedback"><strong>'+(correct?'✅ 正确':'❌ 再记一次')+'</strong> &nbsp; '+escAttr(wd.w)+(wd.ph?' '+escAttr(wd.ph):'')+'<br><span style="color:var(--color-text-info);">'+escAttr(wd.def)+'</span>';
     if(wd.ex){ fb+='<br>'+escAttr(wd.ex); if(wd.exCn) fb+='<br><span class="muted">'+escAttr(wd.exCn)+'</span>'; }
+    if(!correct){ fb+='<br><span class="tiny" style="color:var(--color-accent);margin-top:4px;display:inline-block;">📌 已加入错词本，下次复习会再考你</span>'; }
     fb+='</div><button class="btn-sm" style="width:100%;margin-top:10px;background:var(--color-text-info);color:#fff;border-color:var(--color-text-info);padding:10px;" onclick="vocabNext()">下一个 →</button>';
     $('vocabFb').innerHTML=fb;
   }
