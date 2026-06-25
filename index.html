@@ -335,6 +335,25 @@
   .hero .h-coach .hc-ico { width:17px; height:17px; flex-shrink:0; opacity:.92; }
   .hero .h-coach .hc-txt { flex:1; min-width:0; }
   .hero .h-coach .hc-arrow { width:15px; height:15px; opacity:.7; flex-shrink:0; }
+  /* 训练舱 hero：三连 quest 环 + XP 条 + 连续 */
+  .hero .h-quests { display:flex; gap:10px; margin-top:15px; }
+  .hero .hq-ring { flex:1; display:flex; flex-direction:column; align-items:center; gap:5px; }
+  .hero .hq-ring .qr-lbl { font-size:11px; opacity:.85; }
+  .hero .hq-ring .qr-val { font-size:10.5px; opacity:.7; font-variant-numeric:tabular-nums; }
+  .hero .ring-wrap.mini .ring-label b { font-size:12.5px; }
+  .hero .ring-wrap.mini .ring-label span { display:none; }
+  .hero .h-xp { margin-top:15px; }
+  .hero .h-foot { display:flex; align-items:center; gap:16px; margin-top:16px; }
+  .hero .h-foot .h-xp { margin-top:0; flex:1; min-width:0; }
+  .hero .h-xp .xp-top { display:flex; align-items:center; justify-content:space-between; font-size:12px; margin-bottom:5px; }
+  .hero .h-xp .xp-lv { font-weight:600; }
+  .hero .h-xp .xp-num { opacity:.78; font-variant-numeric:tabular-nums; }
+  .hero .h-xp .xp-bar { height:6px; border-radius:3px; background:rgba(255,255,255,.2); overflow:hidden; }
+  .hero .h-xp .xp-bar > i { display:block; height:100%; background:#fff; border-radius:3px; transition:width .6s var(--ease); }
+  .hero .h-streak-inline { display:flex; align-items:center; gap:7px; }
+  .hero .h-streak-inline .h-flame { width:26px; height:26px; }
+  .hero .h-streak-inline .hs-n { font-size:20px; font-weight:700; letter-spacing:-0.02em; line-height:1; font-variant-numeric:tabular-nums; }
+  .hero .h-streak-inline .hs-l { font-size:10.5px; opacity:.82; margin-top:2px; }
 
   /* 快捷入口 bento */
   .home-quick { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:.9rem; }
@@ -1976,7 +1995,7 @@
     sTotal.textContent = totalDone;
 
     // Hero 驾驶舱 + 快捷入口（仅首页可见，但渲染开销极小）
-    renderHero({ cnt: cnt, total: tasks.length, streak: streak, weekPct: weekPct });
+    renderHero();
     renderHomeQuick();
 
     // Encouraging message when all stats are zero
@@ -2793,11 +2812,11 @@
     if(h<23) return '晚上好';
     return '夜深了';
   }
-  function ringSVG(pct, size){
-    size = size||64; const sw=6, r=(size/2)-sw/2-1, c=2*Math.PI*r;
+  function ringSVG(pct, size, mini){
+    size = size||64; const sw=mini?5:6, r=(size/2)-sw/2-1, c=2*Math.PI*r;
     pct = Math.max(0, Math.min(100, pct));
     const off = c*(1-pct/100);
-    return '<div class="ring-wrap" style="width:'+size+'px;height:'+size+'px;">'+
+    return '<div class="ring-wrap'+(mini?' mini':'')+'" style="width:'+size+'px;height:'+size+'px;">'+
       '<svg viewBox="0 0 '+size+' '+size+'">'+
         '<circle class="ring-bg" cx="'+(size/2)+'" cy="'+(size/2)+'" r="'+r+'" fill="none" stroke-width="'+sw+'"/>'+
         '<circle class="ring-fg" cx="'+(size/2)+'" cy="'+(size/2)+'" r="'+r+'" fill="none" stroke-width="'+sw+'" stroke-dasharray="'+c.toFixed(1)+'" stroke-dashoffset="'+off.toFixed(1)+'"/>'+
@@ -2805,13 +2824,29 @@
       '<div class="ring-label"><b>'+Math.round(pct)+'%</b><span>今日</span></div>'+
     '</div>';
   }
-  function heroStatus(cnt, total){
-    if(total===0) return '今天没有安排，给自己留点白也好。';
-    if(cnt===0)   return '今天还没开始 —— 先拿下第一项，势头就有了。';
-    if(cnt<total) return '已完成 '+cnt+' 项，还差 '+(total-cnt)+' 项，今天就算赢。';
-    return '今日任务全清，干得漂亮 —— 这就是上岸的样子。';
+  // 训练舱状态文案（基于 getDailyTraining）
+  function trainingStatus(t){
+    const remain = t.items.reduce(function(s,it){ return s + Math.max(0, it.goal - it.cur); }, 0);
+    const totalGoal = t.items.reduce(function(s,it){ return s + it.goal; }, 0);
+    const totalCur = t.items.reduce(function(s,it){ return s + Math.min(it.cur, it.goal); }, 0);
+    if (totalCur === 0) return '今天还没开始训练 —— 任意一项达标就算续上 streak。';
+    if (t.allDone)      return '今日训练全部达标，状态在线 —— 这就是上岸的样子。';
+    // 找差距最小的那项给出"再做 N 个就到"提示
+    const closest = t.items.slice().filter(function(x){return x.cur < x.goal;}).sort(function(a,b){return (a.goal-a.cur)-(b.goal-b.cur);})[0];
+    if (closest) return '已完成 '+totalCur+' / '+totalGoal+' —— 再做 '+(closest.goal-closest.cur)+' '+(closest.mod==='vocab'?'个词':closest.mod==='reading'?'篇精读':'道题')+' 就达标。';
+    return '已完成 '+totalCur+' / '+totalGoal+'，继续保持。';
   }
+  // Hero 教练条：优先显示薄弱点，其次错题数，最后回退打卡偏科
   function heroCoachTip(){
+    try {
+      const wk = (window.topWeakness && window.topWeakness('byCat',1,1)) || [];
+      if (wk.length && wk[0].rate >= 0.5) {
+        return wk[0].key + ' 错率 ' + Math.round(wk[0].rate*100) + '% — 让 AI 给你出针对性练习';
+      }
+      const ms = (window.listMistakes && window.listMistakes({})) || [];
+      if (ms.length >= 3) return '错题本累计 ' + ms.length + ' 条 — 让 AI 帮你重点突破';
+    } catch(e){}
+    // 回退：打卡偏科
     try {
       const s = getTagStats(7); let worst=null, wp=1;
       Object.keys(s).forEach(function(tag){ const st=s[tag]; if(st && st.total>=2){ const r=st.done/st.total; if(r<wp){ wp=r; worst=tag; } } });
@@ -2820,19 +2855,46 @@
     } catch(e){}
     return state.p===0 ? '在职期只抓英语+数学，让 AI 帮你排今天' : '全职冲刺：数学＞434＞英语，让 AI 帮你排今天';
   }
-  function renderHero(o){
+  function renderHero(){
     const host = $('heroCard'); if(!host) return;
     const h = new Date().getHours();
-    const pct = o.total ? Math.round(o.cnt/o.total*100) : 0;
-    const flameColor = o.streak>0 ? 'var(--ember)' : 'rgba(255,255,255,.35)';
+    let t;
+    try { t = (typeof window.getDailyTraining==='function') ? window.getDailyTraining() : null; } catch(e){ t=null; }
+    // 兜底：脊柱不可用时退回到打卡数据
+    if (!t) {
+      const tasks = effectiveTasks(state.p, state.wk, state.day);
+      const done = getDone(state.p, state.wk, state.day);
+      const cnt = done.filter(Boolean).length;
+      const pct = tasks.length ? Math.round(cnt/tasks.length*100) : 0;
+      const streak = computeStreak();
+      let html='';
+      html+='<div class="h-greet">'+greetingByHour(h)+' · '+(state.p===0?'在职打基础':'全职冲刺')+'</div>';
+      html+='<div class="h-status">今日打卡 '+cnt+' / '+tasks.length+'</div>';
+      html+='<div class="h-row"><div class="h-streak"><span class="h-flame" style="color:'+(streak>0?'var(--ember)':'rgba(255,255,255,.35)')+'">'+I.flame+'</span><span><div class="hs-n">'+streak+'</div><div class="hs-l">连续打卡</div></span></div><div class="h-spacer"></div>'+ringSVG(pct,64)+'</div>';
+      host.innerHTML = html;
+      return;
+    }
+    // 训练舱模式
+    const flameColor = t.streak>0 ? 'var(--ember)' : 'rgba(255,255,255,.35)';
+    const xpInLevel = t.totalXp % 200;
+    const xpPct = Math.round(xpInLevel/200*100);
+    const labels = { vocab:'背单词', reading:'精读', math:'数学' };
     let html='';
-    html+='<div class="h-greet">'+greetingByHour(h)+' · '+(state.p===0?'在职打基础':'全职冲刺')+'</div>';
-    html+='<div class="h-status">'+heroStatus(o.cnt,o.total)+'</div>';
-    html+='<div class="h-row">';
-    html+=  '<div class="h-streak"><span class="h-flame" style="color:'+flameColor+'">'+I.flame+'</span><span><div class="hs-n">'+o.streak+'</div><div class="hs-l">连续打卡</div></span></div>';
-    html+=  '<div class="h-spacer"></div>';
-    html+=  ringSVG(pct, 64);
+    html+='<div class="h-greet">'+greetingByHour(h)+' · '+(state.p===0?'在职打基础':'全职冲刺')+(t.allDone?' · ✓ 今日已达标':'')+'</div>';
+    html+='<div class="h-status">'+trainingStatus(t)+'</div>';
+    // 三连 quest 进度环
+    html+='<div class="h-quests">';
+    t.items.forEach(function(q){
+      const pct = q.goal ? Math.min(100, Math.round(q.cur/q.goal*100)) : 0;
+      html+='<div class="hq-ring">'+ringSVG(pct, 54, true)+'<div class="qr-lbl">'+(labels[q.mod]||q.mod)+'</div><div class="qr-val">'+q.cur+' / '+q.goal+'</div></div>';
+    });
     html+='</div>';
+    // 一行：streak（左）+ XP 进度条（右，含 Lv 标）
+    html+='<div class="h-foot">';
+    html+=  '<div class="h-streak-inline"><span class="h-flame" style="color:'+flameColor+'">'+I.flame+'</span><span><div class="hs-n">'+t.streak+'</div><div class="hs-l">连续训练</div></span></div>';
+    html+=  '<div class="h-xp"><div class="xp-top"><span class="xp-lv">Lv '+t.level+'</span><span class="xp-num">+'+t.xp+' XP · '+xpInLevel+'/200</span></div><div class="xp-bar"><i style="width:'+xpPct+'%"></i></div></div>';
+    html+='</div>';
+    // 教练建议条（点击进 AI 训练舱）
     html+='<div class="h-coach" onclick="showPage(2)"><span class="hc-ico">'+I.coach+'</span><span class="hc-txt">'+heroCoachTip()+'</span><span class="hc-arrow">'+I.arrowRight+'</span></div>';
     host.innerHTML = html;
   }
