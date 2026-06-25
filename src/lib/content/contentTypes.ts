@@ -42,6 +42,8 @@ export interface ReadingPassageFile {
   level?: string;
   intro?: string;
   paragraphs: string[];
+  /** 生词表（部分文章带）。 */
+  glossary?: WordEntry[];
 }
 
 // ---- 数学 data/math ----

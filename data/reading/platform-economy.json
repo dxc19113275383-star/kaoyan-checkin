@@ -1,0 +1,25 @@
+{
+  "id": "platform-economy",
+  "title": "Who Really Owns the Platform Economy?",
+  "source": "原创 · 平台经济",
+  "level": "考研英语二",
+  "intro": "外卖、网约车、电商平台把买卖双方连在一起，但真正的价值和风险落在谁身上？",
+  "paragraphs": [
+    "Digital platforms have become the invisible marketplaces of modern life. A single app can match a passenger with a driver, a shopper with a seller, or a freelancer with a client in seconds. Because the platform owns the connection rather than the goods, it can grow with remarkably little capital of its own.",
+    "This model creates enormous value, yet it also raises a difficult question of ownership. The workers who deliver the meals and the merchants who stock the shelves generate most of the activity, but the platform sets the rules, collects the data, and captures a large share of the profit.",
+    "Supporters insist that platforms simply lower the cost of doing business, opening opportunities to anyone with a phone and some spare time. Critics reply that flexible work often means unstable income and few protections, and that the convenience consumers enjoy is partly subsidized by those at the bottom.",
+    "As governments begin to regulate this sector, the central issue is balance: how to preserve the efficiency that platforms provide while ensuring that the people who make them work are treated fairly. The answer will shape the next decade of the economy."
+  ],
+  "glossary": [
+    { "w": "platform", "ph": "/ˈplætfɔːm/", "def": "n. 平台", "ex": "a digital platform", "exCn": "数字平台" },
+    { "w": "marketplace", "ph": "/ˈmɑːkɪtpleɪs/", "def": "n. 市场，交易场所", "ex": "an online marketplace", "exCn": "线上市场" },
+    { "w": "capital", "ph": "/ˈkæpɪtl/", "def": "n. 资本，资金", "ex": "with little capital", "exCn": "用很少的资本" },
+    { "w": "merchant", "ph": "/ˈmɜːtʃənt/", "def": "n. 商人，商家", "ex": "small merchants", "exCn": "小商家" },
+    { "w": "capture", "ph": "/ˈkæptʃə/", "def": "vt. 获取，占有", "ex": "to capture a share of the profit", "exCn": "占有一部分利润" },
+    { "w": "freelancer", "ph": "/ˈfriːlɑːnsə/", "def": "n. 自由职业者", "ex": "a freelancer and a client", "exCn": "自由职业者与客户" },
+    { "w": "subsidize", "ph": "/ˈsʌbsɪdaɪz/", "def": "vt. 补贴，资助", "ex": "is subsidized by workers", "exCn": "由劳动者补贴" },
+    { "w": "flexible", "ph": "/ˈfleksəbl/", "def": "adj. 灵活的，弹性的", "ex": "flexible work", "exCn": "弹性工作" },
+    { "w": "unstable", "ph": "/ʌnˈsteɪbl/", "def": "adj. 不稳定的", "ex": "unstable income", "exCn": "不稳定的收入" },
+    { "w": "preserve", "ph": "/prɪˈzɜːv/", "def": "vt. 保持，维护", "ex": "to preserve efficiency", "exCn": "保持效率" }
+  ]
+}

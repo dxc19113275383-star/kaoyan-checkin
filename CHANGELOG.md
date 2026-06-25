@@ -5,6 +5,12 @@
 ## [Unreleased]
 
 ### Added
+- **内容库扩充（data/，纯静态原创/应试风格）**：
+  - 词汇 `words/kaoyan.json` 50 → 80 词（高频考研/商务词，含音标·释义·例句）。
+  - 阅读新增原创文章《Who Really Owns the Platform Economy?》（平台经济，含 10 词生词表）→ 共 3 篇。
+  - 数学 `calc`/`prob` 各 +2 题（导数·重要极限·古典概型）→ 各 10 题，更新 index 计数。
+  - 长难句 `kaoyan-eng2-core` +2 句（否定前置倒装、定语从句+比较）→ 共 8 句。
+  - 阅读页 React 端新增「生词表」折叠展示（读 data 的 glossary）。
 - **仪表盘做成真数据看板**（`DashboardPage`，全部派生自 `kaoyan_v2`，无需后端）：
   - `Overview`：累计打卡 / 已认识词 / 已作答题 / 掌握难句 / 已读文章 / 待解错题 六项跨模块统计。
   - `Heatmap`：当前阶段最近 8 周 × 7 天真实打卡格子。

@@ -2,7 +2,7 @@
   "id": "kaoyan-eng2-core",
   "name": "考研英语二·核心难句",
   "cat": "真题难句",
-  "desc": "高频考点 6 句，覆盖同位语从句、定语从句嵌套、状语从句、分词短语、it 形式主语、并列结构。",
+  "desc": "高频考点 8 句，覆盖同位语从句、定语从句嵌套、状语从句、分词短语、it 形式主语、并列结构、否定前置倒装、比较结构。",
   "sentences": [
     {
       "id": "s1",
@@ -154,6 +154,46 @@
       ],
       "tip": "It is...that... 强调结构，被强调的是『不是技术本身而是整合方式』(not A but B 结构)。去掉 It is 和 that，剩下的句子完整：『not the technology itself but the way (in which) it is integrated into daily workflows determines whether...』。",
       "trap": "It is...that... 既可能是强调句，也可能是 it 形式主语 + that 主语从句。区分：去掉 It is 和 that 后能不能拼回完整句——能=强调句；不能=形式主语。"
+    },
+    {
+      "id": "s7",
+      "cat": "否定前置倒装",
+      "level": "较难",
+      "en": "Not until governments recognized the full scale of the problem did they begin to invest seriously in renewable energy.",
+      "cn": "直到政府认识到问题的全部严重性，他们才开始认真投资可再生能源。",
+      "parts": [
+        {"text":"Not until governments recognized the full scale of the problem","role":"adv","note":"否定时间状语前置（含 until 引导的时间状语从句）"},
+        {"text":" ","role":"plain"},
+        {"text":"did","role":"mark","note":"助动词提到主语前——部分倒装的标志"},
+        {"text":" ","role":"plain"},
+        {"text":"they","role":"subj","note":"主句主语"},
+        {"text":" ","role":"plain"},
+        {"text":"begin to invest seriously in renewable energy","role":"verb","note":"主句谓语（倒装后动词原形回到主语后）"},
+        {"text":".","role":"plain"}
+      ],
+      "tip": "否定词/否定短语（Not until, Never, Hardly, Only then…）置于句首时，主句要用『部分倒装』：把助动词/be 提到主语前。还原正常语序：They did not begin to invest seriously… until governments recognized…",
+      "trap": "倒装的是**主句**，不是 until 引导的从句。从句 governments recognized… 语序不变；只有主句 they begin → did they begin 发生倒装。"
+    },
+    {
+      "id": "s8",
+      "cat": "定语从句+比较",
+      "level": "中等",
+      "en": "The students who spend their time actively solving problems tend to retain knowledge far longer than those who merely reread their notes.",
+      "cn": "那些把时间花在主动解题上的学生，往往比仅仅重读笔记的学生记得更久。",
+      "parts": [
+        {"text":"The students","role":"subj","note":"主语"},
+        {"text":" ","role":"plain"},
+        {"text":"who spend their time actively solving problems","role":"attr","note":"定语从句，修饰 students"},
+        {"text":" ","role":"plain"},
+        {"text":"tend to retain","role":"verb","note":"主句谓语"},
+        {"text":" ","role":"plain"},
+        {"text":"knowledge","role":"obj","note":"宾语"},
+        {"text":" ","role":"plain"},
+        {"text":"far longer than those who merely reread their notes","role":"adv","note":"比较状语（than + those + 定语从句 who…）"},
+        {"text":".","role":"plain"}
+      ],
+      "tip": "主干其实很短：The students tend to retain knowledge longer。两个 who 从句分别修饰 students 和 those；far 修饰比较级 longer，表示『久得多』。",
+      "trap": "别把定语从句的谓语 spend 当成主句谓语——主句真正的谓语是 tend to retain。找到主语后第一个『不在从句里』的动词才是主句谓语。"
     }
   ]
 }

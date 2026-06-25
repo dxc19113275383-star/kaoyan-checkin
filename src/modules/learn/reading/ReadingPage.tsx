@@ -50,6 +50,18 @@ export function ReadingPage() {
             {article.paragraphs.map((p, i) => (
               <p key={i} className="ky-read__p">{p}</p>
             ))}
+            {article.glossary && article.glossary.length > 0 && (
+              <details className="ky-read__gloss">
+                <summary>生词表（{article.glossary.length}）</summary>
+                <ul className="ky-list">
+                  {article.glossary.map((g) => (
+                    <li key={g.w}>
+                      <strong>{g.w}</strong> {g.ph} {g.def}
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            )}
             <Button variant={isRead(meta.id) ? 'ghost' : 'primary'} onClick={() => toggleRead(meta.id)}>
               {isRead(meta.id) ? '已读 ✓（点击取消）' : '标记已读'}
             </Button>

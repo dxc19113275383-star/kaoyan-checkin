@@ -102,6 +102,9 @@ a { color: var(--ky-accent); }
 .ky-read__sub { color: var(--ky-text-dim); font-size: 13px; }
 .ky-read__intro { color: var(--ky-text-dim); font-style: italic; margin: 0 0 10px; }
 .ky-read__p { line-height: 1.8; margin: 0 0 10px; }
+.ky-read__gloss { margin: 0 0 12px; background: var(--ky-surface-2); border-radius: var(--ky-radius-sm); padding: 8px 12px; }
+.ky-read__gloss summary { cursor: pointer; color: var(--ky-accent); font-size: 13px; }
+.ky-read__gloss .ky-list { margin-top: 8px; font-size: 13px; }
 
 /* AI 对话 */
 .ky-chat { display: grid; gap: 10px; margin-bottom: 12px; max-height: 46vh; overflow-y: auto; }
