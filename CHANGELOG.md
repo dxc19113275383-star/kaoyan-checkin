@@ -2,6 +2,15 @@
 
 本项目遵循语义化版本。日期格式 YYYY-MM-DD。
 
+## [Unreleased]
+
+### Added
+- 错题中心 React 试点（V7.1 第一块）：`MistakesPage` 升级为可运行页面——模块筛选、显示/隐藏已解决、标记已解决、再练入口，数据来自迁移后的 `AppState` 信封。
+- `mistakesStore` 单元测试 4 例（record/resolve/list 逻辑）。
+
+### Note
+- 试点页写入新信封 `ky_app_state_v7`，现役 `index.html` 仍读旧键 `kaoyan_v2`；双向同步/统一数据源留待 V7.1。
+
 ## [7.0.0] - 2026-06-25
 
 ### Added
