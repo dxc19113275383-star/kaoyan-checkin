@@ -1,0 +1,54 @@
+{
+  "id": "kaoyan-eng2-prompts",
+  "name": "考研英语二·真题风作文",
+  "prompts": [
+    {
+      "id": "w1",
+      "type": "small",
+      "cat": "小作文·道歉信",
+      "score": 10,
+      "words": "约 100 词",
+      "title": "道歉信：临时取消约定",
+      "prompt": "Suppose you had promised to help your friend Mike move into his new apartment this weekend, but now you cannot make it due to an urgent matter. Write him an email to:\n1) apologize and explain the reason, and\n2) suggest a solution.\nYou should write about 100 words. Do not use your own name; sign as \"Li Ming\".",
+      "requirements": ["格式：称呼 + 正文 + 落款", "先道歉说明原因，再给替代方案", "语气真诚、得体"],
+      "sample": "Dear Mike,\n\nI am writing to apologize sincerely for being unable to help you move this weekend as I had promised. An urgent business trip has come up, and my manager requires me to leave on Saturday morning, which makes it impossible for me to be there.\n\nTo make up for this, I have asked my roommate, who is free and strong, to give you a hand instead. Alternatively, if you could postpone the move to next weekend, I would be more than glad to help you in person.\n\nOnce again, please accept my apologies. I hope everything goes smoothly.\n\nYours sincerely,\nLi Ming",
+      "sampleNotes": "开门见山道歉(apologize sincerely for) + 给出具体原因(urgent business trip) + 两个替代方案(asked my roommate / postpone) + 再次致歉收尾。这是道歉信的标准骨架。"
+    },
+    {
+      "id": "w2",
+      "type": "small",
+      "cat": "小作文·推荐信",
+      "score": 10,
+      "words": "约 100 词",
+      "title": "推荐信：向同学推荐一本书",
+      "prompt": "A student association is collecting book recommendations. Write an email to recommend a book you like to your fellow students. Your email should:\n1) introduce the book briefly, and\n2) explain why you recommend it.\nYou should write about 100 words. Sign as \"Li Ming\".",
+      "requirements": ["格式完整", "简介书 + 推荐理由（至少两点）", "用具体细节而非空话"],
+      "sample": "Dear fellow students,\n\nI am delighted to recommend a book that has greatly influenced me: \"Sapiens\" by Yuval Noah Harari. It traces how our species rose from an ordinary animal to the ruler of the planet, weaving together history, biology and economics in a remarkably readable way.\n\nI recommend it for two reasons. First, it reshapes the way you see money, religion and even nations as shared stories. Second, its clear language makes complex ideas accessible to everyone, regardless of background.\n\nI am confident you will find it both eye-opening and enjoyable.\n\nYours sincerely,\nLi Ming",
+      "sampleNotes": "推荐信骨架：表达推荐意愿(delighted to recommend) + 一句话介绍(traces how...) + 编号理由(First...Second...) + 信心收尾(confident you will find)。理由要具体。"
+    },
+    {
+      "id": "w3",
+      "type": "big",
+      "cat": "大作文·图表",
+      "score": 15,
+      "words": "约 150 词",
+      "title": "图表作文：在线购物增长趋势",
+      "prompt": "Write an essay based on the chart below. In your essay, you should:\n1) interpret the chart, and\n2) give your comments.\n[图表描述：某高校学生 2018–2023 年网购月均消费金额：2018 年约 300 元，2020 年约 600 元，2023 年约 1200 元，呈持续上升趋势。]\nYou should write about 150 words.",
+      "requirements": ["第一段描述图表数据与趋势", "第二段分析原因/影响", "第三段总结或预测", "用 trend 词汇：rise/grow/double/dramatically"],
+      "sample": "As is clearly illustrated in the chart, the average monthly online spending of college students climbed steadily from around 300 yuan in 2018 to approximately 1,200 yuan in 2023, quadrupling within just five years.\n\nSeveral factors account for this striking trend. To begin with, the rapid development of mobile payment and logistics has made online shopping remarkably convenient. In addition, an increasing variety of products and frequent promotions constantly stimulate students' desire to consume.\n\nIn my view, while online shopping brings undeniable convenience, students should spend rationally and avoid being trapped by impulsive purchases. Only by managing money wisely can they truly benefit from this digital era.",
+      "sampleNotes": "三段式：① 描述数据(climbed from...to..., quadrupling) ② 分析原因(To begin with...In addition...) ③ 表态建议(In my view...should...)。图表作文一定要写出具体数字和趋势词。"
+    },
+    {
+      "id": "w4",
+      "type": "big",
+      "cat": "大作文·观点论述",
+      "score": 15,
+      "words": "约 150 词",
+      "title": "观点作文：终身学习的重要性",
+      "prompt": "Write an essay on the importance of lifelong learning in modern society. In your essay, you should:\n1) state your view, and\n2) support it with reasons or examples.\nYou should write about 150 words.",
+      "requirements": ["亮明观点", "至少两个理由/例子支撑", "结尾升华", "用论述连接词：moreover/therefore/in conclusion"],
+      "sample": "In an era of rapid technological change, lifelong learning has become not merely an option but a necessity. I firmly believe that the willingness to keep learning is the key to staying competitive and fulfilled.\n\nThere are two compelling reasons. Firstly, knowledge and skills become outdated faster than ever; only those who continuously update themselves can adapt to new demands in the workplace. Secondly, learning enriches our inner world, bringing a lasting sense of purpose that material success alone cannot provide.\n\nTherefore, we should embrace learning as a lifelong journey rather than a task that ends with graduation. As the saying goes, \"Live as if you were to live forever; learn as if you were to live forever.\"",
+      "sampleNotes": "观点作文骨架：① 背景+亮明观点(I firmly believe) ② 编号理由(Firstly...Secondly...) ③ 总结+名言升华(Therefore...As the saying goes)。引用名言能加分但要贴切。"
+    }
+  ]
+}

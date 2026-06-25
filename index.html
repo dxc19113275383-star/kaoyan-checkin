@@ -507,6 +507,45 @@
   .syn-toggle-row { display:flex; gap:8px; margin-bottom:12px; }
   .syn-toggle-row .btn-sm { flex:1; }
 
+  /* ============================================================
+     P5 — 作文（AI 批改 + 范文 + 模板）
+     ============================================================ */
+  .wr-row { background:var(--color-background-primary); border:1px solid var(--hair); border-radius:var(--border-radius-lg); padding:14px; box-shadow:var(--shadow-ambient); cursor:pointer; margin-bottom:8px; transition:transform .15s var(--ease), box-shadow .25s var(--ease); -webkit-tap-highlight-color:transparent; }
+  .wr-row:active { transform:scale(.985); }
+  @media (hover:hover){ .wr-row:hover { box-shadow:var(--shadow-key); } }
+  .wr-row .wr-meta { display:flex; align-items:center; gap:6px; font-size:11px; color:var(--color-text-tertiary); margin-bottom:5px; }
+  .wr-row .wr-cat { padding:1.5px 8px; border-radius:var(--radius-pill); font-weight:600; letter-spacing:.02em; }
+  .wr-row .wr-cat.t-small { background:var(--color-background-info); color:var(--color-text-info); }
+  .wr-row .wr-cat.t-big { background:var(--brand-soft); color:var(--brand); }
+  .wr-row .wr-tt { font-size:15px; font-weight:600; letter-spacing:-0.01em; color:var(--color-text-primary); }
+  .wr-row .wr-done { float:right; font-size:11px; padding:1.5px 8px; border-radius:var(--radius-pill); background:var(--color-background-success); color:var(--color-text-success); font-weight:600; }
+  .wr-prompt { font-size:14px; line-height:1.7; color:var(--color-text-primary); white-space:pre-wrap; padding:12px 14px; background:var(--color-background-secondary); border-radius:var(--border-radius-md); margin:10px 0; }
+  .wr-req { font-size:12.5px; line-height:1.7; color:var(--color-text-secondary); margin-bottom:10px; }
+  .wr-req li { margin:2px 0; }
+  .wr-textarea { width:100%; min-height:200px; padding:12px 14px; border-radius:var(--border-radius-md); border:1px solid var(--hair-strong); background:var(--color-background-primary); color:var(--color-text-primary); font-size:15px; line-height:1.7; font-family:var(--font-sans); resize:vertical; box-sizing:border-box; transition:border-color .2s var(--ease); }
+  .wr-textarea:focus { outline:none; border-color:var(--brand); }
+  .wr-wc { font-size:12px; color:var(--color-text-tertiary); margin:6px 2px 12px; display:flex; justify-content:space-between; }
+  .wr-wc .wc-ok { color:var(--color-text-success); }
+  /* 批改结果 */
+  .wr-grade { background:var(--color-background-primary); border:1px solid var(--hair); border-radius:var(--border-radius-lg); padding:16px; box-shadow:var(--shadow-ambient); margin-top:12px; }
+  .wr-score-row { display:flex; align-items:center; gap:14px; margin-bottom:12px; }
+  .wr-score-badge { width:60px; height:60px; flex-shrink:0; border-radius:16px; background:var(--brand); color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; box-shadow:var(--shadow-ambient); }
+  .wr-score-badge .ws-grade { font-size:24px; font-weight:700; line-height:1; letter-spacing:-0.02em; }
+  .wr-score-badge .ws-num { font-size:10px; opacity:.85; margin-top:2px; }
+  .wr-score-badge.g-low { background:var(--ember); }
+  .wr-score-row .ws-overall { font-size:13.5px; line-height:1.6; color:var(--color-text-secondary); }
+  .wr-fb-block { margin-bottom:12px; }
+  .wr-fb-block .fb-label { display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; margin-bottom:6px; }
+  .wr-fb-block.fb-good .fb-label { color:var(--color-text-success); }
+  .wr-fb-block.fb-issue .fb-label { color:var(--ember); }
+  .wr-fb-block.fb-sug .fb-label { color:var(--brand); }
+  .wr-fb-block ul { margin:0; padding-left:18px; }
+  .wr-fb-block li { font-size:13.5px; line-height:1.65; margin:4px 0; color:var(--color-text-primary); }
+  .wr-sample-box { padding:12px 14px; background:var(--brand-soft); border-radius:var(--border-radius-md); font-size:14px; line-height:1.8; white-space:pre-wrap; color:var(--color-text-primary); margin-bottom:8px; }
+  .wr-tpl-group { margin-bottom:14px; }
+  .wr-tpl-group .tg-name { font-size:13px; font-weight:600; color:var(--brand); margin-bottom:6px; }
+  .wr-tpl-item { font-size:13px; line-height:1.6; padding:8px 11px; background:var(--color-background-secondary); border-radius:var(--border-radius-sm); margin-bottom:5px; color:var(--color-text-primary); }
+
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
     .reveal { opacity: 1; transform: none; }
@@ -793,6 +832,12 @@
     <div id="syntaxView" style="display:none;"></div>
   </div>
 
+  <!-- ====== 作文（AI 批改 + 范文 + 模板） ====== -->
+  <div id="pageLearnWriting" style="display:none;">
+    <div id="writingHome"></div>
+    <div id="writingView" style="display:none;"></div>
+  </div>
+
   <!-- ====== 资料/网课页面 ====== -->
   <div id="pageResources" style="display:none;">
     <div class="card">
@@ -1036,6 +1081,7 @@
       reading: { progress: {} },
       math:    { wrongBook: [], progress: {} },
       syntax:  { active: 'kaoyan-eng2-core', progress: {} },  // v8.1: 长难句进度（键=`${setId}:${sid}` → {known, lastAt}）
+      writing: { active: 'kaoyan-eng2-prompts', drafts: {}, history: [] },  // v8.2: 作文(草稿+批改历史)
       exams:   { progress: {} },
       mock:    { history: [] },
       // ===== v8 训练舱脊柱（统一学习事件 / 错题错词索引 / 薄弱点画像 / 每日目标 / XP&关卡） =====
@@ -1778,6 +1824,192 @@
   };
 
   window.quitSyntax = function(){ _synCur=null; _synExpanded=false; $('syntaxView').style.display='none'; $('syntaxHome').style.display=''; openSyntax(); };
+
+  // ============================================================
+  // P5 —— 作文模块（写作 + AI 批改 + 范文 + 模板）
+  // 数据 data/writing/*.json；草稿+批改历史走 state.learn.writing（接脊柱）。
+  // ============================================================
+  let _wrSets = null;
+  const _wrCache = {};
+  let _wrCur = null;       // 当前题目
+  let _wrTemplates = null; // 模板缓存
+
+  function ensureWriting(){
+    const w = state.learn.writing = state.learn.writing || {};
+    if(!w.active) w.active='kaoyan-eng2-prompts';
+    if(!w.drafts || typeof w.drafts!=='object') w.drafts={};
+    if(!Array.isArray(w.history)) w.history=[];
+    return w;
+  }
+  function loadWritingPrompts(){
+    return new Promise(function(res){
+      if(_wrCache['prompts']){ res(_wrCache['prompts']); return; }
+      fetch('data/writing/kaoyan-eng2-prompts.json').then(function(r){return r.json();}).then(function(j){ _wrCache['prompts']=(j.prompts||[]); res(_wrCache['prompts']); }).catch(function(){ res(null); });
+    });
+  }
+  function loadWritingTemplates(){
+    return new Promise(function(res){
+      if(_wrTemplates){ res(_wrTemplates); return; }
+      fetch('data/writing/kaoyan-eng2-templates.json').then(function(r){return r.json();}).then(function(j){ _wrTemplates=(j.groups||[]); res(_wrTemplates); }).catch(function(){ res([]); });
+    });
+  }
+
+  window.openWriting = function(){
+    ensureWriting();
+    $('writingView').style.display='none';
+    $('writingHome').style.display='';
+    loadWritingPrompts().then(renderWritingHome);
+  };
+
+  function renderWritingHome(prompts){
+    const w=ensureWriting();
+    let html='<div class="card">';
+    html+='<button class="btn-sm learn-back" onclick="showLearnView(\'hub\')" style="margin-bottom:10px;">← 返回学习</button>';
+    html+='<div class="row" style="justify-content:space-between;align-items:center;gap:8px;"><h2 style="margin:0;">作文</h2><button class="btn-sm" onclick="openWritingTemplates()">📋 模板库</button></div>';
+    html+='<div class="tiny muted" style="margin-top:4px;">考研英语二真题风作文 · 写完一键 AI 批改 · 对照范文</div></div>';
+    if(!prompts){ $('writingHome').innerHTML=html+'<div class="card learn-soon">题目加载失败，请检查网络后重试</div>'; return; }
+    prompts.forEach(function(p){
+      const graded = (w.history||[]).some(function(h){return h.promptId===p.id;});
+      const hasDraft = w.drafts[p.id] && w.drafts[p.id].length>0;
+      html+='<div class="wr-row" onclick="openWritingPrompt(\''+p.id+'\')">';
+      html+='<div class="wr-meta"><span class="wr-cat '+(p.type==='small'?'t-small':'t-big')+'">'+escAttr(p.cat)+'</span><span>'+escAttr(p.words)+' · '+p.score+'分</span></div>';
+      html+='<div class="wr-tt">'+(graded?'<span class="wr-done">已批改 ✓</span>':(hasDraft?'<span class="wr-done" style="background:var(--ember-soft);color:var(--ember);">草稿</span>':''))+escAttr(p.title)+'</div>';
+      html+='</div>';
+    });
+    $('writingHome').innerHTML=html;
+  }
+
+  window.openWritingPrompt = function(pid){
+    loadWritingPrompts().then(function(prompts){
+      const p=(prompts||[]).find(function(x){return x.id===pid;});
+      if(!p) return;
+      _wrCur=p;
+      renderWritingView();
+    });
+  };
+
+  function renderWritingView(){
+    const p=_wrCur; if(!p) return;
+    const w=ensureWriting();
+    const draft = w.drafts[p.id] || '';
+    let html='<div class="card">';
+    html+='<div class="train-meta-bar"><button class="btn-sm learn-back" onclick="quitWriting()">← 列表</button><span class="tiny muted">'+escAttr(p.cat)+' · '+p.score+'分</span></div>';
+    html+='<h2 style="margin:12px 0 8px;font-size:17px;">'+escAttr(p.title)+'</h2>';
+    html+='<div class="wr-prompt">'+escAttr(p.prompt)+'</div>';
+    if(p.requirements && p.requirements.length){ html+='<ul class="wr-req">'; p.requirements.forEach(function(r){ html+='<li>'+escAttr(r)+'</li>'; }); html+='</ul>'; }
+    html+='<textarea class="wr-textarea" id="wrText" placeholder="在这里写你的作文…（写完点下方 AI 批改）" oninput="writingCount()">'+escAttr(draft)+'</textarea>';
+    html+='<div class="wr-wc"><span id="wrWordCount">0 词</span><span class="muted">建议 '+escAttr(p.words)+'</span></div>';
+    html+='<button class="btn-cta" id="wrGradeBtn" onclick="writingGrade()"><span>🤖 AI 批改</span><span class="cta-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span></button>';
+    html+='<div class="syn-toggle-row" style="margin-top:8px;"><button class="btn-sm" onclick="writingShowSample()">📄 看范文</button><button class="btn-sm" onclick="openWritingTemplates()">📋 模板库</button></div>';
+    html+='<div id="wrGradeResult"></div>';
+    html+='</div>';
+    $('writingHome').style.display='none';
+    $('writingView').style.display='';
+    $('writingView').innerHTML=html;
+    writingCount();
+  }
+
+  window.writingCount = function(){
+    const ta=$('wrText'); if(!ta) return;
+    const txt=ta.value.trim();
+    const words = txt ? (txt.match(/[A-Za-z]+(?:'[A-Za-z]+)?/g)||[]).length : 0;
+    const el=$('wrWordCount'); if(el){ el.textContent = words+' 词'; }
+    // 实时存草稿
+    const w=ensureWriting(); w.drafts[_wrCur.id]=ta.value; // 不每键 save，离开时 save
+  };
+
+  window.writingGrade = async function(){
+    const p=_wrCur; if(!p) return;
+    const ta=$('wrText'); const essay=ta.value.trim();
+    const words=(essay.match(/[A-Za-z]+(?:'[A-Za-z]+)?/g)||[]).length;
+    if(words<20){ alert('先写够内容再批改吧（至少 20 词）'); return; }
+    const w=ensureWriting(); w.drafts[p.id]=essay; save();
+    const btn=$('wrGradeBtn'); btn.disabled=true;
+    $('wrGradeResult').innerHTML='<div class="wr-grade"><div class="skeleton" style="height:60px;"></div><div class="skeleton" style="height:14px;margin-top:12px;"></div><div class="skeleton" style="height:14px;width:75%;margin-top:8px;"></div></div>';
+    const prompt = '你是考研英语二作文阅卷老师。请批改下面这篇作文（满分'+p.score+'分）。\n题目：'+p.title+'\n要求：'+p.prompt+'\n\n学生作文：\n'+essay+'\n\n只返回 JSON，不要 markdown 围栏，格式严格如下：\n{"grade":"评级(S/A+/A/B+/B/C+/C/D 之一)","scoreNum":得分整数,"overall":"一句话总评","strengths":["优点1","优点2"],"issues":["问题1","问题2"],"suggestions":["改进建议1","改进建议2"]}';
+    let result=null;
+    try {
+      const resp = await fetch(API_ENDPOINT, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ mode:'qa', question:prompt, context:'批改作文，只返回JSON', formatHint:'只返回JSON' }) });
+      if(resp.ok){ const data=await resp.json(); if(data.reply) result=parseWritingGrade(data.reply, p.score); }
+    } catch(e){ console.warn('[writing] AI 批改失败', e.message); }
+    btn.disabled=false;
+    if(!result){
+      $('wrGradeResult').innerHTML='<div class="wr-grade"><div class="tiny muted" style="line-height:1.7;">AI 批改暂时不可用（可能离线或网络异常）。你可以先点「看范文」对照自己的作文，找差距：结构是否完整？是否分点论述？有没有用高级句型和连接词？</div></div>';
+      return;
+    }
+    // 记录批改历史 + 接脊柱
+    const rec = { id:'wh_'+Date.now().toString(36), promptId:p.id, cat:p.cat, grade:result.grade, scoreNum:result.scoreNum, at:new Date().toISOString() };
+    w.history.push(rec); if(w.history.length>50) w.history=w.history.slice(-50);
+    try {
+      const lowGrades=['C+','C','D'];
+      const isLow = lowGrades.indexOf(result.grade)>=0 || (result.scoreNum/p.score < 0.6);
+      window.logEvent('writing','submit',{ refId:'writing:'+p.id, correct:!isLow, tag:'eng', cat:p.cat, title:p.title, xp: 10 });
+      if(isLow) window.recordMistake('writing','writing:'+p.id, { title:p.title, tag:'eng', cat:p.cat });
+      else window.resolveMistake('writing','writing:'+p.id);
+    } catch(e){}
+    save();
+    renderWritingGrade(result, p);
+  };
+
+  function parseWritingGrade(text, maxScore){
+    let t=String(text||'').trim().replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'');
+    const s=t.indexOf('{'), e=t.lastIndexOf('}'); if(s>=0&&e>s) t=t.slice(s,e+1);
+    let o; try{ o=JSON.parse(t); }catch(err){ return null; }
+    if(!o || (!o.grade && typeof o.scoreNum!=='number')) return null;
+    return {
+      grade: o.grade || '—',
+      scoreNum: (typeof o.scoreNum==='number') ? o.scoreNum : Math.round((maxScore||10)*0.7),
+      overall: o.overall || '',
+      strengths: Array.isArray(o.strengths)?o.strengths:[],
+      issues: Array.isArray(o.issues)?o.issues:[],
+      suggestions: Array.isArray(o.suggestions)?o.suggestions:[]
+    };
+  }
+
+  function renderWritingGrade(r, p){
+    const lowGrades=['C+','C','D'];
+    const isLow = lowGrades.indexOf(r.grade)>=0 || (r.scoreNum/p.score<0.6);
+    let html='<div class="wr-grade">';
+    html+='<div class="wr-score-row"><div class="wr-score-badge'+(isLow?' g-low':'')+'"><div class="ws-grade">'+escAttr(r.grade)+'</div><div class="ws-num">'+r.scoreNum+'/'+p.score+'</div></div><div class="ws-overall">'+escAttr(r.overall||'已完成批改，见下方反馈')+'</div></div>';
+    if(r.strengths.length){ html+='<div class="wr-fb-block fb-good"><div class="fb-label">✓ 优点</div><ul>'+r.strengths.map(function(x){return '<li>'+escAttr(x)+'</li>';}).join('')+'</ul></div>'; }
+    if(r.issues.length){ html+='<div class="wr-fb-block fb-issue"><div class="fb-label">⚠ 问题</div><ul>'+r.issues.map(function(x){return '<li>'+escAttr(x)+'</li>';}).join('')+'</ul></div>'; }
+    if(r.suggestions.length){ html+='<div class="wr-fb-block fb-sug"><div class="fb-label">→ 改进建议</div><ul>'+r.suggestions.map(function(x){return '<li>'+escAttr(x)+'</li>';}).join('')+'</ul></div>'; }
+    html+='<button class="btn-sm" style="width:100%;margin-top:6px;" onclick="writingShowSample()">📄 对照高分范文</button>';
+    html+='</div>';
+    $('wrGradeResult').innerHTML=html;
+    $('wrGradeResult').scrollIntoView({behavior:'smooth', block:'nearest'});
+  }
+
+  window.writingShowSample = function(){
+    const p=_wrCur; if(!p||!p.sample){ alert('该题暂无范文'); return; }
+    let html='<div class="wr-grade"><div class="fb-label" style="color:var(--brand);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;">📄 高分范文</div>';
+    html+='<div class="wr-sample-box">'+escAttr(p.sample)+'</div>';
+    if(p.sampleNotes){ html+='<div class="syn-tip" style="margin-bottom:0;"><b>🔑 范文亮点</b><br>'+escAttr(p.sampleNotes)+'</div>'; }
+    html+='</div>';
+    $('wrGradeResult').innerHTML=html;
+    $('wrGradeResult').scrollIntoView({behavior:'smooth', block:'nearest'});
+  };
+
+  window.openWritingTemplates = function(){
+    loadWritingTemplates().then(function(groups){
+      let html='<div class="card">';
+      html+='<div class="train-meta-bar"><button class="btn-sm learn-back" onclick="'+(_wrCur?'renderWritingView()':'openWriting()')+'">← 返回</button><span class="tiny muted">高频模板库</span></div>';
+      html+='<h2 style="margin:12px 0 4px;font-size:17px;">📋 高频模板库</h2><div class="tiny muted" style="margin-bottom:12px;">背熟这些句型，考场直接套用</div>';
+      (groups||[]).forEach(function(g){
+        html+='<div class="wr-tpl-group"><div class="tg-name">'+escAttr(g.name)+'</div>';
+        g.items.forEach(function(it){ html+='<div class="wr-tpl-item">'+escAttr(it)+'</div>'; });
+        html+='</div>';
+      });
+      html+='</div>';
+      $('writingHome').style.display='none';
+      $('writingView').style.display='';
+      $('writingView').innerHTML=html;
+    });
+  };
+
+  window.renderWritingView = function(){ renderWritingView(); }; // 暴露给模板返回按钮
+  window.quitWriting = function(){ const w=ensureWriting(); if(_wrCur && $('wrText')) { w.drafts[_wrCur.id]=$('wrText').value; save(); } _wrCur=null; $('writingView').style.display='none'; $('writingHome').style.display=''; openWriting(); };
+
 
 
 
@@ -2577,6 +2809,7 @@
     { key:'reading',   icon:'📖', title:'阅读',     sub:'精读 · 点词查义 · 加入背单词', ready:true,  todo:'' },
     { key:'math',      icon:'➗', title:'数学',     sub:'分类练习 · 错题本 · AI讲解', ready:true,  todo:'' },
     { key:'syntax',    icon:'🔍', title:'长难句',   sub:'真题难句 · 成分拆解 · AI讲解', ready:true,  todo:'' },
+    { key:'writing',   icon:'✍️', title:'作文',     sub:'AI 批改 · 范文 · 模板',     ready:true,  todo:'' },
     { key:'mistakes',  icon:'📌', title:'错题中心', sub:'跨模块错题 · 一键再练',     ready:true,  todo:'' },
     { key:'exams',     icon:'📝', title:'真题题库', sub:'按年份/科目/题型',         ready:false, todo:'结构化真题库，作为模拟考与数学练习的内容底座。' },
     { key:'mock',      icon:'🤖', title:'AI模拟考', sub:'作文/翻译批改 · 模拟卷',    ready:false, todo:'AI 作文与专业英语翻译批改 + 模拟卷自测。' },
@@ -2597,7 +2830,7 @@
     $('learnGrid').innerHTML = html;
   }
 
-  const LEARN_PAGES = ['pageLearn','pageLearnTodo','pageResources','pageLearnVocab','pageLearnReading','pageLearnMath','pageLearnMistakes','pageLearnSyntax'];
+  const LEARN_PAGES = ['pageLearn','pageLearnTodo','pageResources','pageLearnVocab','pageLearnReading','pageLearnMath','pageLearnMistakes','pageLearnSyntax','pageLearnWriting'];
   window.showLearnView = function(name) {
     LEARN_PAGES.forEach(function(id){ const el=$(id); if(el) el.style.display='none'; });
     window._learnView = name;
@@ -2608,6 +2841,7 @@
     if (name === 'math') { $('pageLearnMath').style.display=''; openMath(); return; }
     if (name === 'mistakes') { $('pageLearnMistakes').style.display=''; openMistakes(); return; }
     if (name === 'syntax') { $('pageLearnSyntax').style.display=''; openSyntax(); return; }
+    if (name === 'writing') { $('pageLearnWriting').style.display=''; openWriting(); return; }
     const m = LEARN_MODULES.find(function(x){ return x.key===name; });
     $('learnTodoTitle').textContent = m ? (m.icon+' '+m.title) : '敬请期待';
     $('learnTodoDesc').textContent = m ? m.todo : '';
@@ -3334,7 +3568,7 @@
     const pt = $('phaseToggle');
     if (pt) pt.style.display = idx === 0 ? '' : 'none';
     // Hide all secondary pages
-    ['pageLearn','pageLearnTodo','pageResources','pageLearnVocab','pageLearnReading','pageLearnMath','pageLearnMistakes','pageLearnSyntax','pageAI'].forEach(id => { const el = $(id); if(el) el.style.display = 'none'; });
+    ['pageLearn','pageLearnTodo','pageResources','pageLearnVocab','pageLearnReading','pageLearnMath','pageLearnMistakes','pageLearnSyntax','pageLearnWriting','pageAI'].forEach(id => { const el = $(id); if(el) el.style.display = 'none'; });
     // Update nav
     document.querySelectorAll('.bn-btn').forEach(b => { b.className = 'bn-btn' + (b.dataset.page == idx ? ' on' : ''); });
     // Render target
@@ -4597,7 +4831,7 @@
   }, 100);
 
   // Hide learn/resource/AI pages on startup
-  ['pageLearn','pageLearnTodo','pageResources','pageLearnVocab','pageLearnReading','pageLearnMath','pageLearnMistakes','pageLearnSyntax','pageAI'].forEach(function(id) { var el = $(id); if(el) el.style.display = 'none'; });
+  ['pageLearn','pageLearnTodo','pageResources','pageLearnVocab','pageLearnReading','pageLearnMath','pageLearnMistakes','pageLearnSyntax','pageLearnWriting','pageAI'].forEach(function(id) { var el = $(id); if(el) el.style.display = 'none'; });
 })();
 </script>
 </body>

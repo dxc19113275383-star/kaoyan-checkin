@@ -1,0 +1,61 @@
+{
+  "id": "kaoyan-eng2-templates",
+  "name": "高频模板库",
+  "groups": [
+    {
+      "name": "小作文·开头",
+      "items": [
+        "I am writing to apologize sincerely for ...（道歉）",
+        "I am delighted to recommend ... to you.（推荐）",
+        "I am writing to express my gratitude for ...（感谢）",
+        "I am writing to apply for the position of ...（申请）",
+        "On behalf of ..., I would like to invite you to ...（邀请）"
+      ]
+    },
+    {
+      "name": "小作文·主体",
+      "items": [
+        "The reason for this is that ...（说明原因）",
+        "To make up for it, I suggest that ...（补救建议）",
+        "There are two reasons why I recommend it. First, ... Second, ...（编号理由）",
+        "I would be more than glad to ... if you could ...（提供帮助）"
+      ]
+    },
+    {
+      "name": "小作文·结尾",
+      "items": [
+        "Once again, please accept my apologies.（再次致歉）",
+        "I am looking forward to your early reply.（期待回复）",
+        "Thank you for your time and consideration.（感谢收尾）",
+        "I am confident that you will find it ...（信心收尾）"
+      ]
+    },
+    {
+      "name": "大作文·描述图表/现象",
+      "items": [
+        "As is clearly illustrated in the chart, ... climbed steadily from ... to ...（描述上升）",
+        "The number of ... has witnessed a dramatic increase over the past ... years.",
+        "Nowadays, it has become increasingly common for people to ...（现象引入）",
+        "..., doubling / quadrupling within just ... years.（倍数变化）"
+      ]
+    },
+    {
+      "name": "大作文·分析原因/影响",
+      "items": [
+        "Several factors account for this striking trend. To begin with, ... In addition, ...",
+        "There are two compelling reasons. Firstly, ... Secondly, ...",
+        "This phenomenon can be attributed to ...（归因）",
+        "The impact of ... can hardly be overstated.（强调影响）"
+      ]
+    },
+    {
+      "name": "大作文·结尾/建议",
+      "items": [
+        "In my view, while ... brings undeniable benefits, we should ...（辩证表态）",
+        "Therefore, it is high time that we ...（呼吁行动）",
+        "Only by ... can we truly ...（强调唯一途径）",
+        "As the saying goes, \"...\".（名言升华）"
+      ]
+    }
+  ]
+}
