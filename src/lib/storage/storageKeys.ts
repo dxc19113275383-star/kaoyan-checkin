@@ -32,14 +32,19 @@ export const SCHEMA_VERSION_KEY = 'ky_schema_version';
 /** 迁移备份键前缀，完整键形如 `ky_backup_1719300000000`。 */
 export const BACKUP_KEY_PREFIX = 'ky_backup_';
 
+/** 动态键前缀（用于导出/导入时遍历筛选）。 */
+export const VOCAB_LIB_PREFIX = 'vocab_lib_';
+export const READING_PREFIX = 'reading_';
+export const MATH_SET_PREFIX = 'math_set_';
+
 /** 动态键构造器：用户词库 `vocab_lib_<id>`。 */
-export const vocabLibKey = (id: string): string => `vocab_lib_${id}`;
+export const vocabLibKey = (id: string): string => `${VOCAB_LIB_PREFIX}${id}`;
 
 /** 动态键构造器：用户阅读文章 `reading_<id>`。 */
-export const readingKey = (id: string): string => `reading_${id}`;
+export const readingKey = (id: string): string => `${READING_PREFIX}${id}`;
 
 /** 动态键构造器：用户数学题集 `math_set_<id>`。 */
-export const mathSetKey = (id: string): string => `math_set_${id}`;
+export const mathSetKey = (id: string): string => `${MATH_SET_PREFIX}${id}`;
 
 /** 阅读生词本固定库 id。 */
 export const READING_VOCAB_LIB_ID = 'reading';

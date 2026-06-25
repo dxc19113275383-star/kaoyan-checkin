@@ -78,7 +78,8 @@ kaoyan-checkin/
 | **learn/mistakes** | 跨模块错题聚合、来源标记、重练、错因字段预留；智能复习接口预留（V7.1/V7.2） | 单模块判分逻辑 |
 | **ai** | AI 助手页、调用 `chat.js`、模式切换（答疑/错题/计划重排）、提示词与接口抽离；学习调度引擎预留 | 服务端密钥、完整 Agent（V7.3） |
 | **push** | 通知授权、Web Push 订阅、调用 push 函数、应用内提醒设置、iOS 兼容 | 业务数据存储 |
-| **lib/storage** | localStorage 统一读写、key 管理、JSON 容错、默认值、云同步接口预留 | 业务语义 |
+| **settings** | 数据备份页：全量导出/导入（`kaoyan_v2` + 用户库），导入前备份 | 云同步（V7.1） |
+| **lib/storage** | localStorage 统一读写、key 管理、JSON 容错、默认值、统一数据源投影/落回、导出/导入、云同步接口预留 | 业务语义 |
 | **lib/migration** | 读旧数据、判版本、迁移、备份、失败回滚、写新版本号 | UI |
 
 ## 数据流

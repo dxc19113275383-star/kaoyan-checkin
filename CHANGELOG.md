@@ -9,6 +9,9 @@
 - `mistakesStore` 单元测试 4 例（record/resolve/list 逻辑）。
 - **统一数据源 `legacyAdapter`**：AppState 切片 ⇄ 现役 `kaoyan_v2` 单体的双向映射 + `appStateStore` 单测 4 例（投影读 / 落回写 / 保留 learn.log 等现役独有字段 / 无分叉）。
 
+- **数据导出/导入 `dataTransfer`**（V7.1 云同步前的本地安全网，无需后端）：全量导出 `kaoyan_v2` + 用户自建库（`vocab_lib_*`/`reading_*`/`math_set_*`）为 JSON，导入前自动备份、校验非法文件、忽略未知键。新增「数据备份」页（`settings/DataPage`）与 4 例单测。
+- **打卡模块迁 React（功能版）**：`CheckinPage` 支持今日保底打卡、在职/全职切换、考试日期编辑、本周/累计统计；新增 `checkinLogic` 纯函数（todayKey/isTodayDone/weekDoneDays/markTodayDone）与 4 例单测。全部操作统一数据源 `kaoyan_v2`，现役应用同步可见。
+
 ### Changed
 - **消除状态分叉**：`appStateStore` 的运行期读写改为「投影/落回现役 `kaoyan_v2`」，React 工程层与现役 `index.html` 共用同一份数据，编辑互相可见。`ky_app_state_v7` 信封退化为安全快照 / V7.1 云上传种子，不再是运行期真相来源。
 - `bootstrap.ts` 的 `window.KY.getAppState` 改为返回 `kaoyan_v2` 的实时投影。

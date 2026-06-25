@@ -57,3 +57,12 @@ a { color: var(--ky-accent); }
 .ky-mistake__actions { display: flex; gap: 8px; align-items: center; margin-top: 4px; }
 .ky-mistake__actions .ky-btn { text-decoration: none; display: inline-block; font-size: 13px; padding: 6px 12px; }
 .ky-tag { background: var(--ky-surface-2); color: var(--ky-accent); border-radius: 999px; padding: 2px 10px; font-size: 12px; font-weight: 600; }
+
+.ky-data-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.ky-data-msg { margin-top: 10px; color: var(--ky-accent-2); font-size: 13px; }
+.ky-data-hint { margin-top: 8px; color: var(--ky-text-dim); font-size: 12px; }
+.ky-data-hint code { background: var(--ky-surface-2); padding: 1px 5px; border-radius: 5px; }
+
+.ky-checkin__big { font-size: 16px; margin: 0 0 10px; color: var(--ky-text); }
+.ky-link { background: none; border: none; color: var(--ky-accent); cursor: pointer; font-size: 13px; padding: 0; text-decoration: underline; }
+.ky-date { background: var(--ky-surface-2); color: var(--ky-text); border: none; border-radius: 6px; padding: 3px 8px; margin: 0 4px; font-size: 13px; }

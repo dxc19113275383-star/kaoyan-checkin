@@ -9,6 +9,7 @@ import { MistakesPage } from '@/modules/learn/mistakes/MistakesPage';
 import { ResourcesPage } from '@/modules/resources/ResourcesPage';
 import { AiAssistantPage } from '@/modules/ai/AiAssistantPage';
 import { PushPage } from '@/modules/push/PushPage';
+import { DataPage } from '@/modules/settings/DataPage';
 
 export interface RouteDef {
   id: string;
@@ -31,6 +32,7 @@ export const routes: RouteDef[] = [
   { id: 'resources', label: '资料', component: ResourcesPage },
   { id: 'ai', label: 'AI 助手', component: AiAssistantPage },
   { id: 'push', label: '推送', component: PushPage },
+  { id: 'data', label: '数据备份', component: DataPage },
 ];
 
 export const DEFAULT_ROUTE = 'dashboard';
