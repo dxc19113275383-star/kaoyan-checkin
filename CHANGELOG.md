@@ -5,6 +5,7 @@
 ## [Unreleased]
 
 ### Added
+- **导入考研大纲词 5500（正序）**：从本地 xlsx 导入为新词库 `words/kaoyan-5500.json`（5490 词，含音标·释义），在 `words/index.json` 注册并置顶为默认词库；原核心词库（80 词带例句）保留为精学库。
 - **内容库扩充（data/，纯静态原创/应试风格）**：
   - 词汇 `words/kaoyan.json` 50 → 80 词（高频考研/商务词，含音标·释义·例句）。
   - 阅读新增原创文章《Who Really Owns the Platform Economy?》（平台经济，含 10 词生词表）→ 共 3 篇。
