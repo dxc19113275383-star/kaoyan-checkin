@@ -462,6 +462,51 @@
   .mist-filter { display:flex; gap:6px; margin:0 0 10px; overflow-x:auto; }
   .mist-filter .chip { flex-shrink:0; }
 
+  /* ============================================================
+     P4 — 长难句（成分高亮）
+     ============================================================ */
+  .syn-list { display:flex; flex-direction:column; gap:8px; }
+  .syn-row { background:var(--color-background-primary); border:1px solid var(--hair); border-radius:var(--border-radius-lg); padding:14px 14px 12px; box-shadow:var(--shadow-ambient); cursor:pointer; transition:transform .15s var(--ease), box-shadow .25s var(--ease); -webkit-tap-highlight-color:transparent; }
+  .syn-row:active { transform:scale(.985); }
+  @media (hover:hover){ .syn-row:hover { box-shadow:var(--shadow-key); } }
+  .syn-row .sr-meta { display:flex; align-items:center; gap:6px; font-size:11px; color:var(--color-text-tertiary); margin-bottom:6px; }
+  .syn-row .sr-cat { padding:1.5px 8px; background:var(--brand-soft); color:var(--brand); border-radius:var(--radius-pill); font-weight:600; letter-spacing:.02em; }
+  .syn-row .sr-en { font-size:14.5px; line-height:1.65; color:var(--color-text-primary); }
+  .syn-row .sr-badge { float:right; font-size:11px; padding:1.5px 8px; border-radius:var(--radius-pill); font-weight:600; }
+  .syn-row .sr-badge.b-known { background:var(--color-background-success); color:var(--color-text-success); }
+  .syn-row .sr-badge.b-unsure { background:var(--ember-soft); color:var(--ember); }
+  /* 单句视图 */
+  .syn-en { font-size:18px; line-height:1.85; color:var(--color-text-primary); margin:12px 0 14px; font-weight:500; letter-spacing:-0.005em; }
+  .syn-en-plain { font-size:17px; line-height:1.85; color:var(--color-text-primary); margin:12px 0 14px; }
+  /* 成分高亮配色：6 种角色 */
+  .sp { padding:1px 0; border-bottom:2px solid transparent; transition:background .2s var(--ease); cursor:help; border-radius:2px; }
+  .sp[data-r="subj"]  { color:#1f4d3f; border-bottom-color:#1f4d3f; background:rgba(31,77,63,.06); }
+  .sp[data-r="verb"]  { color:#c2570f; border-bottom-color:#c2570f; background:rgba(194,87,15,.06); }
+  .sp[data-r="obj"]   { color:#185fa5; border-bottom-color:#185fa5; background:rgba(24,95,165,.06); }
+  .sp[data-r="attr"]  { color:#5b3a89; border-bottom-color:#5b3a89; background:rgba(91,58,137,.06); }
+  .sp[data-r="adv"]   { color:#0F6E56; border-bottom-color:#0F6E56; background:rgba(15,110,86,.06); }
+  .sp[data-r="appos"] { color:#854F0B; border-bottom-color:#854F0B; background:rgba(133,79,11,.07); }
+  .sp[data-r="mark"]  { color:var(--color-text-tertiary); border-bottom-color:var(--color-text-tertiary); font-style:italic; }
+  @media (prefers-color-scheme: dark) {
+    .sp[data-r="subj"]  { color:#3f9b7c; border-bottom-color:#3f9b7c; }
+    .sp[data-r="verb"]  { color:#e08a4f; border-bottom-color:#e08a4f; }
+    .sp[data-r="obj"]   { color:#7ab4e0; border-bottom-color:#7ab4e0; }
+    .sp[data-r="attr"]  { color:#b599e0; border-bottom-color:#b599e0; }
+    .sp[data-r="adv"]   { color:#7fd4b8; border-bottom-color:#7fd4b8; }
+    .sp[data-r="appos"] { color:#d9a85a; border-bottom-color:#d9a85a; }
+  }
+  .syn-legend { display:flex; flex-wrap:wrap; gap:6px 10px; font-size:11px; color:var(--color-text-secondary); margin-bottom:10px; }
+  .syn-legend .lg { display:inline-flex; align-items:center; gap:4px; }
+  .syn-legend .lg-dot { width:9px; height:3px; border-radius:2px; }
+  .syn-cn { font-size:14.5px; line-height:1.75; color:var(--color-text-secondary); padding:11px 14px; background:var(--color-background-secondary); border-radius:var(--border-radius-md); margin-bottom:10px; }
+  .syn-tip { padding:11px 14px; border-radius:var(--border-radius-md); background:var(--brand-soft); border-left:3px solid var(--brand); font-size:13.5px; line-height:1.7; color:var(--color-text-primary); margin-bottom:8px; }
+  .syn-tip b, .syn-trap b { font-weight:600; }
+  .syn-trap { padding:11px 14px; border-radius:var(--border-radius-md); background:var(--ember-soft); border-left:3px solid var(--ember); font-size:13.5px; line-height:1.7; color:var(--color-text-primary); margin-bottom:14px; }
+  .syn-actions { display:flex; gap:8px; flex-wrap:wrap; }
+  .syn-actions .btn-sm { flex:1; min-width:0; }
+  .syn-toggle-row { display:flex; gap:8px; margin-bottom:12px; }
+  .syn-toggle-row .btn-sm { flex:1; }
+
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
     .reveal { opacity: 1; transform: none; }
@@ -742,6 +787,12 @@
     <div id="mistSession" style="display:none;"></div>
   </div>
 
+  <!-- ====== 长难句（考研英语二真题难句·成分拆解·AI讲解） ====== -->
+  <div id="pageLearnSyntax" style="display:none;">
+    <div id="syntaxHome"></div>
+    <div id="syntaxView" style="display:none;"></div>
+  </div>
+
   <!-- ====== 资料/网课页面 ====== -->
   <div id="pageResources" style="display:none;">
     <div class="card">
@@ -984,6 +1035,7 @@
       vocab:   { active: 'kaoyan', settings: { dailyNew: 20 }, progress: {}, wrongBook: [], daily: { date:'', newDone:0, reviewDone:0 }, userLibs: [] },
       reading: { progress: {} },
       math:    { wrongBook: [], progress: {} },
+      syntax:  { active: 'kaoyan-eng2-core', progress: {} },  // v8.1: 长难句进度（键=`${setId}:${sid}` → {known, lastAt}）
       exams:   { progress: {} },
       mock:    { history: [] },
       // ===== v8 训练舱脊柱（统一学习事件 / 错题错词索引 / 薄弱点画像 / 每日目标 / XP&关卡） =====
@@ -1568,6 +1620,165 @@
       Promise.all([pVocab, pMath]).then(function(){ resolve(_vshuffle(items)); });
     });
   }
+
+  // ============================================================
+  // P4 —— 长难句模块（成分拆解 + 讲解 + AI 详解）
+  // 数据走 data/syntax/*.json；进度走 state.learn.syntax.progress（接脊柱）。
+  // ============================================================
+  let _synSets = null;          // 注册表缓存
+  const _synCache = {};         // setId -> sentences[]
+  let _synCur = null;           // 当前句子
+  let _synExpanded = false;     // 当前是否已展开成分拆解
+
+  function ensureSyntax(){
+    const s = state.learn.syntax = state.learn.syntax || {};
+    if(!s.active) s.active = 'kaoyan-eng2-core';
+    if(!s.progress || typeof s.progress!=='object') s.progress = {};
+    return s;
+  }
+  function synKey(set, sid){ return set+':'+sid; }
+
+  function loadSyntaxSets(){
+    return new Promise(function(res){
+      if(_synSets){ res(_synSets); return; }
+      fetch('data/syntax/index.json').then(function(r){return r.json();}).then(function(j){ _synSets=(j.sets||[]); res(_synSets); }).catch(function(){ _synSets=[]; res(_synSets); });
+    });
+  }
+  function loadSyntaxSentences(setId){
+    return new Promise(function(res){
+      if(_synCache[setId]){ res(_synCache[setId]); return; }
+      const set=(_synSets||[]).find(function(x){return x.id===setId;});
+      if(!set||!set.file){ res(null); return; }
+      fetch('data/syntax/'+set.file).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(j){ const arr=j.sentences||j; _synCache[setId]=arr; res(arr); }).catch(function(){ res(null); });
+    });
+  }
+
+  window.openSyntax = function(){
+    ensureSyntax();
+    $('syntaxView').style.display='none';
+    $('syntaxHome').style.display='';
+    loadSyntaxSets().then(renderSyntaxHome);
+  };
+
+  function renderSyntaxHome(sets){
+    const s=ensureSyntax(); sets=sets||[];
+    let opts='';
+    sets.forEach(function(x){ opts+='<option value="'+x.id+'"'+(x.id===s.active?' selected':'')+'>'+escAttr(x.name)+(x.placeholder?' (待导入)':'')+'</option>'; });
+    loadSyntaxSentences(s.active).then(function(sentences){
+      let html='<div class="card">';
+      html+='<button class="btn-sm learn-back" onclick="showLearnView(\'hub\')" style="margin-bottom:10px;">← 返回学习</button>';
+      html+='<h2 style="margin:0;">长难句</h2>';
+      html+='<div class="tiny muted" style="margin-top:4px;">考研英语二真题难句 · 点开看成分拆解 + 讲解 + 易错点</div>';
+      html+='<select class="vocab-libsel" style="margin-top:11px;" onchange="syntaxSwitchSet(this.value)">'+opts+'</select>';
+      if(!sentences){
+        html+='<div class="learn-soon" style="padding:20px 0;">该句库还没有内容<br><span class="tiny muted">换一个句库，或等待导入</span></div></div>';
+        $('syntaxHome').innerHTML=html; return;
+      }
+      let known=0; sentences.forEach(function(st){ const p=s.progress[synKey(s.active,st.id)]; if(p&&p.known) known++; });
+      const pct = sentences.length ? Math.round(known/sentences.length*100) : 0;
+      html+='<div class="vocab-progbar" style="margin-top:12px;"><i style="width:'+pct+'%"></i></div>';
+      html+='<div class="tiny muted" style="margin-top:6px;">已掌握 '+known+' / '+sentences.length+' 句（'+pct+'%）</div></div>';
+      // 列表
+      html+='<div class="syn-list">';
+      sentences.forEach(function(st){
+        const p=s.progress[synKey(s.active,st.id)];
+        let badge='';
+        if(p&&p.known) badge='<span class="sr-badge b-known">已掌握 ✓</span>';
+        else if(p&&p.unsure) badge='<span class="sr-badge b-unsure">待复习</span>';
+        html+='<div class="syn-row" onclick="openSyntaxSentence(\''+st.id+'\')">';
+        html+='<div class="sr-meta"><span class="sr-cat">'+escAttr(st.cat||'难句')+'</span>'+(st.level?'<span>'+escAttr(st.level)+'</span>':'')+'</div>';
+        html+='<div class="sr-en">'+badge+escAttr(st.en)+'</div>';
+        html+='</div>';
+      });
+      html+='</div>';
+      $('syntaxHome').innerHTML=html;
+    });
+  }
+
+  window.syntaxSwitchSet = function(id){ const s=ensureSyntax(); s.active=id; save(); loadSyntaxSets().then(renderSyntaxHome); };
+
+  window.openSyntaxSentence = function(sid){
+    const s=ensureSyntax();
+    loadSyntaxSentences(s.active).then(function(sentences){
+      if(!sentences) return;
+      const st=sentences.find(function(x){return x.id===sid;});
+      if(!st) return;
+      _synCur=st; _synExpanded=false;
+      renderSyntaxView();
+    });
+  };
+
+  function synPartsHtml(parts){
+    return (parts||[]).map(function(p){
+      if(p.role==='plain' || !p.role) return escAttr(p.text);
+      const note = p.note ? ' title="'+escAttr(p.note)+'"' : '';
+      return '<span class="sp" data-r="'+escAttr(p.role)+'"'+note+'>'+escAttr(p.text)+'</span>';
+    }).join('');
+  }
+
+  function renderSyntaxView(){
+    const st=_synCur; if(!st) return;
+    const s=ensureSyntax();
+    const p=s.progress[synKey(s.active,st.id)]||{};
+    let html='<div class="card">';
+    html+='<div class="train-meta-bar"><button class="btn-sm learn-back" onclick="quitSyntax()">← 列表</button><span class="tiny muted">'+escAttr(st.cat||'')+(st.level?' · '+escAttr(st.level):'')+'</span></div>';
+    // 原文（展开前纯文本，展开后高亮）
+    if(_synExpanded){
+      html+='<div class="syn-en">'+synPartsHtml(st.parts)+'</div>';
+      html+='<div class="syn-legend">';
+      [['subj','主语'],['verb','谓语'],['obj','宾/表'],['attr','定语/从句'],['adv','状语'],['appos','同位语']].forEach(function(r){
+        html+='<span class="lg"><span class="lg-dot sp" data-r="'+r[0]+'" style="display:inline-block;"></span>'+r[1]+'</span>';
+      });
+      html+='</div>';
+      html+='<div class="syn-cn">'+escAttr(st.cn)+'</div>';
+      if(st.tip) html+='<div class="syn-tip"><b>🔑 拆解思路</b><br>'+escAttr(st.tip)+'</div>';
+      if(st.trap) html+='<div class="syn-trap"><b>⚠ 易错点</b><br>'+escAttr(st.trap)+'</div>';
+    } else {
+      html+='<div class="syn-en-plain">'+escAttr(st.en)+'</div>';
+      html+='<button class="btn-cta" style="margin-bottom:4px;" onclick="syntaxExpand()"><span>展开成分拆解</span><span class="cta-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></span></button>';
+      html+='<div class="tiny muted" style="text-align:center;margin-top:6px;">先自己试着断句，再展开对答案</div>';
+    }
+    if(_synExpanded){
+      html+='<div class="syn-actions">';
+      html+='<button class="btn-sm" style="'+(p.known?'background:var(--brand);color:#fff;border-color:var(--brand);':'')+'" onclick="syntaxMark(\'known\')">✓ 已掌握</button>';
+      html+='<button class="btn-sm" onclick="syntaxMark(\'unsure\')">✗ 还不懂</button>';
+      html+='<button class="btn-sm" onclick="syntaxAskAI()">🤖 AI 详解</button>';
+      html+='</div>';
+    }
+    html+='</div>';
+    $('syntaxHome').style.display='none';
+    $('syntaxView').style.display='';
+    $('syntaxView').innerHTML=html;
+  }
+
+  window.syntaxExpand = function(){ _synExpanded=true; renderSyntaxView(); };
+
+  window.syntaxMark = function(kind){
+    const st=_synCur; if(!st) return;
+    const s=ensureSyntax(), k=synKey(s.active,st.id);
+    const p=s.progress[k]=s.progress[k]||{};
+    if(kind==='known'){
+      p.known=true; p.unsure=false; p.lastAt=new Date().toISOString();
+      try{ window.logEvent('syntax','mark',{ refId:k, correct:true, tag:'eng', cat:st.cat||'长难句', title:(st.en||'').slice(0,40) }); window.resolveMistake('syntax', k); }catch(e){}
+    } else {
+      p.known=false; p.unsure=true; p.lastAt=new Date().toISOString();
+      try{ window.logEvent('syntax','mark',{ refId:k, correct:false, tag:'eng', cat:st.cat||'长难句', title:(st.en||'').slice(0,40) }); window.recordMistake('syntax', k, { title:(st.en||'').slice(0,40), tag:'eng', cat:st.cat||'长难句' }); }catch(e){}
+    }
+    save();
+    quitSyntax();
+  };
+
+  window.syntaxAskAI = function(){
+    const st=_synCur; if(!st) return;
+    const txt='请帮我彻底讲清这个考研英语二长难句：\n'+st.en+'\n\n请按：① 主干是什么 ② 每个从句/修饰成分的作用 ③ 翻译 ④ 我该怎么训练这种句子 来讲。';
+    showPage(2);
+    aiMode='qa';
+    document.querySelectorAll('#aiModeSeg button').forEach(function(x){ x.className=(x.dataset.mode==='qa'?'on':''); });
+    const inp=$('aiInput'); if(inp){ inp.value=txt; inp.focus(); }
+  };
+
+  window.quitSyntax = function(){ _synCur=null; _synExpanded=false; $('syntaxView').style.display='none'; $('syntaxHome').style.display=''; openSyntax(); };
+
 
 
 
@@ -2365,6 +2576,7 @@
     { key:'vocab',     icon:'📚', title:'背单词',   sub:'多词库 · 斩词 · 艾宾浩斯',   ready:true,  todo:'' },
     { key:'reading',   icon:'📖', title:'阅读',     sub:'精读 · 点词查义 · 加入背单词', ready:true,  todo:'' },
     { key:'math',      icon:'➗', title:'数学',     sub:'分类练习 · 错题本 · AI讲解', ready:true,  todo:'' },
+    { key:'syntax',    icon:'🔍', title:'长难句',   sub:'真题难句 · 成分拆解 · AI讲解', ready:true,  todo:'' },
     { key:'mistakes',  icon:'📌', title:'错题中心', sub:'跨模块错题 · 一键再练',     ready:true,  todo:'' },
     { key:'exams',     icon:'📝', title:'真题题库', sub:'按年份/科目/题型',         ready:false, todo:'结构化真题库，作为模拟考与数学练习的内容底座。' },
     { key:'mock',      icon:'🤖', title:'AI模拟考', sub:'作文/翻译批改 · 模拟卷',    ready:false, todo:'AI 作文与专业英语翻译批改 + 模拟卷自测。' },
@@ -2385,7 +2597,7 @@
     $('learnGrid').innerHTML = html;
   }
 
-  const LEARN_PAGES = ['pageLearn','pageLearnTodo','pageResources','pageLearnVocab','pageLearnReading','pageLearnMath','pageLearnMistakes'];
+  const LEARN_PAGES = ['pageLearn','pageLearnTodo','pageResources','pageLearnVocab','pageLearnReading','pageLearnMath','pageLearnMistakes','pageLearnSyntax'];
   window.showLearnView = function(name) {
     LEARN_PAGES.forEach(function(id){ const el=$(id); if(el) el.style.display='none'; });
     window._learnView = name;
@@ -2395,6 +2607,7 @@
     if (name === 'reading') { $('pageLearnReading').style.display=''; openReading(); return; }
     if (name === 'math') { $('pageLearnMath').style.display=''; openMath(); return; }
     if (name === 'mistakes') { $('pageLearnMistakes').style.display=''; openMistakes(); return; }
+    if (name === 'syntax') { $('pageLearnSyntax').style.display=''; openSyntax(); return; }
     const m = LEARN_MODULES.find(function(x){ return x.key===name; });
     $('learnTodoTitle').textContent = m ? (m.icon+' '+m.title) : '敬请期待';
     $('learnTodoDesc').textContent = m ? m.todo : '';
@@ -3121,7 +3334,7 @@
     const pt = $('phaseToggle');
     if (pt) pt.style.display = idx === 0 ? '' : 'none';
     // Hide all secondary pages
-    ['pageLearn','pageLearnTodo','pageResources','pageLearnVocab','pageLearnReading','pageLearnMath','pageLearnMistakes','pageAI'].forEach(id => { const el = $(id); if(el) el.style.display = 'none'; });
+    ['pageLearn','pageLearnTodo','pageResources','pageLearnVocab','pageLearnReading','pageLearnMath','pageLearnMistakes','pageLearnSyntax','pageAI'].forEach(id => { const el = $(id); if(el) el.style.display = 'none'; });
     // Update nav
     document.querySelectorAll('.bn-btn').forEach(b => { b.className = 'bn-btn' + (b.dataset.page == idx ? ' on' : ''); });
     // Render target
@@ -4384,7 +4597,7 @@
   }, 100);
 
   // Hide learn/resource/AI pages on startup
-  ['pageLearn','pageLearnTodo','pageResources','pageLearnVocab','pageLearnReading','pageLearnMath','pageLearnMistakes','pageAI'].forEach(function(id) { var el = $(id); if(el) el.style.display = 'none'; });
+  ['pageLearn','pageLearnTodo','pageResources','pageLearnVocab','pageLearnReading','pageLearnMath','pageLearnMistakes','pageLearnSyntax','pageAI'].forEach(function(id) { var el = $(id); if(el) el.style.display = 'none'; });
 })();
 </script>
 </body>

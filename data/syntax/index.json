@@ -1,0 +1,7 @@
+{
+  "sets": [
+    { "id": "kaoyan-eng2-core", "name": "考研英语二·核心难句", "desc": "高频考点 6 句 · 真题风格", "cat": "真题难句", "file": "kaoyan-eng2-core.json", "count": 6 },
+    { "id": "kaoyan-eng2-clauses", "name": "从句嵌套·待导入", "desc": "定语/状语/同位语从句套层", "cat": "从句", "file": "kaoyan-eng2-clauses.json", "placeholder": true },
+    { "id": "kaoyan-eng2-inversion", "name": "倒装·强调·待导入", "desc": "考研英语二倒装与强调结构", "cat": "倒装强调", "file": "kaoyan-eng2-inversion.json", "placeholder": true }
+  ]
+}
