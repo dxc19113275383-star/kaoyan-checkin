@@ -915,9 +915,184 @@
       reading: { progress: {} },
       math:    { wrongBook: [], progress: {} },
       exams:   { progress: {} },
-      mock:    { history: [] }
+      mock:    { history: [] },
+      // ===== v8 训练舱脊柱（统一学习事件 / 错题错词索引 / 薄弱点画像 / 每日目标 / XP&关卡） =====
+      log:       [],   // append-only 事件流，每条 {id,ts,mod,action,refId,correct,durMs,meta}；硬上限 5000
+      mistakes:  {},   // 跨模块错题/错词索引；键 = `${mod}:${refId}`；值 = {mod,refId,title,tag,count,firstAt,lastAt,resolved}
+      weakness:  { byMod:{}, byTag:{}, byCat:{}, updatedAt:'', window:14 }, // 14 天滚动聚合，按需重算
+      daily:     { date:'', xp:0, quests:{}, streak:0, lastDate:'' }, // 每日 quest 进度 + XP；跨天重置 quests/xp，保留 streak
+      profile:   { level:1, totalXp:0, examTarget:'kaoyan_eng2', strict:true } // 等级 / 累计 XP / 应试目标
     };
   }
+
+  // ============================================================
+  // 训练舱脊柱 API（v8）—— 统一学习事件 + 错题错词 + 薄弱点 + XP/Quest
+  // 设计原则：纯函数（仅读写 state.learn），无模块耦合；append-only；自动裁剪防膨胀。
+  // ============================================================
+  const LOG_MAX = 5000;
+  const WEAK_WINDOW = 14;       // 薄弱点统计滚动窗口（天）
+  const XP_TABLE = { vocab_correct:2, vocab_wrong:1, vocab_known:1, reading_done:8, reading_word:1, math_correct:6, math_wrong:2, writing_submit:10, default:1 };
+  const QUEST_DEFAULT = { vocab:20, reading:1, math:5 }; // 每日默认 quest 目标
+
+  function _genEvId(){ return 'ev_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,7); }
+  function _ensureSpine(){
+    const L = state.learn = state.learn || defaultLearn();
+    if (!Array.isArray(L.log)) L.log = [];
+    if (!L.mistakes || typeof L.mistakes!=='object') L.mistakes = {};
+    if (!L.weakness || typeof L.weakness!=='object') L.weakness = { byMod:{}, byTag:{}, byCat:{}, updatedAt:'', window:WEAK_WINDOW };
+    if (!L.daily || typeof L.daily!=='object') L.daily = { date:'', xp:0, quests:{}, streak:0, lastDate:'' };
+    if (!L.profile || typeof L.profile!=='object') L.profile = { level:1, totalXp:0, examTarget:'kaoyan_eng2', strict:true };
+    // 跨天处理：保留 streak/lastDate，重置 xp/quests
+    const t = todayStr();
+    if (L.daily.date !== t) {
+      // streak 衔接：昨日完成基础 quest 才续 streak
+      const y = vAddDays(t, -1);
+      if (L.daily.date === y && L.daily.lastDate === y) {
+        // 已经续过；不动
+      } else if (L.daily.date && L.daily.date !== t) {
+        // 跨天：检查最后一次「完成日」是不是 t-1，否则 streak 归零
+        if (L.daily.lastDate !== y) L.daily.streak = 0;
+      }
+      L.daily.date = t;
+      L.daily.xp = 0;
+      L.daily.quests = {};
+    }
+    return L;
+  }
+
+  // 记录一个学习事件（核心入口）。各引擎判分后调用。
+  // mod: 'vocab'|'reading'|'math'|'writing'|'listening'|'syntax'
+  // action: 'answer'|'view'|'mark'|'submit' 等
+  // ev: { refId, correct?, durMs?, tag?, cat?, title?, xp? }
+  window.logEvent = function(mod, action, ev){
+    const L = _ensureSpine();
+    ev = ev || {};
+    const entry = {
+      id: _genEvId(), ts: new Date().toISOString(),
+      mod: mod, action: action,
+      refId: ev.refId || '',
+      correct: typeof ev.correct === 'boolean' ? ev.correct : null,
+      durMs: ev.durMs || 0,
+      meta: { tag: ev.tag||'', cat: ev.cat||'', title: ev.title||'' }
+    };
+    L.log.push(entry);
+    if (L.log.length > LOG_MAX) L.log = L.log.slice(-LOG_MAX);
+    // 增量更新薄弱点（不等用户打开页面才重算）
+    _bumpWeakness(mod, ev.tag||'', ev.cat||'', entry.correct);
+    // XP & quest 推进（仅在 correct=true 或非答题动作时记 XP）
+    const xpKey = mod + (entry.correct === false ? '_wrong' : (entry.correct === true ? '_correct' : ''));
+    const xpDelta = (typeof ev.xp === 'number') ? ev.xp : (XP_TABLE[xpKey] || (entry.correct === false ? 0 : XP_TABLE.default));
+    if (xpDelta > 0) _addXP(xpDelta);
+    _bumpQuest(mod, action, entry.correct);
+    return entry.id;
+  };
+
+  // 错题/错词登记。同一 refId 累计 count；resolveMistake 标记为已解决。
+  window.recordMistake = function(mod, refId, info){
+    const L = _ensureSpine();
+    const k = mod + ':' + refId;
+    const now = new Date().toISOString();
+    const cur = L.mistakes[k] || { mod:mod, refId:refId, title:'', tag:'', count:0, firstAt:now, lastAt:now, resolved:false };
+    cur.count = (cur.count||0) + 1;
+    cur.lastAt = now;
+    cur.resolved = false;
+    if (info) { if (info.title) cur.title = info.title; if (info.tag) cur.tag = info.tag; if (info.cat) cur.cat = info.cat; }
+    L.mistakes[k] = cur;
+  };
+  window.resolveMistake = function(mod, refId){
+    const L = _ensureSpine();
+    const k = mod + ':' + refId;
+    if (L.mistakes[k]) { L.mistakes[k].resolved = true; L.mistakes[k].resolvedAt = new Date().toISOString(); }
+  };
+
+  function _bumpWeakness(mod, tag, cat, correct){
+    const L = _ensureSpine();
+    const w = L.weakness;
+    function bump(map, key){ if(!key) return; const e = map[key] = map[key] || { total:0, wrong:0 }; e.total++; if (correct === false) e.wrong++; }
+    bump(w.byMod, mod);
+    bump(w.byTag, tag);
+    bump(w.byCat, cat);
+    w.updatedAt = new Date().toISOString();
+  }
+  // 全量重算薄弱点（按 14 天窗口扫 log；用于跨天/导入后修正增量）
+  window.recomputeWeakness = function(){
+    const L = _ensureSpine();
+    const cutoff = new Date(Date.now() - WEAK_WINDOW*86400000).toISOString();
+    const w = { byMod:{}, byTag:{}, byCat:{}, updatedAt:new Date().toISOString(), window:WEAK_WINDOW };
+    L.log.forEach(function(e){
+      if (e.ts < cutoff) return;
+      function bump(map, key){ if(!key) return; const x = map[key] = map[key] || { total:0, wrong:0 }; x.total++; if (e.correct === false) x.wrong++; }
+      bump(w.byMod, e.mod);
+      bump(w.byTag, (e.meta&&e.meta.tag)||'');
+      bump(w.byCat, (e.meta&&e.meta.cat)||'');
+    });
+    L.weakness = w;
+    return w;
+  };
+  // 取 top N 薄弱项（按 wrong/total 比例，且 total 达阈值）
+  window.topWeakness = function(dim, n, minTotal){
+    const L = _ensureSpine();
+    const map = (L.weakness && L.weakness[dim]) || {};
+    const arr = Object.keys(map).map(function(k){ const e=map[k]; return { key:k, total:e.total, wrong:e.wrong, rate: e.total ? e.wrong/e.total : 0 }; });
+    return arr.filter(function(x){ return x.total >= (minTotal||3); })
+              .sort(function(a,b){ return b.rate - a.rate || b.total - a.total; })
+              .slice(0, n||3);
+  };
+
+  function _addXP(delta){
+    const L = _ensureSpine();
+    L.daily.xp = (L.daily.xp||0) + delta;
+    L.profile.totalXp = (L.profile.totalXp||0) + delta;
+    // 升级：每 200 XP 一级（线性，简单）
+    const newLevel = 1 + Math.floor(L.profile.totalXp / 200);
+    if (newLevel > L.profile.level) L.profile.level = newLevel;
+  }
+  function _bumpQuest(mod, action, correct){
+    const L = _ensureSpine();
+    const q = L.daily.quests = L.daily.quests || {};
+    // 默认 quest：背词+1（任何答题）、阅读+1（标记已读）、数学+1（任何答题）
+    if (mod === 'vocab' && action === 'answer') q.vocab = (q.vocab||0) + 1;
+    if (mod === 'reading' && action === 'mark') q.reading = (q.reading||0) + 1;
+    if (mod === 'math' && action === 'answer') q.math = (q.math||0) + 1;
+    // 检查是否完成今日 quest（任意一项达标即续 streak）
+    const goals = QUEST_DEFAULT;
+    const done = (q.vocab||0) >= goals.vocab || (q.reading||0) >= goals.reading || (q.math||0) >= goals.math;
+    if (done) {
+      const t = todayStr();
+      if (L.daily.lastDate !== t) {
+        const y = vAddDays(t, -1);
+        L.daily.streak = (L.daily.lastDate === y) ? (L.daily.streak||0) + 1 : 1;
+        L.daily.lastDate = t;
+      }
+    }
+  }
+
+  // 给首页/AI 用：一行摘要 + 进度
+  window.getDailyTraining = function(){
+    const L = _ensureSpine();
+    const q = L.daily.quests || {};
+    const goals = QUEST_DEFAULT;
+    const items = [
+      { mod:'vocab',   label:'背单词', cur:q.vocab||0,   goal:goals.vocab },
+      { mod:'reading', label:'精读',   cur:q.reading||0, goal:goals.reading },
+      { mod:'math',    label:'数学',   cur:q.math||0,    goal:goals.math }
+    ];
+    const allDone = items.every(function(x){ return x.cur >= x.goal; });
+    return { items:items, xp:L.daily.xp||0, streak:L.daily.streak||0, level:L.profile.level||1, totalXp:L.profile.totalXp||0, allDone:allDone };
+  };
+
+  // 跨模块错题/错词列表（默认未解决的）
+  window.listMistakes = function(opts){
+    const L = _ensureSpine();
+    opts = opts || {};
+    const arr = Object.keys(L.mistakes).map(function(k){ return L.mistakes[k]; });
+    return arr.filter(function(m){
+      if (opts.includeResolved !== true && m.resolved) return false;
+      if (opts.mod && m.mod !== opts.mod) return false;
+      return true;
+    }).sort(function(a,b){ return (b.lastAt||'').localeCompare(a.lastAt||''); });
+  };
+
   let state = {
     p: 0, wk: 1, day: 0, data: {},
     startDate: null,
@@ -942,8 +1117,8 @@
       reminderTime: "20:30",
       tone: "normal"
     },
-    learn: defaultLearn(), // v7: 学习中心（背单词/阅读/数学/真题/模拟考进度）
-    version: 7
+    learn: defaultLearn(), // v7+: 学习中心（背单词/阅读/数学/真题/模拟考进度）；v8 起加 log/mistakes/weakness/daily/profile 脊柱
+    version: 8
   };
 
   // ===== PERSISTENCE =====
@@ -985,6 +1160,16 @@
     if (loaded.version === 6) {
       loaded.learn = loaded.learn || defaultLearn();
       loaded.version = 7;
+    }
+    if (loaded.version === 7) {
+      // v8: 训练舱脊柱字段；旧 learn 不存在则 defaultLearn 已建好，存在则增量补齐
+      loaded.learn = loaded.learn || defaultLearn();
+      if (!Array.isArray(loaded.learn.log)) loaded.learn.log = [];
+      if (!loaded.learn.mistakes || typeof loaded.learn.mistakes !== 'object') loaded.learn.mistakes = {};
+      if (!loaded.learn.weakness || typeof loaded.learn.weakness !== 'object') loaded.learn.weakness = { byMod:{}, byTag:{}, byCat:{}, updatedAt:'', window:14 };
+      if (!loaded.learn.daily || typeof loaded.learn.daily !== 'object') loaded.learn.daily = { date:'', xp:0, quests:{}, streak:0, lastDate:'' };
+      if (!loaded.learn.profile || typeof loaded.learn.profile !== 'object') loaded.learn.profile = { level:1, totalXp:0, examTarget:'kaoyan_eng2', strict:true };
+      loaded.version = 8;
     }
     // 防御：任何情况下 learn 都要存在，子字段缺失补齐
     if (!loaded.learn) loaded.learn = defaultLearn();
@@ -1904,6 +2089,12 @@
     p.seenAt=new Date().toISOString();
     v.progress[k]=p;
     if(_vsession && _vsession.mode!=='wrong'){ if(item.mode==='new' && wasNew) v.daily.newDone++; else if(item.mode==='review') v.daily.reviewDone++; }
+    // 训练舱脊柱：写事件 + 错词登记/销账
+    try {
+      window.logEvent('vocab','answer',{ refId: lib+':'+wd.w, correct: correct, tag:'eng', cat: lib, title: wd.w });
+      if (correct) { if (p.stage >= VOCAB_MASTER_STAGE) window.resolveMistake('vocab', lib+':'+wd.w); }
+      else window.recordMistake('vocab', lib+':'+wd.w, { title: wd.w, tag:'eng', cat: lib });
+    } catch(e){}
     save();
   }
 
@@ -2071,6 +2262,8 @@
     const v=ensureVocab();
     let ul=v.userLibs.find(function(x){return x.id==='reading';});
     if(!ul) v.userLibs.push({id:'reading', name:'阅读生词本', count:arr.length}); else ul.count=arr.length;
+    // 训练舱脊柱：阅读中加生词也是一次学习行为
+    try { window.logEvent('reading','word',{ refId:'reading:'+lw, tag:'eng', title: entry.w }); } catch(e){}
     save(); return true;
   }
   window.readingSaveWord = function(){
@@ -2083,7 +2276,10 @@
 
   window.markPassageRead = function(id){
     const r=ensureReading(); const pr=r.progress[id]=r.progress[id]||{};
+    const wasRead = !!pr.read;
     pr.read=!pr.read; if(pr.read) pr.readAt=new Date().toISOString();
+    // 训练舱脊柱：从未读→已读才计学习行为（取消已读不计）
+    if (!wasRead && pr.read) { try { window.logEvent('reading','mark',{ refId: 'reading:'+id, tag:'eng', title: (_readingCur && _readingCur.title)||id }); } catch(e){} }
     save(); if(_readingCur) renderPassage(_readingCur);
   };
 
@@ -2234,6 +2430,13 @@
     p.lastAt=new Date().toISOString();
     m.progress[k]=p;
     m.daily.done++; if(correct) m.daily.correct++;
+    // 训练舱脊柱：写事件 + 错题登记/销账
+    try {
+      const title = String(q.stem||'').slice(0,40);
+      window.logEvent('math','answer',{ refId: set+':'+q.id, correct: correct, tag:'math', cat: q.cat||set, title: title });
+      if (correct) { if (p.stage >= MATH_MASTER) window.resolveMistake('math', set+':'+q.id); }
+      else window.recordMistake('math', set+':'+q.id, { title: title, tag:'math', cat: q.cat||set });
+    } catch(e){}
     save();
   }
 
