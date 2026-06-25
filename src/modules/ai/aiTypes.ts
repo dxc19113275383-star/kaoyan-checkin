@@ -36,7 +36,8 @@ export interface ChatRequest {
 }
 
 export interface ChatResponse {
-  answer?: string;
+  /** 成功回复（chat.js 返回 { reply }）。 */
+  reply?: string;
   error?: string;
   [k: string]: unknown;
 }

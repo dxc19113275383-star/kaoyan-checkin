@@ -5,6 +5,11 @@
 ## [Unreleased]
 
 ### Added
+- **资料 / AI助手 / 推送 迁成可操作 React 页面**：
+  - 资料 `ResourcesPage`：新增/删除网课·资料·真题链接（`resourcesStore`，3 例单测）。
+  - AI助手 `AiAssistantPage`：模式切换 + 多轮对话，调 `aiClient`→`/api/chat`，历史持久化（`aiStore`，2 例单测）。
+  - 推送 `PushPage`：请求权限 / 订阅 Web Push / 测试发送 / 提醒时间设置（调 `pushClient`，best-effort）。
+- 修复 `resourcesStore` 同毫秒连续新增导致 id 冲突（加随机后缀）；修正 `ChatResponse` 字段为 `reply`（与 chat.js 返回一致）。
 - **4 个学习模块迁成可操作 React 页面**（统一走 `kaoyan_v2`，内容读自 `data/`）：
   - 数学 `MathPage`：选题集 → 做题判分 → 解析 → 答错自动记入错题中心。
   - 词汇 `VocabPage`：单词卡翻面 → 认识/不认识 → 写进度 + 错词记录。
