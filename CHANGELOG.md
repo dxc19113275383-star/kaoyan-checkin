@@ -5,11 +5,13 @@
 ## [Unreleased]
 
 ### Added
-- 错题中心 React 试点（V7.1 第一块）：`MistakesPage` 升级为可运行页面——模块筛选、显示/隐藏已解决、标记已解决、再练入口，数据来自迁移后的 `AppState` 信封。
+- 错题中心 React 试点（V7.1 第一块）：`MistakesPage` 升级为可运行页面——模块筛选、显示/隐藏已解决、标记已解决、再练入口。
 - `mistakesStore` 单元测试 4 例（record/resolve/list 逻辑）。
+- **统一数据源 `legacyAdapter`**：AppState 切片 ⇄ 现役 `kaoyan_v2` 单体的双向映射 + `appStateStore` 单测 4 例（投影读 / 落回写 / 保留 learn.log 等现役独有字段 / 无分叉）。
 
-### Note
-- 试点页写入新信封 `ky_app_state_v7`，现役 `index.html` 仍读旧键 `kaoyan_v2`；双向同步/统一数据源留待 V7.1。
+### Changed
+- **消除状态分叉**：`appStateStore` 的运行期读写改为「投影/落回现役 `kaoyan_v2`」，React 工程层与现役 `index.html` 共用同一份数据，编辑互相可见。`ky_app_state_v7` 信封退化为安全快照 / V7.1 云上传种子，不再是运行期真相来源。
+- `bootstrap.ts` 的 `window.KY.getAppState` 改为返回 `kaoyan_v2` 的实时投影。
 
 ## [7.0.0] - 2026-06-25
 

@@ -13,7 +13,7 @@
  */
 import { storage } from '@/lib/storage/localStorageClient';
 import { runMigration } from '@/lib/migration/migrate';
-import { APP_STATE_KEY } from '@/lib/storage/storageKeys';
+import { getAppState } from '@/lib/storage/appStateStore';
 import type { AppState } from '@/lib/storage/storageTypes';
 
 declare global {
@@ -21,7 +21,7 @@ declare global {
     KY?: {
       version: string;
       storage: typeof storage;
-      getAppState: () => AppState | null;
+      getAppState: () => AppState;
       runMigration: typeof runMigration;
     };
   }
@@ -33,7 +33,8 @@ function boot(): void {
     window.KY = {
       version: '7.0.0',
       storage,
-      getAppState: () => storage.get<AppState | null>(APP_STATE_KEY, null),
+      // 统一数据源：返回现役 kaoyan_v2 的实时投影（与 React 工程层一致）。
+      getAppState,
       runMigration,
     };
     if (result.error) {

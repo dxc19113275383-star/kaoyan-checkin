@@ -27,9 +27,9 @@ function shortDate(iso: string): string {
 /**
  * 错题中心（V7.0 → V7.1 试点）：把现役错题聚合逻辑迁成可运行的 React 页面。
  *
- * 数据来源：AppState 信封 `ky_app_state_v7`（由 bootstrap 迁移层从现役 `kaoyan_v2` 派生）。
- * 注意：本预览页的「标记已解决」写入新信封；现役 index.html 仍读旧键 —— 两者的双向同步
- * 是 V7.1 云同步/统一数据源要解决的问题（见 ROADMAP）。真实「再练」仍走现役训练舱。
+ * 数据来源：统一真相来源 `kaoyan_v2`（经 appStateStore 投影为 AppState）。
+ * 「标记已解决」会就地写回 `kaoyan_v2.learn.mistakes`，现役 index.html 下次加载即可见（无分叉）。
+ * 真实「再练」仍走现役训练舱（/index.html#mistakes）。
  */
 export function MistakesPage() {
   const [tick, setTick] = useState(0);
