@@ -404,6 +404,22 @@
   /* 快捷 chips 容器对齐 */
   #aiQuickChips { padding:2px 4px; }
 
+  /* ============================================================
+     P1 — AI 自适应今日训练（训练舱）
+     ============================================================ */
+  .train-banner { border:1px solid color-mix(in srgb, var(--brand) 22%, var(--hair)); background:linear-gradient(160deg, var(--brand-soft) 0%, var(--color-background-primary) 70%); }
+  .tb-head { display:flex; align-items:center; gap:10px; }
+  .tb-ico { width:38px; height:38px; flex-shrink:0; border-radius:11px; background:var(--brand); color:#fff; display:flex; align-items:center; justify-content:center; font-size:19px; box-shadow:var(--shadow-ambient); }
+  .tb-title { font-size:15.5px; font-weight:600; letter-spacing:-0.01em; }
+  .tb-sub { font-size:12px; color:var(--color-text-secondary); margin-top:1px; line-height:1.4; }
+  .tb-weak { display:flex; flex-wrap:wrap; gap:6px; margin:11px 0 0; }
+  .tb-weak .wk { display:inline-flex; align-items:center; gap:5px; font-size:11.5px; font-weight:500; padding:3px 9px; border-radius:var(--radius-pill); background:var(--color-background-secondary); color:var(--color-text-secondary); }
+  .tb-weak .wk b { color:var(--ember); font-weight:600; font-variant-numeric:tabular-nums; }
+  .train-q-cat { font-size:11px; color:var(--color-text-tertiary); margin-top:12px; display:flex; align-items:center; gap:6px; }
+  .train-q-cat .tqc-badge { font-size:10px; font-weight:600; padding:1.5px 7px; border-radius:var(--radius-pill); background:var(--brand-soft); color:var(--brand); letter-spacing:.02em; }
+  .train-stem { margin:8px 0 4px; font-size:16px; line-height:1.7; color:var(--color-text-primary); font-weight:500; }
+  .train-meta-bar { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
     .reveal { opacity: 1; transform: none; }
@@ -749,6 +765,12 @@
     <!-- 快捷问题 chips -->
     <div class="chip-row" id="aiQuickChips" style="margin-bottom:10px;"></div>
 
+    <!-- 🎯 AI 自适应今日训练（训练舱 P1） -->
+    <div id="aiTrainBanner" class="card train-banner" style="margin-bottom:12px;"></div>
+
+    <!-- 训练会话（生成后占据页面） -->
+    <div id="aiTrainSession" style="display:none;margin-bottom:12px;"></div>
+
     <!-- 对话历史 -->
     <div id="aiChatHistory" style="padding-bottom:calc(var(--bottom-nav-height) + 88px + var(--safe-bottom));"></div>
 
@@ -921,7 +943,8 @@
       mistakes:  {},   // 跨模块错题/错词索引；键 = `${mod}:${refId}`；值 = {mod,refId,title,tag,count,firstAt,lastAt,resolved}
       weakness:  { byMod:{}, byTag:{}, byCat:{}, updatedAt:'', window:14 }, // 14 天滚动聚合，按需重算
       daily:     { date:'', xp:0, quests:{}, streak:0, lastDate:'' }, // 每日 quest 进度 + XP；跨天重置 quests/xp，保留 streak
-      profile:   { level:1, totalXp:0, examTarget:'kaoyan_eng2', strict:true } // 等级 / 累计 XP / 应试目标
+      profile:   { level:1, totalXp:0, examTarget:'kaoyan_eng2', strict:true }, // 等级 / 累计 XP / 应试目标
+      lastPack:  null   // v8: AI/离线生成的最近一次训练包 {generatedAt,source,items,idx,correct}
     };
   }
 
@@ -1092,6 +1115,262 @@
       return true;
     }).sort(function(a,b){ return (b.lastAt||'').localeCompare(a.lastAt||''); });
   };
+
+  // ============================================================
+  // 训练舱 P1 —— AI 自适应今日训练生成器
+  // 读薄弱点/错题 → 调 AI 代理产出针对性 MCQ 练习包；AI 不可用则离线兜底（错题/错词重练）。
+  // 答题反馈全部回流脊柱（logEvent + 错题销账/登记）。
+  // ============================================================
+  let _trainSession = null;       // 当前训练会话
+
+  // 收集"画像种子"：薄弱点 + 最近错题/错词（带真实标题，喂给 AI）
+  function getTrainingSeed(){
+    const weakCat = (window.topWeakness('byCat',4,1)||[]);
+    const weakMod = (window.topWeakness('byMod',3,1)||[]);
+    const mistakes = (window.listMistakes({})||[]).slice(0,12).map(function(m){
+      return { mod:m.mod, refId:m.refId, title:m.title||m.refId, tag:m.tag||'', cat:m.cat||'', count:m.count||1 };
+    });
+    return { weakCat:weakCat, weakMod:weakMod, mistakes:mistakes, examTarget:'kaoyan_eng2' };
+  }
+
+  // 构造严格 JSON Prompt（要求 AI 只返回 JSON）
+  function genTrainingPrompt(seed){
+    const weakDesc = seed.weakCat.length
+      ? seed.weakCat.map(function(w){ return w.key+'(错'+Math.round(w.rate*100)+'%)'; }).join('、')
+      : '暂无明显薄弱点，给基础巩固题';
+    const mistDesc = seed.mistakes.length
+      ? seed.mistakes.map(function(m){ return '['+m.mod+']'+m.title; }).join('、')
+      : '无';
+    return [
+      '你是考研英语二+396经济类联考的命题助教。请根据考生的薄弱点，出一组针对性单选练习题。',
+      '考生薄弱知识点：' + weakDesc,
+      '考生近期错题/错词：' + mistDesc,
+      '',
+      '出题要求：',
+      '1. 共 6 道单选题，紧扣上述薄弱点；英语题贴考研英语二风格（词义辨析/语法/阅读判断），数学题贴396风格。',
+      '2. 每题4个选项，只有1个正确。',
+      '3. 必须只返回 JSON，不要任何解释性文字、不要markdown代码块标记。格式严格如下：',
+      '{"items":[{"mod":"vocab|math|reading|syntax","cat":"知识点","stem":"题干","options":["A选项","B选项","C选项","D选项"],"answer":0,"explain":"简短解析","level":"基础|中等|拔高"}]}',
+      'answer 为正确选项下标(0-3)。mod 用 vocab(词汇)/reading(阅读理解)/syntax(语法长难句)/math(数学)。'
+    ].join('\n');
+  }
+
+  // 从 AI 回复中稳健提取 JSON 练习包
+  function parseTrainingPack(text){
+    if(!text) return null;
+    let t = String(text).trim();
+    // 去掉 markdown 代码块围栏
+    t = t.replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'');
+    // 尝试截取第一个 { 到最后一个 }
+    const s = t.indexOf('{'), e = t.lastIndexOf('}');
+    if(s>=0 && e>s) t = t.slice(s, e+1);
+    let obj;
+    try { obj = JSON.parse(t); } catch(err){ return null; }
+    const items = (obj && Array.isArray(obj.items)) ? obj.items : (Array.isArray(obj)?obj:null);
+    if(!items || !items.length) return null;
+    const clean = items.filter(function(q){
+      return q && q.stem && Array.isArray(q.options) && q.options.length>=2 && typeof q.answer==='number' && q.answer>=0 && q.answer<q.options.length;
+    }).map(function(q,i){
+      return { id:'pk_'+i, type:'mcq', mod:(q.mod||'vocab'), refId:(q.refId||''), cat:(q.cat||''), stem:String(q.stem), options:q.options.map(String), answer:q.answer, explain:(q.explain||''), level:(q.level||'中等'), ai:true };
+    });
+    return clean.length ? clean : null;
+  }
+
+  // 离线兜底：从错词本 + 错题本抽题重练（复用现有词库/题库 + 干扰项逻辑）
+  function buildOfflineTrainingPack(){
+    return new Promise(function(resolve){
+      const items = [];
+      const v = (state.learn && state.learn.vocab) || {};
+      const m = (state.learn && state.learn.math) || {};
+      const vWrong = (v.wrongBook||[]).slice(0,4);
+      const vLib = v.active || 'kaoyan';
+      // 必须先确保词库注册表已加载，否则 loadVocabWords 早返回 null
+      const ensureLibs = (typeof loadVocabLibs==='function') ? loadVocabLibs() : Promise.resolve();
+      ensureLibs.then(function(){
+        const pv = (typeof loadVocabWords==='function') ? loadVocabWords(vLib) : Promise.resolve(null);
+        pv.then(function(words){
+          if(words && words.length){
+            vWrong.forEach(function(k){
+              const w = k.slice(k.indexOf(':')+1);
+              const wd = words.find(function(x){return x.w===w;});
+              if(wd && wd.def){
+                const distract = (typeof vDistractors==='function') ? vDistractors(wd, words, 3) : [];
+                const opts = _vshuffle([wd.def].concat(distract));
+                items.push({ id:'pk_v_'+items.length, type:'mcq', mod:'vocab', refId:vLib+':'+wd.w, cat:'错词重练', stem:'「'+wd.w+'」'+(wd.ph||'')+' 的意思是？', options:opts, answer:opts.indexOf(wd.def), explain:(wd.ex?wd.ex+(wd.exCn?'　'+wd.exCn:''):'复习巩固'), level:'中等', ai:false });
+              }
+            });
+          }
+          const mWrong = (m.wrongBook||[]).slice(0,4);
+          const mSet = m.active || 'calc';
+          // 同理：题集注册表也得先加载
+          const ensureSets = (typeof loadMathSets==='function') ? loadMathSets() : Promise.resolve();
+          ensureSets.then(function(){
+            const pm = (typeof loadMathQuestions==='function') ? loadMathQuestions(mSet) : Promise.resolve(null);
+            pm.then(function(qs){
+              if(qs && qs.length){
+                mWrong.forEach(function(k){
+                  const qid = k.slice(k.indexOf(':')+1);
+                  const q = qs.find(function(x){return x.id===qid;});
+                  if(q){ items.push({ id:'pk_m_'+items.length, type:'mcq', mod:'math', refId:mSet+':'+q.id, cat:q.cat||'错题重练', stem:q.stem, options:q.options.slice(), answer:q.answer, explain:q.explain||'', level:q.level||'中等', ai:false }); }
+                });
+              }
+              resolve(_vshuffle(items));
+            });
+          });
+        });
+      });
+    });
+  }
+
+  // ---- 训练横幅（idle / loading / ready 状态） ----
+  window.renderTrainBanner = function(){
+    const host = $('aiTrainBanner'); if(!host) return;
+    const seed = getTrainingSeed();
+    const weak = seed.weakCat;
+    const mistCount = seed.mistakes.length;
+    let weakHtml = '';
+    if(weak.length){
+      weakHtml = '<div class="tb-weak">' + weak.map(function(w){
+        return '<span class="wk">'+escAttr(w.key||'综合')+' <b>错'+Math.round(w.rate*100)+'%</b></span>';
+      }).join('') + '</div>';
+    }
+    let sub, btnLabel, canGen=true;
+    if(weak.length || mistCount){
+      sub = 'AI 会按你最近的薄弱点和错题，出一组针对性练习。';
+      btnLabel = '🎯 生成今日训练';
+    } else {
+      sub = '先去背几个词、做几道题，累计 3 次以上记录后，AI 就能按薄弱点定制训练了。';
+      btnLabel = '先去学习中心练几题';
+      canGen=false;
+    }
+    let html = '<div class="tb-head"><div class="tb-ico">🎯</div><div style="flex:1;min-width:0;"><div class="tb-title">AI 自适应训练</div><div class="tb-sub">'+sub+'</div></div></div>';
+    html += weakHtml;
+    if(canGen){
+      html += '<button class="btn-cta" style="margin-top:13px;" onclick="generateTraining()"><span>'+btnLabel+'</span><span class="cta-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span></button>';
+    } else {
+      html += '<button class="btn-sm" style="width:100%;margin-top:13px;" onclick="showPage(1)">'+btnLabel+'</button>';
+    }
+    host.innerHTML = html;
+  };
+
+  // ---- 主入口：生成训练（在线优先，离线兜底） ----
+  window.generateTraining = async function(){
+    const host = $('aiTrainBanner');
+    host.innerHTML = '<div class="tb-head"><div class="tb-ico">🎯</div><div style="flex:1;"><div class="tb-title">正在为你定制训练…</div><div class="tb-sub">分析薄弱点中，请稍候</div></div></div>'+
+      '<div class="skeleton" style="height:14px;margin-top:14px;"></div><div class="skeleton" style="height:14px;width:70%;margin-top:8px;"></div>';
+    const seed = getTrainingSeed();
+    let pack = null, source = 'ai';
+    // 在线生成
+    try {
+      const resp = await fetch(API_ENDPOINT, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ mode:'qa', question: genTrainingPrompt(seed), context:'生成训练题，只返回JSON', formatHint:'只返回JSON，无markdown围栏' })
+      });
+      if(resp.ok){ const data = await resp.json(); if(data.reply) pack = parseTrainingPack(data.reply); }
+    } catch(e){ console.warn('[train] AI 生成失败，转离线', e.message); }
+    // 离线兜底
+    if(!pack || !pack.length){
+      source = 'offline';
+      pack = await buildOfflineTrainingPack();
+    }
+    if(!pack || !pack.length){
+      renderTrainBanner();
+      const h=$('aiTrainBanner'); h.insertAdjacentHTML('beforeend','<div class="tiny muted" style="margin-top:10px;">还没有足够的错题/薄弱点来生成训练，先去学习中心练几道吧。</div>');
+      return;
+    }
+    const L = _ensureSpine();
+    L.lastPack = { generatedAt:new Date().toISOString(), source:source, items:pack, idx:0, correct:0 };
+    save();
+    startTraining();
+  };
+
+  window.startTraining = function(){
+    const L = _ensureSpine();
+    const pack = L.lastPack;
+    if(!pack || !pack.items || !pack.items.length){ renderTrainBanner(); return; }
+    _trainSession = pack;
+    if(typeof pack.idx!=='number') pack.idx=0;
+    $('aiTrainBanner').style.display='none';
+    $('aiChatHistory').style.display='none';
+    const s=$('aiTrainSession'); s.style.display='';
+    renderTrainCard();
+  };
+
+  function renderTrainCard(){
+    const s=_trainSession; if(!s) return;
+    if(s.idx>=s.items.length){ renderTrainDone(); return; }
+    const q=s.items[s.idx];
+    s._answered=false;
+    const srcTag = s.source==='ai' ? 'AI 定制' : '错题重练';
+    let html='<div class="card">';
+    html+='<div class="train-meta-bar"><button class="btn-sm learn-back" onclick="quitTraining()">← 退出</button><span class="tiny muted">'+(s.idx+1)+' / '+s.items.length+'</span></div>';
+    html+='<div class="vocab-progbar" style="margin-top:10px;"><i style="width:'+Math.round(s.idx/s.items.length*100)+'%"></i></div>';
+    html+='<div class="train-q-cat"><span class="tqc-badge">'+escAttr(srcTag)+'</span>'+(q.cat?escAttr(q.cat):'')+(q.level?' · '+escAttr(q.level):'')+'</div>';
+    html+='<div class="train-stem">'+escAttr(q.stem)+'</div>';
+    html+='<div class="vocab-opts" id="trainOpts">';
+    q.options.forEach(function(o,i){ html+='<button class="vocab-opt" style="text-align:left;" onclick="trainPick(this)" data-i="'+i+'">'+String.fromCharCode(65+i)+'. '+escAttr(o)+'</button>'; });
+    html+='</div><div id="trainFb"></div></div>';
+    $('aiTrainSession').innerHTML=html;
+  }
+
+  window.trainPick = function(btn){
+    const s=_trainSession; if(!s||s._answered) return;
+    s._answered=true;
+    const q=s.items[s.idx];
+    const pick=parseInt(btn.getAttribute('data-i'),10);
+    const correct = pick===q.answer;
+    document.querySelectorAll('#trainOpts .vocab-opt').forEach(function(b){ b.disabled=true; const bi=parseInt(b.getAttribute('data-i'),10); if(bi===q.answer) b.classList.add('correct'); else if(b===btn) b.classList.add('wrong'); });
+    if(correct) s.correct++;
+    // 回流脊柱：训练答题也是学习事件；命中已有错题则销账/登记
+    try {
+      window.logEvent(q.mod||'vocab','answer',{ refId:q.refId||('train:'+q.id), correct:correct, tag:(q.mod==='math'?'math':'eng'), cat:q.cat||'', title:(q.stem||'').slice(0,40) });
+      if(q.refId){ if(correct) window.resolveMistake(q.mod, q.refId); else window.recordMistake(q.mod, q.refId, {title:(q.stem||'').slice(0,40), cat:q.cat||''}); }
+    } catch(e){}
+    save();
+    showTrainFeedback(q, correct);
+  };
+
+  function showTrainFeedback(q, correct){
+    let fb='<div class="vocab-feedback"><strong>'+(correct?'✅ 正确':'❌ 答错了')+'</strong> &nbsp; 正确答案：'+String.fromCharCode(65+q.answer)+'. '+escAttr(q.options[q.answer]);
+    if(q.explain){ fb+='<div class="math-explain"><b>解析</b><br>'+escAttr(q.explain)+'</div>'; }
+    fb+='</div><button class="btn-cta" style="margin-top:11px;" onclick="trainNext()"><span>'+(_trainSession.idx>=_trainSession.items.length-1?'看结果':'下一题')+'</span><span class="cta-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span></button>';
+    $('trainFb').innerHTML=fb;
+  }
+
+  window.trainNext = function(){ const s=_trainSession; if(!s)return; s.idx++; if(s===_ensureSpine().lastPack) save(); renderTrainCard(); };
+
+  function renderTrainDone(){
+    const s=_trainSession;
+    const acc = s.items.length ? Math.round(s.correct/s.items.length*100) : 0;
+    const L=_ensureSpine(); L.lastPack=null; save();
+    let html='<div class="card" style="text-align:center;">';
+    html+='<div style="font-size:42px;">'+(acc>=80?'🎉':(acc>=50?'💪':'📌'))+'</div>';
+    html+='<h2 style="margin:8px 0;">本组训练完成</h2>';
+    html+='<p class="muted">答对 '+s.correct+' / '+s.items.length+'（'+acc+'%）· 已计入今日进度与错题本</p>';
+    html+='<button class="btn-cta" style="margin-top:14px;" onclick="finishTraining()"><span>完成</span><span class="cta-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></span></button>';
+    html+='<button class="btn-sm" style="width:100%;margin-top:8px;" onclick="generateTraining()">再生成一组</button></div>';
+    $('aiTrainSession').innerHTML=html;
+    _trainSession=null;
+  }
+
+  window.quitTraining = function(){
+    // 退出但保留进度（lastPack 仍在），可下次继续
+    _trainSession=null;
+    $('aiTrainSession').style.display='none';
+    $('aiChatHistory').style.display='';
+    $('aiTrainBanner').style.display='';
+    renderTrainBanner();
+  };
+  window.finishTraining = function(){
+    _trainSession=null;
+    $('aiTrainSession').style.display='none';
+    $('aiChatHistory').style.display='';
+    $('aiTrainBanner').style.display='';
+    renderTrainBanner();
+    if(typeof renderAI==='function') renderAI();
+  };
+
+
 
   let state = {
     p: 0, wk: 1, day: 0, data: {},
@@ -3018,6 +3297,18 @@
     }
     renderAIQuickChips();
     updateAIStatus();
+    // 训练舱：有未完成训练包则恢复会话，否则渲染横幅
+    try {
+      const L = _ensureSpine();
+      if (L.lastPack && L.lastPack.items && L.lastPack.items.length && (L.lastPack.idx||0) < L.lastPack.items.length) {
+        startTraining();
+      } else {
+        $('aiTrainSession').style.display='none';
+        $('aiTrainBanner').style.display='';
+        $('aiChatHistory').style.display='';
+        renderTrainBanner();
+      }
+    } catch(e){ console.warn('[train banner]', e.message); }
   }
 
   // 快捷问题 chips —— 按当前模式给出最相关的 5 条
