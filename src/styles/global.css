@@ -66,3 +66,39 @@ a { color: var(--ky-accent); }
 .ky-checkin__big { font-size: 16px; margin: 0 0 10px; color: var(--ky-text); }
 .ky-link { background: none; border: none; color: var(--ky-accent); cursor: pointer; font-size: 13px; padding: 0; text-decoration: underline; }
 .ky-date { background: var(--ky-surface-2); color: var(--ky-text); border: none; border-radius: 6px; padding: 3px 8px; margin: 0 4px; font-size: 13px; }
+
+/* 数学 quiz */
+.ky-q__stem { font-size: 15px; color: var(--ky-text); margin: 0 0 12px; }
+.ky-q__opts { display: grid; gap: 8px; }
+.ky-opt { text-align: left; background: var(--ky-surface-2); color: var(--ky-text); border: 1px solid transparent; border-radius: var(--ky-radius-sm); padding: 10px 12px; cursor: pointer; font-size: 14px; }
+.ky-opt:disabled { cursor: default; }
+.ky-opt.is-correct { border-color: var(--ky-accent-2); background: rgba(127,174,110,.18); }
+.ky-opt.is-wrong { border-color: var(--ky-danger); background: rgba(217,105,79,.18); }
+.ky-opt__k { display: inline-block; width: 20px; font-weight: 700; color: var(--ky-accent); }
+.ky-q__feedback { margin-top: 12px; display: grid; gap: 8px; }
+.ky-q__explain { color: var(--ky-text-dim); font-size: 13px; line-height: 1.6; }
+
+/* 词汇卡 */
+.ky-flash { text-align: center; display: grid; gap: 6px; }
+.ky-flash__w { font-size: 30px; font-weight: 700; margin: 6px 0 0; }
+.ky-flash__ph { color: var(--ky-text-dim); margin: 0; }
+.ky-flash__def { font-size: 16px; margin: 8px 0 0; }
+.ky-flash__ex { margin: 6px 0 0; }
+.ky-flash__excn { color: var(--ky-text-dim); font-size: 13px; margin: 2px 0 0; }
+.ky-flash__actions { display: flex; gap: 10px; justify-content: center; margin-top: 12px; }
+
+/* 长难句 */
+.ky-syntax__en { font-size: 16px; line-height: 1.7; margin: 0 0 8px; }
+.ky-syntax__cn { color: var(--ky-accent); margin: 0 0 10px; }
+.ky-syntax__parts { list-style: none; margin: 0 0 10px; padding: 0; display: grid; gap: 6px; }
+.ky-syntax__parts li { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 13px; }
+.ky-syntax__text { color: var(--ky-text); }
+.ky-syntax__note { color: var(--ky-text-dim); }
+
+/* 阅读 */
+.ky-read__list { list-style: none; margin: 0 0 12px; padding: 0; display: grid; gap: 10px; }
+.ky-read__item { background: var(--ky-surface); border-radius: var(--ky-radius); padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+.ky-read__title { font-weight: 600; }
+.ky-read__sub { color: var(--ky-text-dim); font-size: 13px; }
+.ky-read__intro { color: var(--ky-text-dim); font-style: italic; margin: 0 0 10px; }
+.ky-read__p { line-height: 1.8; margin: 0 0 10px; }

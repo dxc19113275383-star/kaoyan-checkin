@@ -5,6 +5,15 @@
 ## [Unreleased]
 
 ### Added
+- **4 个学习模块迁成可操作 React 页面**（统一走 `kaoyan_v2`，内容读自 `data/`）：
+  - 数学 `MathPage`：选题集 → 做题判分 → 解析 → 答错自动记入错题中心。
+  - 词汇 `VocabPage`：单词卡翻面 → 认识/不认识 → 写进度 + 错词记录。
+  - 长难句 `SyntaxPage`：显示英文 → 翻面看译文 + 成分拆解 → 标记已掌握。
+  - 阅读 `ReadingPage`：文章列表 → 阅读 → 标记已读。
+- 新增内容层 `src/lib/content`（`contentClient` + `contentTypes`，带缓存）与 `useAsync` hook。
+- Vite `dataDir` 插件加开发期中间件：`npm run dev` 下 `/data/*` 由根 `data/` 提供（生产仍拷进 dist/data）。
+- **开发约定文档**：CONTRIBUTING 增「新功能开发约定（给接手的 AI / 开发者）」——新功能一律 React、三层心智模型、新增页面标准步骤、样板清单、红线。
+
 - 错题中心 React 试点（V7.1 第一块）：`MistakesPage` 升级为可运行页面——模块筛选、显示/隐藏已解决、标记已解决、再练入口。
 - `mistakesStore` 单元测试 4 例（record/resolve/list 逻辑）。
 - **统一数据源 `legacyAdapter`**：AppState 切片 ⇄ 现役 `kaoyan_v2` 单体的双向映射 + `appStateStore` 单测 4 例（投影读 / 落回写 / 保留 learn.log 等现役独有字段 / 无分叉）。

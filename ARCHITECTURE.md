@@ -27,6 +27,10 @@ V7.0 采用**渐进式重构**：现役 `index.html` 保持完整可用；新建
 （`src/`）先以「基础设施 + 模块契约 + 工程外壳」的形态落地，后续版本逐模块接管 UI。
 这样既满足「可长期维护」目标，又不冒一次性重写 4800 行现役代码导致功能回归的风险。
 
+> **接手须知**：自 V7.1 起新功能一律用 React 写在 `src/`，`index.html` 只迁出不新增。
+> 具体「怎么加新功能/页面」的标准步骤见 [CONTRIBUTING.md](./CONTRIBUTING.md#新功能开发约定给接手的-ai--开发者务必先读)。
+> 已可操作的样板页面：math/vocab/syntax/reading/mistakes/checkin/settings(DataPage)。
+
 ## 目录结构
 ```
 kaoyan-checkin/
@@ -55,6 +59,7 @@ kaoyan-checkin/
 │   ├── lib/
 │   │   ├── storage/        # storageKeys / localStorageClient / storageTypes / appStateStore / legacyAdapter（+ 单测）
 │   │   ├── migration/      # versions / legacyImport / migrate（+ 单测）
+│   │   ├── content/        # contentClient / contentTypes（读取 data/ 内容库，带缓存）
 │   │   ├── pwa/            # registerServiceWorker / pwaUtils
 │   │   └── utils/          # date / progress / format
 │   ├── styles/             # tokens.css / global.css

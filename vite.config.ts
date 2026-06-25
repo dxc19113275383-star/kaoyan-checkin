@@ -2,35 +2,42 @@
 import { defineConfig, type Plugin } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import { fileURLToPath, URL } from 'node:url';
-import { cpSync, existsSync } from 'node:fs';
+import { cpSync, existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 /**
- * 把仓库根目录的 `data/`（静态学习内容库：词库 / 阅读 / 数学 / 长难句 / 作文）
- * 拷贝进构建产物 `dist/data/`。
- *
- * 设计原因：V7.0 要求 data 内容继续放在仓库根 `data/`（验收标准 7），
- * 但 Vite 默认只会把 `public/` 拷进 dist。这里用一个零依赖的内联插件，
- * 在构建结束时把 `data/` 原样复制到 `dist/data/`，保持运行期 `fetch('data/...')` 的 URL 不变。
+ * data/ 内容库插件（零依赖）：
+ *  - 构建期（closeBundle）：把仓库根 `data/` 原样拷进 `dist/data/`，保持运行期
+ *    `fetch('data/...')` 的 URL 不变（V7.0 验收标准 7：data 内容仍放仓库根 data/）。
+ *  - 开发期（configureServer）：Vite 默认不服务非 public 的根目录文件，这里加一个中间件
+ *    把 `/data/*` 映射到根 `data/`，使 `npm run dev` 下 React 页面也能 fetch 到内容。
  */
-function copyDataDir(): Plugin {
+function dataDir(): Plugin {
+  const dataRoot = resolve(__dirname, 'data');
   return {
-    name: 'copy-data-dir',
-    apply: 'build',
+    name: 'kaoyan-data-dir',
     closeBundle() {
-      const from = resolve(__dirname, 'data');
-      const to = resolve(__dirname, 'dist/data');
-      if (existsSync(from)) {
-        cpSync(from, to, { recursive: true });
+      if (existsSync(dataRoot)) {
+        cpSync(dataRoot, resolve(__dirname, 'dist/data'), { recursive: true });
         // eslint-disable-next-line no-console
-        console.log('[copy-data-dir] data/ -> dist/data/');
+        console.log('[kaoyan-data-dir] data/ -> dist/data/');
       }
+    },
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        if (!req.url || !req.url.startsWith('/data/')) return next();
+        const rel = decodeURIComponent(req.url.split('?')[0]);
+        const fp = resolve(__dirname, '.' + rel);
+        if (!fp.startsWith(dataRoot) || !existsSync(fp)) return next();
+        res.setHeader('Content-Type', 'application/json; charset=utf-8');
+        res.end(readFileSync(fp));
+      });
     },
   };
 }
 
 export default defineConfig({
-  plugins: [react(), copyDataDir()],
+  plugins: [react(), dataDir()],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
