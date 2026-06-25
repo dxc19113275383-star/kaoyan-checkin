@@ -1,7 +1,7 @@
 // Service Worker for 考研备考打卡 PWA
 // Cache-first strategy: app shell pre-cached, HTML stale-while-revalidate
 
-const CACHE_NAME = 'kaoyan-pwa-v13';
+const CACHE_NAME = 'kaoyan-pwa-v14';
 const APP_SHELL = [
   './index.html',
   './manifest.json',
