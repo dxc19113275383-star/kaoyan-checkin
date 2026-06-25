@@ -4,6 +4,14 @@
 
 ## [Unreleased]
 
+### Changed
+- **恢复零构建静态部署（默认）**：现役 `index.html` 是自包含纯静态应用，无需 `npm run build` 即可部署（GitHub Pages / Netlify 拖拽 / 任意静态托管）。
+  - PWA 文件（`manifest.json`/`sw.js`/`icon.svg`）从 `public/` 移回**仓库根目录**；`data/` 本就在根。
+  - `netlify.toml` 改为 `publish = "."`、移除 build 命令（不再消耗构建额度）。
+  - 移除 `index.html` 中需要构建的 `/src/bootstrap.ts` 模块脚本（纯静态下无法运行；现役应用本就直接读写 `kaoyan_v2`，不依赖它）。
+  - `vite.config` 设 `publicDir: false`，由插件在构建时把根 PWA 文件 + `data/` 拷进 `dist/`，使可选的 Vite 构建模式仍可用。
+  - 5500 词库随 `data/words/index.json` 被现役 `index.html` 动态加载——零构建下打开背单词即可见。
+
 ### Added
 - **导入考研大纲词 5500（正序）**：从本地 xlsx 导入为新词库 `words/kaoyan-5500.json`（5490 词，含音标·释义），在 `words/index.json` 注册并置顶为默认词库；原核心词库（80 词带例句）保留为精学库。
 - **内容库扩充（data/，纯静态原创/应试风格）**：

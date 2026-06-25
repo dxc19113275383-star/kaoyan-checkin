@@ -73,13 +73,21 @@ npm run preview    # 本地预览 dist/
 
 生成 VAPID 密钥：`npx web-push generate-vapid-keys`。
 
-## 部署方式（Netlify）
-1. 仓库已配置 [`netlify.toml`](./netlify.toml)：`command = "npm run build"`，`publish = "dist"`，`functions = "netlify/functions"`。
-2. 在 **Site settings → Environment variables** 配置上表中的服务端变量。
-3. 连接 GitHub 仓库后，push 到默认分支即自动构建部署；也可用 `npx netlify deploy --prod`。
-4. `data/` 会在构建时由内联 Vite 插件拷贝进 `dist/data/`，运行期 `fetch('data/...')` URL 不变。
+## 部署方式（两种模式）
 
-> 历史上还有一个 `_deploy/`（手动拖拽部署用的临时干净目录），已在 `.gitignore` 中忽略，不影响本流程。
+### 模式 A：零构建静态部署（默认 · 推荐 · 无需 build 额度）
+现役应用 `index.html` 是**自包含的纯静态单文件应用**，`data/`（含 5500 词库）、`manifest.json`、`sw.js`、`icon.svg` 都直接放在**仓库根目录**，无需任何构建即可运行。
+- **GitHub Pages**：仓库 Settings → Pages → Source 选 `master` / `(root)`，即上线（免费、零构建）。
+- **Netlify 拖拽 / 连接**：当前 [`netlify.toml`](./netlify.toml) 为 `publish = "."`、**无 build 命令**，连接仓库 push 即发布，不消耗构建额度。
+- **本地 / 任意静态托管**：直接用任意静态服务器指向仓库根即可（如 `python -m http.server`）。
+- 新增词库/题目只需改 `data/`，提交后刷新页面就生效——`index.html` 会动态读取 `data/words/index.json` 里的词库列表。
+
+> 注意：AI 助手与 Web Push 依赖 Netlify Functions（服务端），零构建静态托管（如 GitHub Pages）下这两个功能不可用，其余（打卡 / 背单词 / 做题 / 错题 / 资料等本地功能）全部正常。
+
+### 模式 B：Vite 构建（可选 · 需要 React 工程外壳时）
+需要 `preview.html` 这个 React 工程外壳时，运行 `npm run build` 产出 `dist/`（插件会把 `data/` 与 PWA 文件一并拷入）。把 `netlify.toml` 的 build 改回 `command = "npm run build"` / `publish = "dist"` 即可走构建部署。
+
+> 历史上还有一个 `_deploy/`（手动拖拽部署用的临时干净目录），已在 `.gitignore` 中忽略。
 
 ## PWA 使用说明
 - **桌面端（Chrome/Edge）**：地址栏右侧「安装」图标 → 安装为应用。

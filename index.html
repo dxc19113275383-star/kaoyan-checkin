@@ -4834,8 +4834,5 @@
   ['pageLearn','pageLearnTodo','pageResources','pageLearnVocab','pageLearnReading','pageLearnMath','pageLearnMistakes','pageLearnSyntax','pageLearnWriting','pageAI'].forEach(function(id) { var el = $(id); if(el) el.style.display = 'none'; });
 })();
 </script>
-<!-- V7.0 渐进增强：迁移层 + storage 桥（只读旧主状态 kaoyan_v2，写新键 ky_app_state_v7；全程 try/catch，绝不影响现役应用）。
-     Vite 构建时会把它打包并替换为带 hash 的产物；未走构建的纯静态部署下，浏览器忽略找不到的 TS 模块，应用照常运行。 -->
-<script type="module" src="/src/bootstrap.ts"></script>
 </body>
 </html>

@@ -34,11 +34,10 @@ V7.0 采用**渐进式重构**：现役 `index.html` 保持完整可用；新建
 ## 目录结构
 ```
 kaoyan-checkin/
-├── public/                 # PWA 静态资源（Vite 自动拷贝到 dist 根）
-│   ├── manifest.json
-│   ├── sw.js               # Service Worker（缓存 + Web Push 事件）
-│   └── icon.svg
-├── data/                   # 静态学习内容库（构建时拷贝进 dist/data）
+├── manifest.json           # PWA 清单（放仓库根，零构建静态部署）
+├── sw.js                   # Service Worker（缓存 + Web Push 事件，放根，作用域 /）
+├── icon.svg                # 应用图标
+├── data/                   # 静态学习内容库（放根；可选构建时也拷进 dist/data）
 │   ├── words/  reading/  math/  syntax/  writing/
 ├── netlify/functions/      # Netlify Functions（服务端）
 │   ├── chat.js             # DeepSeek 代理（AI）
@@ -144,8 +143,8 @@ type AppState = {
 - **容错**：`localStorageClient` 统一 try/catch，隐私模式/配额超限优雅降级（返回默认值，不抛异常）。
 
 ## PWA 架构
-- **manifest**（`public/manifest.json`）：`display: standalone`、`start_url: ./index.html`、暖色 `theme_color`、`icon.svg` maskable。
-- **Service Worker**（`public/sw.js`，构建后位于站点根，作用域 `/`）：
+- **manifest**（根 `manifest.json`）：`display: standalone`、`start_url: ./index.html`、暖色 `theme_color`、`icon.svg` maskable。
+- **Service Worker**（根 `sw.js`，作用域 `/`）：
   - install 预缓存 App Shell（index.html / manifest / icon）。
   - activate 清理旧缓存。
   - fetch：导航(HTML) 走 **stale-while-revalidate**；其它资源 **cache-first**。

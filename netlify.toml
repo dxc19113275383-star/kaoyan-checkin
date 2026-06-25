@@ -1,20 +1,18 @@
-# Netlify 部署配置 — V7.0 起改为 Vite 构建产物
+# Netlify 部署配置 —— 零构建静态部署（直接发布仓库根目录，无需 npm run build）
+# 现役应用 index.html 是自包含的纯静态单文件应用，data/ 为静态内容库；
+# 不需要构建即可运行。需要 React 工程外壳时再用 `npm run build`（见 README「两种部署模式」）。
 [build]
-  command = "npm run build"
-  publish = "dist"
+  publish = "."
   functions = "netlify/functions"
 
-[build.environment]
-  NODE_VERSION = "20"
-
-# AI 代理：前端调用 /api/chat → DeepSeek 代理函数
+# AI 代理：前端调用 /api/chat → DeepSeek 代理函数（仅在配置了函数与环境变量时生效）
 [[redirects]]
   from = "/api/chat"
   to = "/.netlify/functions/chat"
   status = 200
   force = true
 
-# SPA / PWA 回退：所有未命中路由回到 index.html（现役单文件应用入口）
+# SPA / PWA 回退：所有未命中路由回到 index.html
 [[redirects]]
   from = "/*"
   to = "/index.html"
