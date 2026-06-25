@@ -14,6 +14,8 @@ export default [
       'public/**',
       'data/**',
       'index.html',
+      'sw.js',
+      'preview.html',
       'eslint.config.js',
       'vite.config.ts',
     ],

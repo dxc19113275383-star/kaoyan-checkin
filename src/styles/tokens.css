@@ -1,15 +1,56 @@
-/* 设计 token —— 沿用现役应用暖色调（manifest theme_color #1d1c17）。 */
+/* 设计 token —— Apple-inspired（V7.2）。与现役 index.html 同一套设计语言。
+   保留 --ky-* 命名以兼容已有 React 组件 CSS；值改为浅灰白 + 墨绿 + 近黑。 */
 :root {
-  --ky-bg: #1d1c17;
-  --ky-surface: #2a2823;
-  --ky-surface-2: #34322b;
-  --ky-text: #f3efe6;
-  --ky-text-dim: #b8b2a3;
-  --ky-accent: #e0b34d;
-  --ky-accent-2: #7fae6e;
-  --ky-danger: #d9694f;
-  --ky-radius: 14px;
-  --ky-radius-sm: 9px;
+  /* —— 表面 / 背景 —— */
+  --ky-bg: #F5F5F7;
+  --ky-surface: rgba(255, 255, 255, 0.86);
+  --ky-surface-solid: #FFFFFF;
+  --ky-surface-2: #F2F2F7;
+  --ky-surface-deep: #1D1D1F;
+
+  /* —— 文字 —— */
+  --ky-text: #1D1D1F;
+  --ky-text-dim: #6E6E73;
+
+  /* —— 品牌：墨绿 + 暖橙强调 —— */
+  --ky-accent: #1F4D3F;
+  --ky-accent-2: #1F4D3F;
+  --ky-ember: #C2570F;
+  --ky-danger: #FF453A;
+  --ky-success: #34C759;
+
+  /* —— 边框 —— */
+  --ky-border: rgba(60, 60, 67, 0.12);
+
+  /* —— 圆角（Apple 厚圆角）—— */
+  --ky-radius: 24px;
+  --ky-radius-sm: 16px;
+  --ky-radius-pill: 999px;
   --ky-gap: 14px;
-  --ky-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+
+  /* —— 阴影 —— */
+  --ky-shadow: 0 10px 30px rgba(15, 23, 42, 0.06), 0 2px 8px rgba(15, 23, 42, 0.04);
+
+  --ky-font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+  --ky-font-num: ui-rounded, "SF Pro Rounded", -apple-system, system-ui, "PingFang SC", sans-serif;
+
+  --ky-safe-top: env(safe-area-inset-top, 0px);
+  --ky-safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ky-bg: #000000;
+    --ky-surface: rgba(28, 28, 30, 0.78);
+    --ky-surface-solid: #1C1C1E;
+    --ky-surface-2: #1C1C1E;
+    --ky-surface-deep: #0A0A0B;
+    --ky-text: #F5F5F7;
+    --ky-text-dim: #98989D;
+    --ky-accent: #5DBE9A;
+    --ky-accent-2: #5DBE9A;
+    --ky-ember: #E08A4F;
+    --ky-border: rgba(255, 255, 255, 0.10);
+    --ky-shadow: 0 10px 30px rgba(0, 0, 0, 0.40), 0 2px 8px rgba(0, 0, 0, 0.30);
+  }
 }
