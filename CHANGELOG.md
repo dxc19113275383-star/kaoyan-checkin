@@ -5,6 +5,12 @@
 ## [Unreleased]
 
 ### Added
+- **仪表盘做成真数据看板**（`DashboardPage`，全部派生自 `kaoyan_v2`，无需后端）：
+  - `Overview`：累计打卡 / 已认识词 / 已作答题 / 掌握难句 / 已读文章 / 待解错题 六项跨模块统计。
+  - `Heatmap`：当前阶段最近 8 周 × 7 天真实打卡格子。
+  - `TodayTasks`：今日打卡状态 + 本周进度条 + 考试倒计时。
+  - `WeaknessPanel`：按模块/考点聚合未解决错题 + 最近薄弱点笔记。
+  - 新增 `dashboardLogic` 纯函数（buildHeatmap / weaknessByMod / topWeakTags）+ 4 例单测。
 - **资料 / AI助手 / 推送 迁成可操作 React 页面**：
   - 资料 `ResourcesPage`：新增/删除网课·资料·真题链接（`resourcesStore`，3 例单测）。
   - AI助手 `AiAssistantPage`：模式切换 + 多轮对话，调 `aiClient`→`/api/chat`，历史持久化（`aiStore`，2 例单测）。

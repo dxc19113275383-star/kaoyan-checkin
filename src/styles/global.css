@@ -121,3 +121,23 @@ a { color: var(--ky-accent); }
 .ky-res__item { background: var(--ky-surface); border-radius: var(--ky-radius); padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .ky-res__main { display: flex; align-items: center; gap: 8px; }
 .ky-res__main a { color: var(--ky-accent); }
+
+/* 仪表盘 */
+.ky-today__line { margin: 0 0 10px; font-size: 14px; }
+.ky-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.ky-stat { background: var(--ky-surface-2); border-radius: var(--ky-radius-sm); padding: 12px 8px; text-align: center; display: grid; gap: 2px; }
+.ky-stat__v { font-size: 22px; font-weight: 700; color: var(--ky-accent); }
+.ky-stat__l { font-size: 12px; color: var(--ky-text-dim); }
+
+.ky-heat { display: grid; gap: 4px; font-size: 11px; }
+.ky-heat__head, .ky-heat__row { display: grid; grid-template-columns: 32px repeat(7, 1fr); gap: 4px; align-items: center; }
+.ky-heat__wk { color: var(--ky-text-dim); }
+.ky-heat__dl { text-align: center; color: var(--ky-text-dim); }
+.ky-heat__cell { aspect-ratio: 1; border-radius: 4px; background: var(--ky-surface-2); }
+.ky-heat__cell.is-on { background: var(--ky-accent-2); }
+
+.ky-weak { display: flex; gap: 8px; flex-wrap: wrap; }
+.ky-weak__chip { background: rgba(217,105,79,.16); color: var(--ky-text); border-radius: 999px; padding: 4px 12px; font-size: 13px; }
+.ky-weak__chip strong { color: var(--ky-danger); }
+.ky-weak__tags { color: var(--ky-text-dim); font-size: 13px; margin: 10px 0 0; }
+.ky-weak__notes { margin-top: 10px; }
