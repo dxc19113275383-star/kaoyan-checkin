@@ -1,0 +1,15 @@
+/* 设计 token —— 沿用现役应用暖色调（manifest theme_color #1d1c17）。 */
+:root {
+  --ky-bg: #1d1c17;
+  --ky-surface: #2a2823;
+  --ky-surface-2: #34322b;
+  --ky-text: #f3efe6;
+  --ky-text-dim: #b8b2a3;
+  --ky-accent: #e0b34d;
+  --ky-accent-2: #7fae6e;
+  --ky-danger: #d9694f;
+  --ky-radius: 14px;
+  --ky-radius-sm: 9px;
+  --ky-gap: 14px;
+  --ky-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+}

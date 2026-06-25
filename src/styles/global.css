@@ -1,0 +1,46 @@
+/* 全局样式 —— V7.0 React 工程外壳（preview.html）。现役 index.html 样式不受影响。 */
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: var(--ky-font);
+  background: var(--ky-bg);
+  color: var(--ky-text);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--ky-accent); }
+
+.ky-app { max-width: 760px; margin: 0 auto; padding: 16px; }
+.ky-app__header h1 { font-size: 20px; margin: 8px 0 2px; }
+.ky-app__sub { color: var(--ky-text-dim); font-size: 13px; margin: 0 0 12px; }
+.ky-app__main { margin-top: 16px; display: grid; gap: var(--ky-gap); }
+
+.ky-tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+.ky-tabs__tab {
+  background: var(--ky-surface); color: var(--ky-text-dim);
+  border: none; border-radius: 999px; padding: 6px 14px; font-size: 13px; cursor: pointer;
+}
+.ky-tabs__tab.is-active { background: var(--ky-accent); color: #1d1c17; font-weight: 600; }
+
+.ky-card { background: var(--ky-surface); border-radius: var(--ky-radius); padding: 14px 16px; }
+.ky-card__title { font-weight: 600; margin-bottom: 8px; }
+.ky-card__body { color: var(--ky-text-dim); font-size: 14px; }
+
+.ky-module__title { font-size: 18px; margin: 4px 0 12px; }
+.ky-module__legacy { font-size: 13px; color: var(--ky-text-dim); margin-top: 8px; }
+
+.ky-list { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+
+.ky-btn { border: none; border-radius: var(--ky-radius-sm); padding: 8px 14px; cursor: pointer; font-size: 14px; }
+.ky-btn--primary { background: var(--ky-accent); color: #1d1c17; }
+.ky-btn--ghost { background: var(--ky-surface-2); color: var(--ky-text); }
+.ky-btn--danger { background: var(--ky-danger); color: #fff; }
+
+.ky-progress { display: flex; align-items: center; gap: 8px; }
+.ky-progress__track { flex: 1; height: 8px; background: var(--ky-surface-2); border-radius: 999px; overflow: hidden; }
+.ky-progress__fill { height: 100%; background: var(--ky-accent-2); }
+.ky-progress__text { font-size: 12px; color: var(--ky-text-dim); }
+
+.ky-modal__overlay { position: fixed; inset: 0; background: rgba(0,0,0,.5); display: grid; place-items: center; }
+.ky-modal { position: relative; background: var(--ky-surface); border-radius: var(--ky-radius); padding: 18px; max-width: 92vw; width: 420px; }
+.ky-modal__title { font-weight: 600; margin-bottom: 10px; }
+.ky-modal__close { position: absolute; top: 8px; right: 10px; background: none; border: none; color: var(--ky-text-dim); font-size: 22px; cursor: pointer; }
