@@ -3688,21 +3688,11 @@
   };
 
   function showVocabSpellFeedback(correct, userInput, wd){
-    let fb='<div class="vocab-feedback">';
-    if(correct){
-      fb += fbHead(true,'正确')+' &nbsp; '+escAttr(wd.w)+(wd.ph?' '+escAttr(wd.ph):'');
-    } else {
-      fb += fbHead(false,'拼错了');
-      fb += '<div style="margin-top:6px;">你写的：<span style="color:var(--color-danger);font-family:var(--font-num);">'+escAttr(userInput)+'</span></div>';
-      fb += '<div>正确：<span style="color:var(--color-success);font-family:var(--font-num);font-weight:600;">'+escAttr(wd.w)+'</span>'+(wd.ph?' <span class="muted">'+escAttr(wd.ph):'')+'</span></div>';
-    }
-    fb += '<div style="margin-top:6px;color:var(--color-text-info);">'+escAttr(wd.def||'')+'</div>';
-    fb += vExBlockHtml(_vsession.lib, wd, 'vGenBoxSpell');
-    if(!correct){ fb+='<div class="tiny" style="color:var(--color-accent);margin-top:6px;display:flex;align-items:center;gap:5px;">'+I.bookmark+'已加入错词本，下次复习会再考你</div>'; }
-    fb += '</div>';
+    let fb='';
     fb += '<button class="btn-sm" style="width:100%;margin-top:10px;" onclick="vocabWordCard(\''+escAttr(_vsession.lib)+'\',\''+escAttr(wd.w).replace(/\x27/g,"\\\x27")+'\')">'+I.bookOpen+'词义详解</button>';
     fb += '<button class="btn-cta" style="margin-top:8px;" onclick="vocabNext()"><span>下一个 →</span></button>';
     $('vocabFb').innerHTML=fb;
+    if(!correct) vocabWordCard(_vsession.lib, wd.w); // 答错直接弹词义详解
   }
 
   window.vocabPick=function(btn){
@@ -3738,13 +3728,11 @@
 
   function showVocabFeedback(correct){
     const wd=_vsession.queue[_vsession.idx].wd;
-    let fb='<div class="vocab-feedback">'+fbHead(correct, correct?'正确':'再记一次')+' &nbsp; '+escAttr(wd.w)+(wd.ph?' '+escAttr(wd.ph):'')+'<br><span style="color:var(--color-text-info);">'+escAttr(wd.def)+'</span>';
-    fb+=vExBlockHtml(_vsession.lib, wd, 'vGenBoxMcq');
-    if(!correct){ fb+='<br><span class="tiny" style="color:var(--color-accent);margin-top:4px;display:inline-flex;align-items:center;gap:5px;">'+I.bookmark+'已加入错词本，下次复习会再考你</span>'; }
-    fb+='</div>';
+    let fb='';
     fb+='<button class="btn-sm" style="width:100%;margin-top:10px;" onclick="vocabWordCard(\''+escAttr(_vsession.lib)+'\',\''+escAttr(wd.w).replace(/\x27/g,"\\\x27")+'\')">'+I.bookOpen+'词义详解</button>';
     fb+='<button class="btn-sm" style="width:100%;margin-top:8px;background:var(--color-text-info);color:#fff;border-color:var(--color-text-info);padding:10px;" onclick="vocabNext()">下一个 →</button>';
     $('vocabFb').innerHTML=fb;
+    if(!correct) vocabWordCard(_vsession.lib, wd.w); // 答错直接弹词义详解
   }
 
   window.vocabKnown=function(){
@@ -4054,12 +4042,23 @@
     document.querySelectorAll('#readingView .rd-word').forEach(function(el){ if(saved[el.getAttribute('data-w')]) el.classList.add('rd-saved'); });
   }
 
+  /** 把词库 def 串按词性拆成「全部释义」多行（内置，零 Token）。例：
+      "v.使加速,促进 vi.加快,增加" → ["v.使加速,促进","vi.加快,增加"]。 */
+  function splitDefSenses(def){
+    if(!def) return [];
+    const POS='adj|adv|ad|abbr|aux|art|a|vt|vi|v|prep|pron|pl|conj|num|interj|int|n';
+    const marked=String(def).replace(new RegExp('(^|[\\s；;,，])((?:'+POS+')\\.)','g'), '$1$2');
+    const parts=marked.split('').map(function(s){return s.trim().replace(/^[；;,，\s]+/,'');}).filter(Boolean);
+    return parts.length?parts:[String(def).trim()];
+  }
   /** 通用查词卡（阅读/背单词共用）。entry={w,ph,def,ex,exCn}；opts.showSave 显示「加入背单词」。 */
   window.openWordCard = function(entry, opts){
     opts=opts||{};
     if(!entry||!entry.w) return;
     window._wcWord=entry; window._rdTapWord=entry; // 兼容 readingSaveWord
     const wEsc=escAttr(entry.w);
+    const senses=splitDefSenses(entry.def);
+    const cached=genCacheGet('wd_'+entry.w.toLowerCase());
     let html='<div class="rw-head"><div>';
     html+=  '<div class="rw-w">'+wEsc+'</div>';
     if(entry.ph) html+='<div class="rw-ph">'+escAttr(entry.ph)+'</div>';
@@ -4068,18 +4067,26 @@
     html+=    '<button data-say="'+wEsc+'" data-lang="en-GB" onclick="vSpeakEl(this)" aria-label="英式发音"><span class="rw-tag">英</span>'+I.sound+'</button>';
     html+=  '</div>';
     html+='</div><button class="btn-sm spk" style="width:32px;height:32px;border-radius:8px;" onclick="closeWordCard()" aria-label="关闭">'+I.x+'</button></div>';
-    html+='<div class="rw-sec"><div class="rw-sec-t">释义</div><div class="rw-def-item">'+(entry.def?escAttr(entry.def):'<span class="muted">未收录释义，点下方「AI 详解」生成</span>')+'</div></div>';
-    if(entry.ex){ html+='<div class="rw-sec"><div class="rw-sec-t">例句</div><div class="rw-ex-en">'+escAttr(entry.ex)+'</div>'+(entry.exCn?'<div class="rw-ex-cn">'+escAttr(entry.exCn)+'</div>':'')+'</div>'; }
+    // 释义：内置词库 def 拆词性多行（零 Token）；未收录时占位，下面自动 AI 补全
+    if(senses.length){
+      html+='<div class="rw-sec"><div class="rw-sec-t">释义</div>';
+      senses.forEach(function(s){ html+='<div class="rw-def-item">'+escAttr(s)+'</div>'; });
+      html+='</div>';
+    } else if(!cached){
+      html+='<div class="rw-sec"><div class="rw-sec-t">释义</div><div class="rw-def-item muted" id="rwDefLoading">未收录，正在用 AI 补全…</div></div>';
+    }
+    if(entry.ex){ html+='<div class="rw-sec"><div class="rw-sec-t">例句</div><div class="rw-ex-en">'+escAttr(entry.ex)+' <button class="spk" data-say="'+escAttr(entry.ex)+'" onclick="vSpeakEl(this)" aria-label="朗读例句">'+I.sound+'</button></div>'+(entry.exCn?'<div class="rw-ex-cn">'+escAttr(entry.exCn)+'</div>':'')+'</div>'; }
     html+='<div id="rwAnalysis"></div>';
     html+='<div class="row" style="gap:8px;margin-top:14px;">';
-    html+='<button class="btn-sm" id="rwAiBtn" style="flex:1;" onclick="readingWordAnalyze()">'+I.spark+'AI 详解</button>';
+    html+='<button class="btn-sm" id="rwAiBtn" style="flex:1;" onclick="readingWordAnalyze()">'+I.spark+(cached?'重新生成':'AI 词根+例句')+'</button>';
     if(opts.showSave) html+='<button class="btn-sm" style="flex:1;background:var(--color-primary);color:var(--color-primary-on);border-color:var(--color-primary);" onclick="readingSaveWord()">'+I.plus+'加入背单词</button>';
     html+='</div>';
     const pop=$('wordCard');
     pop.innerHTML=html; pop.style.display=''; pop.scrollTop=0;
     if(opts.speak!==false) vSpeak(entry.w);
-    const cached=genCacheGet('wd_'+entry.w.toLowerCase());
     if(cached) renderWordAnalysis(cached);
+    // 仅「未收录且无缓存」时自动 AI 补全——内置覆盖绝大多数词，冷门词才花 Token（且永久缓存）
+    else if(!senses.length){ readingWordAnalyze(); }
   };
   window.closeWordCard = function(){ const p=$('wordCard'); if(p) p.style.display='none'; };
 
@@ -4103,7 +4110,7 @@
   function renderWordAnalysis(d){
     const box=$('rwAnalysis'); if(!box||!d) return;
     let h='';
-    if(d.defs && d.defs.length){ h+='<div class="rw-sec"><div class="rw-sec-t">全部释义</div>'+d.defs.map(function(x){return '<div class="rw-def-item">'+escAttr(x)+'</div>';}).join('')+'</div>'; }
+    if(d.defs && d.defs.length && !(window._wcWord && window._wcWord.def)){ h+='<div class="rw-sec"><div class="rw-sec-t">全部释义</div>'+d.defs.map(function(x){return '<div class="rw-def-item">'+escAttr(x)+'</div>';}).join('')+'</div>'; }
     if(d.root){ h+='<div class="rw-sec"><div class="rw-sec-t">词根助记</div><div class="rw-root">'+escAttr(d.root)+'</div></div>'; }
     if(d.ex){ h+='<div class="rw-sec"><div class="rw-sec-t">AI 例句</div><div class="rw-ex-en">'+escAttr(d.ex)+' <button class="spk" data-say="'+escAttr(d.ex)+'" onclick="vSpeakEl(this)" aria-label="朗读例句">'+I.sound+'</button></div>'+(d.exCn?'<div class="rw-ex-cn">'+escAttr(d.exCn)+'</div>':'')+'</div>'; }
     box.innerHTML=h;
