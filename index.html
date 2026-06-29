@@ -1270,6 +1270,9 @@
     </div>
   </div>
 
+  <!-- 共享查词卡（阅读/背单词通用，置于页面外层以便任意页都能弹出） -->
+  <div id="wordCard" class="reading-pop" style="display:none;"></div>
+
   <!-- ====== 数学 ====== -->
   <div id="pageLearnMath" style="display:none;">
     <div id="mathHome"></div>
@@ -3696,7 +3699,9 @@
     fb += '<div style="margin-top:6px;color:var(--color-text-info);">'+escAttr(wd.def||'')+'</div>';
     fb += vExBlockHtml(_vsession.lib, wd, 'vGenBoxSpell');
     if(!correct){ fb+='<div class="tiny" style="color:var(--color-accent);margin-top:6px;display:flex;align-items:center;gap:5px;">'+I.bookmark+'已加入错词本，下次复习会再考你</div>'; }
-    fb += '</div><button class="btn-cta" style="margin-top:10px;" onclick="vocabNext()"><span>下一个 →</span></button>';
+    fb += '</div>';
+    fb += '<button class="btn-sm" style="width:100%;margin-top:10px;" onclick="vocabWordCard(\''+escAttr(_vsession.lib)+'\',\''+escAttr(wd.w).replace(/\x27/g,"\\\x27")+'\')">'+I.bookOpen+'词义详解</button>';
+    fb += '<button class="btn-cta" style="margin-top:8px;" onclick="vocabNext()"><span>下一个 →</span></button>';
     $('vocabFb').innerHTML=fb;
   }
 
@@ -3736,7 +3741,9 @@
     let fb='<div class="vocab-feedback">'+fbHead(correct, correct?'正确':'再记一次')+' &nbsp; '+escAttr(wd.w)+(wd.ph?' '+escAttr(wd.ph):'')+'<br><span style="color:var(--color-text-info);">'+escAttr(wd.def)+'</span>';
     fb+=vExBlockHtml(_vsession.lib, wd, 'vGenBoxMcq');
     if(!correct){ fb+='<br><span class="tiny" style="color:var(--color-accent);margin-top:4px;display:inline-flex;align-items:center;gap:5px;">'+I.bookmark+'已加入错词本，下次复习会再考你</span>'; }
-    fb+='</div><button class="btn-sm" style="width:100%;margin-top:10px;background:var(--color-text-info);color:#fff;border-color:var(--color-text-info);padding:10px;" onclick="vocabNext()">下一个 →</button>';
+    fb+='</div>';
+    fb+='<button class="btn-sm" style="width:100%;margin-top:10px;" onclick="vocabWordCard(\''+escAttr(_vsession.lib)+'\',\''+escAttr(wd.w).replace(/\x27/g,"\\\x27")+'\')">'+I.bookOpen+'词义详解</button>';
+    fb+='<button class="btn-sm" style="width:100%;margin-top:8px;background:var(--color-text-info);color:#fff;border-color:var(--color-text-info);padding:10px;" onclick="vocabNext()">下一个 →</button>';
     $('vocabFb').innerHTML=fb;
   }
 
@@ -3808,6 +3815,7 @@
         html+='<div class="muted" style="font-size:13px;margin-top:2px;">'+escAttr(wd.def||'')+'</div>';
         html+='<div class="row" style="gap:8px;margin-top:6px;align-items:center;">';
         html+='<button class="spk" data-say="'+escAttr(wd.w)+'" onclick="vSpeakEl(this)" title="发音" aria-label="发音">'+I.sound+'</button>';
+        html+='<button class="btn-sm" style="font-size:12px;padding:3px 10px;" onclick="vocabWordCard(\''+escAttr(v.active)+'\',\''+wEsc+'\')">详解</button>';
         html+='<button class="btn-sm" style="font-size:12px;padding:3px 10px;" onclick="vbToggleEx(\''+escAttr(v.active)+'\',\''+wEsc+'\',\''+id+'\')">例句</button>';
         html+='<button class="btn-sm" style="font-size:12px;padding:3px 10px;" onclick="vbReview(\''+wEsc+'\')">重新复习</button>';
         html+='</div>';
@@ -4046,11 +4054,11 @@
     document.querySelectorAll('#readingView .rd-word').forEach(function(el){ if(saved[el.getAttribute('data-w')]) el.classList.add('rd-saved'); });
   }
 
-  window.readingTap = function(el){
-    const w=el.getAttribute('data-w');
-    const hit=_readingDict[w] || _readingDict[w.replace(/(ed|ing|es|s)$/,'')] || null;
-    const entry=hit || {w:w, def:''};
-    window._rdTapWord=entry;
+  /** 通用查词卡（阅读/背单词共用）。entry={w,ph,def,ex,exCn}；opts.showSave 显示「加入背单词」。 */
+  window.openWordCard = function(entry, opts){
+    opts=opts||{};
+    if(!entry||!entry.w) return;
+    window._wcWord=entry; window._rdTapWord=entry; // 兼容 readingSaveWord
     const wEsc=escAttr(entry.w);
     let html='<div class="rw-head"><div>';
     html+=  '<div class="rw-w">'+wEsc+'</div>';
@@ -4059,18 +4067,38 @@
     html+=    '<button data-say="'+wEsc+'" data-lang="en-US" onclick="vSpeakEl(this)" aria-label="美式发音"><span class="rw-tag">美</span>'+I.sound+'</button>';
     html+=    '<button data-say="'+wEsc+'" data-lang="en-GB" onclick="vSpeakEl(this)" aria-label="英式发音"><span class="rw-tag">英</span>'+I.sound+'</button>';
     html+=  '</div>';
-    html+='</div><button class="btn-sm spk" style="width:32px;height:32px;border-radius:8px;" onclick="readingClosePop()" aria-label="关闭">'+I.x+'</button></div>';
+    html+='</div><button class="btn-sm spk" style="width:32px;height:32px;border-radius:8px;" onclick="closeWordCard()" aria-label="关闭">'+I.x+'</button></div>';
     html+='<div class="rw-sec"><div class="rw-sec-t">释义</div><div class="rw-def-item">'+(entry.def?escAttr(entry.def):'<span class="muted">未收录释义，点下方「AI 详解」生成</span>')+'</div></div>';
     if(entry.ex){ html+='<div class="rw-sec"><div class="rw-sec-t">例句</div><div class="rw-ex-en">'+escAttr(entry.ex)+'</div>'+(entry.exCn?'<div class="rw-ex-cn">'+escAttr(entry.exCn)+'</div>':'')+'</div>'; }
     html+='<div id="rwAnalysis"></div>';
     html+='<div class="row" style="gap:8px;margin-top:14px;">';
     html+='<button class="btn-sm" id="rwAiBtn" style="flex:1;" onclick="readingWordAnalyze()">'+I.spark+'AI 详解</button>';
-    html+='<button class="btn-sm" style="flex:1;background:var(--color-primary);color:var(--color-primary-on);border-color:var(--color-primary);" onclick="readingSaveWord()">'+I.plus+'加入背单词</button>';
+    if(opts.showSave) html+='<button class="btn-sm" style="flex:1;background:var(--color-primary);color:var(--color-primary-on);border-color:var(--color-primary);" onclick="readingSaveWord()">'+I.plus+'加入背单词</button>';
     html+='</div>';
-    $('readingPop').innerHTML=html; $('readingPop').style.display=''; $('readingPop').scrollTop=0;
-    vSpeak(entry.w);
+    const pop=$('wordCard');
+    pop.innerHTML=html; pop.style.display=''; pop.scrollTop=0;
+    if(opts.speak!==false) vSpeak(entry.w);
     const cached=genCacheGet('wd_'+entry.w.toLowerCase());
     if(cached) renderWordAnalysis(cached);
+  };
+  window.closeWordCard = function(){ const p=$('wordCard'); if(p) p.style.display='none'; };
+
+  window.readingTap = function(el){
+    const w=el.getAttribute('data-w');
+    const hit=_readingDict[w] || _readingDict[w.replace(/(ed|ing|es|s)$/,'')] || null;
+    const entry=hit || {w:w, def:''};
+    openWordCard(entry, {showSave:true});
+  };
+  /** 背单词侧：按 词条对象 或 lib+word 打开查词卡（不带「加入背单词」）。 */
+  window.vocabWordCard = function(lib, word){
+    let wd=null;
+    if(_vsession && _vsession.words){ wd=_vsession.words.find(function(x){return x.w===word;}); }
+    if(!wd && _vocabCache[lib]){ wd=_vocabCache[lib].find(function(x){return x.w===word;}); }
+    if(!wd) wd={ w: word };
+    // 合并 AI 例句缓存（若词条本身无例句）
+    const r = wd.ex ? null : genCacheGet('ex_'+lib+':'+wd.w);
+    const entry = { w: wd.w, ph: wd.ph||'', def: wd.def||'', ex: wd.ex||(r&&r.ex)||'', exCn: wd.exCn||(r&&r.exCn)||'' };
+    openWordCard(entry, {showSave:false, speak:false});
   };
   function renderWordAnalysis(d){
     const box=$('rwAnalysis'); if(!box||!d) return;
@@ -4132,7 +4160,7 @@
     addWordToReadingLib(entry);
     document.querySelectorAll('#readingView .rd-word').forEach(function(el){ if(el.getAttribute('data-w')===entry.w.toLowerCase()) el.classList.add('rd-saved'); });
     const r=ensureReading(); if(_readingCur){ const pr=r.progress[_readingCur.id]=r.progress[_readingCur.id]||{}; pr.saved=countReadingLib(); save(); }
-    readingClosePop();
+    closeWordCard();
   };
 
   window.markPassageRead = function(id){

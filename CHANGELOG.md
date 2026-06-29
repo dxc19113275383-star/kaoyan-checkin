@@ -9,6 +9,7 @@
   - **逐句渲染**——文章不再是整段，按句切分（`rdSplitEn`/`rdSplitCn`），每句独立成块、自带 🔊；「显示译文」时内置 3 篇逐句中英对照（我手写的段译按句号切分恰好与英文句数对齐，自动对齐；不齐则回退整段译文）。
   - **试听改逐句**——`_rdPlayer.units` 改为句级单元，「试听全文」逐句连读 + 高亮当前句；点某句 🔊 从该句起读。
   - **查词卡（百词斩式）**——点单词弹出富卡片：大词 + 音标 + **美/英两种发音**（`speechSynthesis` en-US/en-GB）+ 释义 + 例句；新增「AI 详解」按 DeepSeek 生成**全部释义（分条）/ 词根助记 / 地道例句+翻译**，解析缓存 `localStorage['gen_wd_<word>']`，下次秒开（不编造词频/配图）。
+- **背单词也能用查词卡**：把查词卡抽成通用组件 `openWordCard(entry,opts)` + 共享浮层 `#wordCard`（移出阅读页，任意页可弹）。斩词/拼写答完的反馈卡、以及「已学单词浏览」每行都加了「词义详解」入口，点开即同款富卡片（美/英发音 + 释义 + 例句 + AI 详解；背单词侧不显示「加入背单词」）。
 
 ### Changed
 - **极简高级 UI 改版（去 emoji · 全量 SVG 线性图标）**：全站布局 emoji 统一换成项目既有的 `I` 线性图标集（保持单一图标语言，未引入第二套）。新增图标 `sound/play/stop/refresh/bookOpen/arrowLeft/x/xCircle/bookmark/pen/layers/grid/sigma/robot`。
