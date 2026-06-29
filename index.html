@@ -3481,6 +3481,7 @@
 
   window.openVocab = function(){
     ensureVocab();
+    loadWordDetail();
     $('vocabSession').style.display='none';
     $('vocabHome').style.display='';
     loadVocabLibs().then(renderVocabHome);
@@ -3874,6 +3875,7 @@
 
   window.openReading = function(){
     ensureReading();
+    loadWordDetail();
     $('readingView').style.display='none'; $('readingPop').style.display='none';
     $('readingHome').style.display='';
     const r=ensureReading();
@@ -4042,6 +4044,19 @@
     document.querySelectorAll('#readingView .rd-word').forEach(function(el){ if(saved[el.getAttribute('data-w')]) el.classList.add('rd-saved'); });
   }
 
+  // 内置词义详解库（词根助记 + 例句，离线零 Token；由 scripts/gen-word-details.mjs 批量生成）
+  let _wordDetail=null, _wordDetailLoading=null;
+  function loadWordDetail(){
+    if(_wordDetail) return Promise.resolve(_wordDetail);
+    if(_wordDetailLoading) return _wordDetailLoading;
+    _wordDetailLoading=fetch('data/words/kaoyan-5500-detail.json')
+      .then(function(r){ return r.ok?r.json():{}; })
+      .then(function(j){ _wordDetail=j||{}; return _wordDetail; })
+      .catch(function(){ _wordDetail={}; return _wordDetail; });
+    return _wordDetailLoading;
+  }
+  window.loadWordDetail=loadWordDetail;
+
   /** 把词库 def 串按词性拆成「全部释义」多行（内置，零 Token）。例：
       "v.使加速,促进 vi.加快,增加" → ["v.使加速,促进","vi.加快,增加"]。 */
   function splitDefSenses(def){
@@ -4084,9 +4099,15 @@
     const pop=$('wordCard');
     pop.innerHTML=html; pop.style.display=''; pop.scrollTop=0;
     if(opts.speak!==false) vSpeak(entry.w);
-    if(cached) renderWordAnalysis(cached);
-    // 仅「未收录且无缓存」时自动 AI 补全——内置覆盖绝大多数词，冷门词才花 Token（且永久缓存）
-    else if(!senses.length){ readingWordAnalyze(); }
+    const lw=entry.w.toLowerCase();
+    if(cached){ renderWordAnalysis(cached); return; }
+    // 优先内置详解库（词根+例句，零 Token）；查不到再按需 AI，且只对「未收录释义」的冷门词自动补
+    loadWordDetail().then(function(map){
+      if(window._wcWord!==entry) return;   // 卡片已切到别的词，放弃
+      const d=map[lw];
+      if(d){ renderWordAnalysis(d); }
+      else if(!senses.length){ readingWordAnalyze(); }
+    });
   };
   window.closeWordCard = function(){ const p=$('wordCard'); if(p) p.style.display='none'; };
 
@@ -4112,7 +4133,7 @@
     let h='';
     if(d.defs && d.defs.length && !(window._wcWord && window._wcWord.def)){ h+='<div class="rw-sec"><div class="rw-sec-t">全部释义</div>'+d.defs.map(function(x){return '<div class="rw-def-item">'+escAttr(x)+'</div>';}).join('')+'</div>'; }
     if(d.root){ h+='<div class="rw-sec"><div class="rw-sec-t">词根助记</div><div class="rw-root">'+escAttr(d.root)+'</div></div>'; }
-    if(d.ex){ h+='<div class="rw-sec"><div class="rw-sec-t">AI 例句</div><div class="rw-ex-en">'+escAttr(d.ex)+' <button class="spk" data-say="'+escAttr(d.ex)+'" onclick="vSpeakEl(this)" aria-label="朗读例句">'+I.sound+'</button></div>'+(d.exCn?'<div class="rw-ex-cn">'+escAttr(d.exCn)+'</div>':'')+'</div>'; }
+    if(d.ex){ h+='<div class="rw-sec"><div class="rw-sec-t">例句</div><div class="rw-ex-en">'+escAttr(d.ex)+' <button class="spk" data-say="'+escAttr(d.ex)+'" onclick="vSpeakEl(this)" aria-label="朗读例句">'+I.sound+'</button></div>'+(d.exCn?'<div class="rw-ex-cn">'+escAttr(d.exCn)+'</div>':'')+'</div>'; }
     box.innerHTML=h;
     const btn=$('rwAiBtn'); if(btn){ btn.disabled=false; btn.innerHTML=I.refresh+'重新生成'; }
   }

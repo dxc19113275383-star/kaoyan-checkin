@@ -55,7 +55,7 @@ exports.handler = async function(event) {
             { role: "user", content: question }
           ],
           temperature: 0.3,
-          max_tokens: 600
+          max_tokens: Math.min(Math.max(parseInt(body.maxTokens, 10) || 600, 200), 4000)
         })
       });
       const genRaw = await genResp.text();
