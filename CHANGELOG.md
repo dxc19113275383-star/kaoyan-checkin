@@ -5,6 +5,12 @@
 ## [Unreleased]
 
 ### Changed
+- **极简高级 UI 改版（去 emoji · 全量 SVG 线性图标）**：全站布局 emoji 统一换成项目既有的 `I` 线性图标集（保持单一图标语言，未引入第二套）。新增图标 `sound/play/stop/refresh/bookOpen/arrowLeft/x/xCircle/bookmark/pen/layers/grid/sigma/robot`。
+  - **发音按钮重做**：丑陋的 🔊 emoji → 极简圆形描边图标按钮（卡片大号 `.vocab-speak` + 行内 `.spk`），覆盖单词卡/拼写卡/例句/已学浏览/阅读逐段/查词弹层。
+  - **背单词主页重排**：卡片 `.fill-card` 撑满视口（消除底部大片留白）；新增「开始复习」按钮（只练到期词，`buildVocabQueue('review')`）；「每日新词 / 错词本 / 已学」改为更小、钉在卡片底部的次级按钮；主操作升级为 `.btn-cta`。
+  - **学习中心 hub**：10 个模块卡 emoji 图标 → 线性 SVG（书/书页/Σ/分层/笔/书签/网格/机器人/文件夹）。
+  - **反馈/完成态**：对错标题用 `fbHead()`（图标+语义色，替代 ✅❌）；完成页 🎉/💪 → 语义色对勾；错词提示 📌 → 书签图标；偏科预警 🔴🟡 → 语义色圆点。
+  - 长难句/作文/数学/错题/AI 训练横幅/仪表盘/推送设置等处的 emoji 同步替换或移除；保留排版箭头 `← →` 与极简对勾 `✓`。
 - **恢复零构建静态部署（默认）**：现役 `index.html` 是自包含纯静态应用，无需 `npm run build` 即可部署（GitHub Pages / Netlify 拖拽 / 任意静态托管）。
   - PWA 文件（`manifest.json`/`sw.js`/`icon.svg`）从 `public/` 移回**仓库根目录**；`data/` 本就在根。
   - `netlify.toml` 改为 `publish = "."`、移除 build 命令（不再消耗构建额度）。
