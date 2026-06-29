@@ -40,6 +40,41 @@ exports.handler = async function(event) {
       };
     }
 
+    // mode=gen：内容生成通道（例句 / 句子翻译）。跳过陪跑型系统提示，低温度返回纯净文本，便于前端按需缓存。
+    if (mode === "gen") {
+      const sys = (typeof body.system === "string" && body.system.trim())
+        ? body.system
+        : "你是一名严谨的考研英语内容助手。只输出被要求的内容本身，不要寒暄、不要解释、不要使用 Markdown 代码块。";
+      const genResp = await fetch("https://api.deepseek.com/chat/completions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}` },
+        body: JSON.stringify({
+          model: "deepseek-chat",
+          messages: [
+            { role: "system", content: sys },
+            { role: "user", content: question }
+          ],
+          temperature: 0.3,
+          max_tokens: 600
+        })
+      });
+      const genRaw = await genResp.text();
+      if (!genResp.ok) {
+        return {
+          statusCode: genResp.status,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          body: JSON.stringify({ error: "DeepSeek API error", status: genResp.status, detail: genRaw.slice(0, 500) })
+        };
+      }
+      const genData = JSON.parse(genRaw);
+      const genReply = genData.choices?.[0]?.message?.content || "";
+      return {
+        statusCode: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        body: JSON.stringify({ reply: genReply })
+      };
+    }
+
     // Simple greeting → short reply
     const trimmed = question.trim();
     if (/^(你好|在吗|hi|hello|嗨|哈喽|hey|早上好|下午好|晚上好)[\s!！。.]*$/i.test(trimmed)) {
