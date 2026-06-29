@@ -42,11 +42,13 @@
     --color-text-warning: #854F0B;
     --color-text-success: #0F6E56;
 
-    /* —— 品牌：PayPal 蓝（蓝/白主题） —— */
-    --color-primary: #0070E0;
-    --color-primary-strong: #0059B3;
-    --color-primary-soft: #E5F0FB;
+    /* —— 品牌：PayPal 蓝（柔和版 · 蓝/白主题 + 渐变） —— */
+    --color-primary: #1A6FD4;
+    --color-primary-strong: #1257B0;
+    --color-primary-soft: #E9F1FB;
     --color-primary-on: #FFFFFF;
+    --brand-gradient: linear-gradient(150deg, #2B82E2 0%, #135FB6 52%, #0A3C84 100%);
+    --brand-gradient-soft: linear-gradient(135deg, #2E86E6 0%, #1257B0 100%);
     --brand: var(--color-primary);
     --brand-strong: var(--color-primary-strong);
     --brand-soft: var(--color-primary-soft);
@@ -190,7 +192,7 @@
   .card.hero { border-radius: var(--radius-xl); padding: 24px 24px 22px; box-shadow: var(--shadow-elevated); border-color: transparent; }
   /* Hero 深色版（"绿+黑"中的"黑"轴，仅 1-2 处） */
   .card.hero.hero--deep, .card.deep {
-    background: var(--color-surface-deep);
+    background: var(--brand-gradient);
     color: var(--color-text-on-deep);
     border-color: transparent;
     box-shadow: var(--shadow-deep-on-light);
@@ -437,6 +439,9 @@
   .res-filter { padding: 5px 8px; border-radius: 6px; border: 0.5px solid var(--color-border-secondary); background: var(--color-background-secondary); color: var(--color-text-primary); font-size: 12px; font-family: var(--font-sans); }
   /* 学习中心 hub */
   .learn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .lc-section { grid-column: 1 / -1; font-size: 12px; font-weight: 700; letter-spacing: .06em; color: var(--color-text-tertiary); margin: 14px 2px 0; }
+  .lc-section:first-child { margin-top: 2px; }
+  .learn-card.lc-soon { opacity: .6; }
   /* —— 学习中心 hub 卡：iOS 小组件式 —— */
   .learn-card {
     position: relative; text-align: left;
@@ -534,6 +539,10 @@
   .mc-row .mc-del { width: 30px; height: 30px; min-width: 30px; min-height: 30px; color: var(--color-text-tertiary); }
   .mc-row .mc-del svg { width: 15px; height: 15px; }
   .mc-help { margin-top: 16px; padding: 12px 14px; border-radius: 10px; background: var(--color-background-secondary); }
+  .mc-rate button { font-size: 12px; font-weight: 600; padding: 0 4px; }
+  .mc-notes { margin-top: 16px; }
+  .mc-note-ta { width: 100%; min-height: 96px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--color-border-strong); background: var(--color-background-primary); color: var(--color-text-primary); font-size: 14px; line-height: 1.7; font-family: var(--font-sans); resize: vertical; box-sizing: border-box; }
+  .mc-note-ta:focus { outline: none; border-color: var(--color-primary); }
   /* 背单词增强：灯泡详情 + 可点击例句 + 查词弹窗（百词斩风格） */
   .vocab-lamp { display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 50%; border: 0.5px solid var(--color-border-secondary); background: var(--color-background-secondary); cursor: pointer; font-size: 18px; margin: 10px 0 0 8px; vertical-align: middle; }
   .vocab-lamp.on { background: #fde68a; border-color: #f59e0b; }
@@ -634,8 +643,8 @@
   .btn-primary { background: var(--brand); color: var(--brand-on); border-color: var(--brand); }
   .btn-primary:active { background: var(--brand-strong); }
   .btn-ghost { background: transparent; border-color: transparent; color: var(--color-text-secondary); }
-  .btn-cta { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; height: 52px; padding: 0 22px; font-size: 15px; font-weight: 600; letter-spacing: -0.01em; border-radius: var(--radius-sm); border: none; background: var(--color-primary); color: var(--color-primary-on); cursor: pointer; box-shadow: var(--shadow-soft); transition: transform .15s var(--ease-out), box-shadow .2s var(--ease), background .2s var(--ease); -webkit-tap-highlight-color: transparent; }
-  .btn-cta:active { transform: scale(.98); background: var(--color-primary-strong); box-shadow: var(--shadow-pressed); }
+  .btn-cta { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; height: 52px; padding: 0 22px; font-size: 15px; font-weight: 600; letter-spacing: -0.01em; border-radius: var(--radius-sm); border: none; background: var(--brand-gradient-soft); color: var(--color-primary-on); cursor: pointer; box-shadow: var(--shadow-soft); transition: transform .15s var(--ease-out), box-shadow .2s var(--ease), filter .2s var(--ease); -webkit-tap-highlight-color: transparent; }
+  .btn-cta:active { transform: scale(.98); filter: brightness(.92); box-shadow: var(--shadow-pressed); }
   /* Button-in-button：CTA 尾部圆形图标（high-end haptic 细节，克制版） */
   .btn-cta .cta-ico { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: var(--radius-pill); background: rgba(255,255,255,.18); transition: transform .25s var(--ease); }
   .btn-cta:active .cta-ico { transform: translateX(2px); }
@@ -723,7 +732,7 @@
   /* Hero——唯一的品牌着色焦点（深墨绿，非廉价亮色/紫蓝渐变） */
   /* —— Hero 卡：深色（"绿+黑"中的"黑"轴），仅首页 hero 用 —— */
   .hero {
-    background: var(--color-surface-deep);
+    background: var(--brand-gradient);
     color: var(--color-text-on-deep);
     border: none;
     padding: 24px 24px 22px;
@@ -1329,7 +1338,7 @@
     <div class="modal-overlay" id="mcImport" style="display:none;">
       <div class="modal" style="max-width:460px;max-height:90vh;overflow-y:auto;">
         <h3>批量导入课程</h3>
-        <p class="tiny muted" style="margin:4px 0 8px;">粘贴 JSON 数组，每项：<code>{"chapter":"第1章","title":"1-1 ...","url":"https://….mp4"}</code>。url 须为可直链播放地址。</p>
+        <p class="tiny muted" style="margin:4px 0 8px;">粘贴课程 JSON 数组，每项：<code>{"chapter":"第1章","title":"1-1 ...","url":"https://….mp4"}</code>（url 须为可直链播放地址）；也可粘贴「导出备份」的 JSON 来恢复课程+进度+笔记。</p>
         <textarea id="mcImpJson" placeholder='[{"chapter":"第1章 函数与极限","title":"1-1 映射与函数","url":"https://oss.example.com/math/1-1.mp4"}]' style="width:100%;min-height:200px;font-family:monospace;font-size:12px;"></textarea>
         <div class="row" style="justify-content:flex-end;gap:8px;margin-top:8px;">
           <button class="btn-sm" id="mcImpCancel">取消</button>
@@ -3357,34 +3366,38 @@
   // ===== PAGE SWITCHING =====
   // ===== 学习中心 =====
   const LEARN_MODULES = [
-    { key:'today',     icon:I.grid,     title:'今日学习', sub:'今天该背/读/做的清单',     ready:false, todo:'引擎齐了后，这里会聚合今日的背单词、阅读、数学任务，一键直达。' },
-    { key:'vocab',     icon:I.book,     title:'背单词',   sub:'多词库 · 斩词 · 艾宾浩斯',   ready:true,  todo:'' },
-    { key:'reading',   icon:I.bookOpen, title:'阅读',     sub:'精读 · 点词查义 · 加入背单词', ready:true,  todo:'' },
-    { key:'math',      icon:I.sigma,    title:'数学',     sub:'分类练习 · 错题本 · AI讲解', ready:true,  todo:'' },
-    { key:'mathcourse',icon:I.play,     title:'数学课程', sub:'视频课 · 章节 · 续播',     ready:true,  todo:'' },
-    { key:'syntax',    icon:I.layers,   title:'长难句',   sub:'真题难句 · 成分拆解 · AI讲解', ready:true,  todo:'' },
-    { key:'writing',   icon:I.pen,      title:'作文',     sub:'AI 批改 · 范文 · 模板',     ready:true,  todo:'' },
-    { key:'mistakes',  icon:I.bookmark, title:'错题中心', sub:'跨模块错题 · 一键再练',     ready:true,  todo:'' },
-    { key:'exams',     icon:I.edit,     title:'真题题库', sub:'按年份/科目/题型',         ready:false, todo:'结构化真题库，作为模拟考与数学练习的内容底座。' },
-    { key:'mock',      icon:I.robot,    title:'AI模拟考', sub:'作文/翻译批改 · 模拟卷',    ready:false, todo:'AI 作文与专业英语翻译批改 + 模拟卷自测。' },
-    { key:'resources', icon:I.folder,   title:'资料/网课', sub:'视频/PDF/文档在线观看',    ready:true,  todo:'' }
+    { key:'today',     icon:I.grid,     title:'今日学习', sub:'今天该背/读/做的清单',     group:'综合', ready:false, todo:'引擎齐了后，这里会聚合今日的背单词、阅读、数学任务，一键直达。' },
+    { key:'vocab',     icon:I.book,     title:'背单词',   sub:'多词库 · 斩词 · 艾宾浩斯',   group:'英语', ready:true,  todo:'' },
+    { key:'reading',   icon:I.bookOpen, title:'阅读',     sub:'精读 · 点词查义 · 加入背单词', group:'英语', ready:true,  todo:'' },
+    { key:'syntax',    icon:I.layers,   title:'长难句',   sub:'真题难句 · 成分拆解 · AI讲解', group:'英语', ready:true,  todo:'' },
+    { key:'writing',   icon:I.pen,      title:'作文',     sub:'AI 批改 · 范文 · 模板',     group:'英语', ready:true,  todo:'' },
+    { key:'math',      icon:I.sigma,    title:'数学',     sub:'分类练习 · 错题本 · AI讲解', group:'数学', ready:true,  todo:'' },
+    { key:'mathcourse',icon:I.play,     title:'数学课程', sub:'视频课 · 章节 · 续播',     group:'数学', ready:true,  todo:'' },
+    { key:'mistakes',  icon:I.bookmark, title:'错题中心', sub:'跨模块错题 · 一键再练',     group:'综合', ready:true,  todo:'' },
+    { key:'exams',     icon:I.edit,     title:'真题题库', sub:'按年份/科目/题型',         group:'综合', ready:false, todo:'结构化真题库，作为模拟考与数学练习的内容底座。' },
+    { key:'mock',      icon:I.robot,    title:'AI模拟考', sub:'作文/翻译批改 · 模拟卷',    group:'综合', ready:false, todo:'AI 作文与专业英语翻译批改 + 模拟卷自测。' },
+    { key:'resources', icon:I.folder,   title:'资料/网课', sub:'视频/PDF/文档在线观看',    group:'综合', ready:true,  todo:'' }
   ];
 
   function renderLearnHub() {
     let html = '';
-    LEARN_MODULES.forEach(function(m){
-      const badge = m.ready ? '<span class="lc-badge ready">可用</span>' : '<span class="lc-badge soon">敬请期待</span>';
-      html += '<button class="learn-card'+(m.ready?' lc-ready':'')+'" onclick="showLearnView(\''+m.key+'\')">' +
-        badge +
-        '<span class="lc-icon">'+m.icon+'</span>' +
-        '<span class="lc-title">'+m.title+'</span>' +
-        '<span class="lc-sub">'+m.sub+'</span>' +
-      '</button>';
+    ['英语','数学','综合'].forEach(function(g){
+      const items = LEARN_MODULES.filter(function(m){ return m.group===g; });
+      if(!items.length) return;
+      html += '<div class="lc-section">'+g+'</div>';
+      items.forEach(function(m){
+        const badge = m.ready ? '' : '<span class="lc-badge soon">敬请期待</span>';
+        html += '<button class="learn-card'+(m.ready?' lc-ready':' lc-soon')+'" onclick="showLearnView(\''+m.key+'\')">' +
+          badge +
+          '<span class="lc-icon">'+m.icon+'</span>' +
+          '<span class="lc-title">'+m.title+'</span>' +
+          '<span class="lc-sub">'+m.sub+'</span>' +
+        '</button>';
+      });
     });
     const grid = $('learnGrid');
     grid.className = 'learn-grid ky-stagger';
     grid.innerHTML = html;
-    // 入场动画播完后移除 stagger，避免后续重渲重复触发
     setTimeout(function(){ grid.classList.remove('ky-stagger'); }, 600);
   }
 
@@ -4496,7 +4509,7 @@
     let done=0; lessons.forEach(function(l){ if((m.progress[l.id]||{}).done) done++; });
     let html='<div class="card">';
     html+='<button class="btn-sm learn-back" onclick="showLearnView(\'hub\')" style="margin-bottom:10px;">'+I.arrowLeft+'返回学习</button>';
-    html+='<div class="row" style="justify-content:space-between;align-items:center;gap:8px;"><h2 style="margin:0;">数学课程</h2><div class="row" style="gap:8px;"><button class="btn-sm" onclick="mcOpenImport()">'+I.layers+'导入</button><button class="btn-sm" onclick="mcOpenEdit()">'+I.plus+'添加</button></div></div>';
+    html+='<div class="row" style="justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;"><h2 style="margin:0;">数学课程</h2><div class="row" style="gap:6px;flex-wrap:wrap;justify-content:flex-end;"><button class="btn-sm" onclick="mcExport()">'+I.download+'备份</button><button class="btn-sm" onclick="mcOpenImport()">'+I.layers+'导入</button><button class="btn-sm" onclick="mcOpenEdit()">'+I.plus+'添加</button></div></div>';
     if(lessons.length){
       const pct=Math.round(done/lessons.length*100);
       html+='<div class="vocab-progbar" style="margin-top:12px;"><i style="width:'+pct+'%"></i></div>';
@@ -4537,6 +4550,11 @@
     if(!l.url || mode==='pan' || mode==='link' || mode==='extvideo'){
       html+='<div class="tiny" style="color:var(--color-accent);margin-top:6px;line-height:1.7;">该链接不是可内嵌的直链（百度网盘/外链无法应用内播放）。请改用 .mp4/.m3u8 直链'+(l.url?('，或 <a href="'+escAttr(l.url)+'" target="_blank" rel="noopener" style="color:var(--color-text-info);">新窗口打开</a>'):'')+'。</div>';
     }
+    // 倍速（仅可内嵌播放时显示）
+    if(l.url && (mode==='video'||mode==='hls')){
+      const cur=(ensureMathCourse().settings&&ensureMathCourse().settings.rate)||1;
+      html+='<div class="row" style="align-items:center;gap:8px;margin-top:10px;"><span class="tiny muted">倍速</span>'+mcRateSeg(cur)+'</div>';
+    }
     html+='<h2 style="margin:12px 0 2px;font-size:17px;">'+escAttr(l.title)+'</h2>';
     html+='<div class="tiny muted">'+escAttr(l.chapter||'')+'</div>';
     html+='<div class="row" style="gap:8px;margin-top:12px;">';
@@ -4544,9 +4562,34 @@
     html+='<button class="btn-sm" style="flex:1;" onclick="mcMarkDone(\''+l.id+'\')">'+I.check+'标记已学</button>';
     html+='<button class="btn-sm" style="flex:1;'+(next?'':'opacity:.4;pointer-events:none;')+'" onclick="mcPlay(\''+(next?next.id:'')+'\')">下一节 →</button>';
     html+='</div>';
+    // 课堂笔记
+    const note=(ensureMathCourse().progress[l.id]||{}).note||'';
+    html+='<div class="mc-notes"><div class="rw-sec-t" style="margin-bottom:6px;">课堂笔记</div><textarea id="mcNote" class="mc-note-ta" placeholder="记点什么…（自动保存）">'+escAttr(note)+'</textarea></div>';
     html+='</div>';
     $('mcHome').style.display='none'; $('mcPlayer').style.display=''; $('mcPlayer').innerHTML=html;
     if(l.url && (mode==='video'||mode==='hls')) mcMountVideo(l, mode);
+    // 笔记自动保存（防抖）
+    const ta=$('mcNote');
+    if(ta){ let nt; ta.addEventListener('input', function(){ clearTimeout(nt); nt=setTimeout(function(){ const mm=ensureMathCourse(); const pp=mm.progress[l.id]=mm.progress[l.id]||{}; pp.note=ta.value; save(); }, 500); }); }
+  };
+  function mcRateSeg(cur){
+    const rates=[0.75,1,1.25,1.5,2];
+    let h='<div class="seg mc-rate" style="flex:1;">';
+    rates.forEach(function(r){ const lbl=(r===1?'1x':r+'x'); h+='<button'+(Math.abs((cur||1)-r)<0.001?' class="on"':'')+' onclick="mcSetRate('+r+')">'+lbl+'</button>'; });
+    h+='</div>'; return h;
+  }
+  window.mcSetRate=function(r){
+    const m=ensureMathCourse(); m.settings=m.settings||{}; m.settings.rate=r; save();
+    if(_mcVideoEl){ try{ _mcVideoEl.playbackRate=r; }catch(e){} }
+    document.querySelectorAll('.mc-rate button').forEach(function(b){ b.classList.toggle('on', b.textContent===(r===1?'1x':r+'x')); });
+  };
+  window.mcExport=function(){
+    const m=ensureMathCourse();
+    const data={ type:'kaoyan-mathcourse-backup', version:1, exportedAt:new Date().toISOString(), lessons:m.lessons, progress:m.progress, settings:m.settings||{} };
+    const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+    const url=URL.createObjectURL(blob); const a=document.createElement('a');
+    a.href=url; a.download='数学课程备份_'+todayStr()+'.json'; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
   };
   function mcMountVideo(l, mode){
     const m=ensureMathCourse(); const stage=$('mcStage'); if(!stage) return;
@@ -4554,7 +4597,10 @@
     v.style.cssText='width:100%;max-height:60vh;background:#000;border-radius:10px;';
     stage.appendChild(v); _mcVideoEl=v;
     const p=m.progress[l.id]||{}; const resumeAt=p.time||0;
-    const startPlay=function(){ if(resumeAt>3 && v.duration && resumeAt<v.duration-2) v.currentTime=resumeAt; };
+    const rate=(m.settings&&m.settings.rate)||1;
+    const applyRate=function(){ try{ v.playbackRate=rate; }catch(e){} };
+    v.addEventListener('loadedmetadata', applyRate); v.addEventListener('play', applyRate);
+    const startPlay=function(){ applyRate(); if(resumeAt>3 && v.duration && resumeAt<v.duration-2) v.currentTime=resumeAt; };
     if(mode==='video'){ v.src=l.url; v.addEventListener('loadedmetadata', startPlay, {once:true}); }
     else if(v.canPlayType('application/vnd.apple.mpegurl')){ v.src=l.url; v.addEventListener('loadedmetadata', startPlay, {once:true}); }
     else { loadHls(function(Hls){ if(Hls&&Hls.isSupported()){ const hls=new Hls(); hls.loadSource(l.url); hls.attachMedia(v); hls.on(Hls.Events.MANIFEST_PARSED, startPlay); window._mcHls=hls; } }); }
@@ -4609,9 +4655,21 @@
   };
   window.mcOpenImport=function(){ $('mcImpJson').value=''; $('mcImport').style.display=''; };
   window.mcDoImport=function(){
-    const m=ensureMathCourse(); let arr;
-    try{ arr=JSON.parse($('mcImpJson').value); }catch(e){ alert('JSON 解析失败：'+e.message); return; }
-    if(!Array.isArray(arr)||!arr.length){ alert('需要一个非空数组'); return; }
+    const m=ensureMathCourse(); let parsed;
+    try{ parsed=JSON.parse($('mcImpJson').value); }catch(e){ alert('JSON 解析失败：'+e.message); return; }
+    // 备份对象：恢复课节 + 进度 + 设置（按 id 合并，已存在则更新）
+    if(parsed && !Array.isArray(parsed) && Array.isArray(parsed.lessons)){
+      if(!confirm('这是一个备份文件，将恢复其中的课程与学习进度（同 id 覆盖）。继续？')) return;
+      const byId={}; m.lessons.forEach(function(l){ byId[l.id]=l; });
+      parsed.lessons.forEach(function(l){ if(l&&l.title&&l.url){ const id=l.id||('mc_'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)); byId[id]={id:id, chapter:l.chapter||'未分章', title:String(l.title), url:String(l.url)}; } });
+      m.lessons=Object.keys(byId).map(function(k){return byId[k];});
+      if(parsed.progress) Object.keys(parsed.progress).forEach(function(k){ m.progress[k]=parsed.progress[k]; });
+      if(parsed.settings) m.settings=Object.assign(m.settings||{}, parsed.settings);
+      save(); $('mcImport').style.display='none'; openMathCourse();
+      alert('已从备份恢复 '+parsed.lessons.length+' 节'); return;
+    }
+    const arr=parsed;
+    if(!Array.isArray(arr)||!arr.length){ alert('需要一个课程数组，或一个备份对象'); return; }
     let added=0;
     arr.forEach(function(o){ if(o&&o.title&&o.url){ m.lessons.push({ id:'mc_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6)+(added++), chapter:(o.chapter||'未分章'), title:String(o.title), url:String(o.url) }); } });
     save(); $('mcImport').style.display='none'; openMathCourse();
