@@ -4,6 +4,9 @@
 
 ## [Unreleased]
 
+### Changed
+- **主题换肤：PayPal 蓝 / 白**：品牌色由墨绿改为 PayPal 蓝（`--color-primary #0070E0`，hover `#0059B3`，软色 `#E5F0FB`）；首页 hero 深色容器改 PayPal 深蓝 `#003087`；信息色高亮、`.t-eng/.t-write` 标签、长难句"主语"高亮、`learn-card` 边框等硬编码墨绿一并换蓝。深色模式品牌色改亮蓝 `#409CFF`。PWA `manifest` theme_color、`icon.svg` 渐变改 PayPal 蓝。语义色（成功绿/危险红）与暖橙强调（错词/连续训练等稀缺标识）保留。
+
 ### Added
 - **数学课程模块（自托管直链视频 · 章节 · 续播）**：学习中心新增「数学课程」卡 → `pageLearnMathCourse`。
   - 应用内 `<video>` / HLS(hls.js) **内嵌播放**直链视频（`.mp4`/`.m3u8`），复用资源查看器的 `detectPlayMode`/`loadHls`。

@@ -23,13 +23,13 @@
     --color-bg-secondary: #F2F2F7;
     --color-surface: rgba(255, 255, 255, 0.86);
     --color-surface-solid: #FFFFFF;
-    --color-surface-deep: #1D1D1F;                    /* "黑"轴：深色 hero 容器 */
-    --color-surface-deep-2: #2C2C2E;
+    --color-surface-deep: #003087;                    /* PayPal 深蓝 hero 容器 */
+    --color-surface-deep-2: #00256B;
     /* —— legacy 别名（向后兼容现役 4800 行 CSS） —— */
     --color-background-primary: var(--color-surface-solid);
     --color-background-secondary: var(--color-bg-secondary);
     --color-background-tertiary: var(--color-bg);
-    --color-background-info: rgba(31, 77, 63, 0.08);
+    --color-background-info: rgba(0, 112, 224, 0.08);
     --color-background-warning: var(--color-accent-soft, #FBEEDE);
     --color-background-success: rgba(52, 199, 89, 0.14);
 
@@ -42,10 +42,10 @@
     --color-text-warning: #854F0B;
     --color-text-success: #0F6E56;
 
-    /* —— 品牌：墨绿（"绿+黑"的"绿"轴） —— */
-    --color-primary: #1F4D3F;
-    --color-primary-strong: #163A2F;
-    --color-primary-soft: #E8EFEB;
+    /* —— 品牌：PayPal 蓝（蓝/白主题） —— */
+    --color-primary: #0070E0;
+    --color-primary-strong: #0059B3;
+    --color-primary-soft: #E5F0FB;
     --color-primary-on: #FFFFFF;
     --brand: var(--color-primary);
     --brand-strong: var(--color-primary-strong);
@@ -122,13 +122,13 @@
       --color-background-primary: var(--color-surface-solid);
       --color-background-secondary: var(--color-bg-secondary);
       --color-background-tertiary: var(--color-bg);
-      --color-background-info: rgba(93, 190, 154, 0.14);
+      --color-background-info: rgba(64, 156, 255, 0.16);
       --color-text-primary: #F5F5F7;
       --color-text-secondary: #98989D;
       --color-text-tertiary: #6E6E73;
-      --color-primary: #5DBE9A;
-      --color-primary-strong: #4AAB87;
-      --color-primary-soft: rgba(93, 190, 154, 0.14);
+      --color-primary: #409CFF;
+      --color-primary-strong: #1E86F0;
+      --color-primary-soft: rgba(64, 156, 255, 0.16);
       --color-text-info: var(--color-primary);
       --color-accent: #E08A4F;
       --color-accent-soft: rgba(224, 138, 79, 0.16);
@@ -147,7 +147,7 @@
   body {
     color: var(--color-text-primary);
     background:
-      radial-gradient(circle at 0% 0%, rgba(31, 77, 63, 0.06), transparent 32%),
+      radial-gradient(circle at 0% 0%, rgba(0, 112, 224,0.06), transparent 32%),
       radial-gradient(circle at 100% 100%, rgba(194, 87, 15, 0.04), transparent 36%),
       linear-gradient(180deg, #F7F7FA 0%, var(--color-bg) 100%);
     padding: calc(var(--safe-top) + 12px) 1rem calc(var(--bottom-nav-height) + var(--safe-bottom) + 16px) 1rem;
@@ -211,11 +211,11 @@
   .task.done .focus { color: var(--color-text-tertiary); }
   /* —— 科目标签：统一柔和 Apple Tag 风（保留 class 名以兼容） —— */
   .tag { font-size: 11px; font-weight: 500; padding: 2px 9px; border-radius: var(--radius-pill); margin-left: 6px; vertical-align: 1.5px; white-space: nowrap; letter-spacing: .01em; line-height: 1.5; }
-  .t-eng   { background: rgba(31, 77, 63, 0.10);  color: var(--color-primary); }
+  .t-eng   { background: rgba(0, 112, 224,0.10);  color: var(--color-primary); }
   .t-math  { background: rgba(194, 87, 15, 0.10); color: var(--color-accent); }
   .t-rev   { background: rgba(52, 199, 89, 0.12); color: #0F6E56; }
   .t-logic { background: rgba(60, 60, 67, 0.08);  color: var(--color-text-secondary); }
-  .t-write { background: rgba(31, 77, 63, 0.10);  color: var(--color-primary); }
+  .t-write { background: rgba(0, 112, 224,0.10);  color: var(--color-primary); }
   .t-major { background: rgba(194, 87, 15, 0.10); color: var(--color-accent); }
   .t-pol   { background: rgba(255, 69, 58, 0.10); color: var(--color-danger); }
   /* —— 进度条 / 数据条 —— */
@@ -466,7 +466,7 @@
   .learn-card .lc-icon svg { width: 24px; height: 24px; vertical-align: 0; }
   .learn-card .lc-title { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; color: var(--color-text-primary); }
   .learn-card .lc-sub { font-size: 12px; color: var(--color-text-secondary); line-height: 1.4; }
-  .learn-card.lc-ready { border-color: rgba(31, 77, 63, 0.18); }
+  .learn-card.lc-ready { border-color: rgba(0, 112, 224,0.18); }
   .learn-card .lc-badge {
     position: absolute; top: 12px; right: 12px;
     font-size: 10px; font-weight: 600;
@@ -943,7 +943,7 @@
   .syn-en-plain { font-size:17px; line-height:1.85; color:var(--color-text-primary); margin:12px 0 14px; }
   /* 成分高亮配色：6 种角色 */
   .sp { padding:1px 0; border-bottom:2px solid transparent; transition:background .2s var(--ease); cursor:help; border-radius:2px; }
-  .sp[data-r="subj"]  { color:#1f4d3f; border-bottom-color:#1f4d3f; background:rgba(31,77,63,.06); }
+  .sp[data-r="subj"]  { color:#0070E0; border-bottom-color:#0070E0; background:rgba(0,112,224,.06); }
   .sp[data-r="verb"]  { color:#c2570f; border-bottom-color:#c2570f; background:rgba(194,87,15,.06); }
   .sp[data-r="obj"]   { color:#185fa5; border-bottom-color:#185fa5; background:rgba(24,95,165,.06); }
   .sp[data-r="attr"]  { color:#5b3a89; border-bottom-color:#5b3a89; background:rgba(91,58,137,.06); }
