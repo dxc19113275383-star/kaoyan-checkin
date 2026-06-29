@@ -520,6 +520,20 @@
   .fb-done-ic svg { width: 46px; height: 46px; }
   .fb-done-ic.is-mid { color: var(--color-accent); }
   .wdot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; vertical-align: middle; margin-right: 2px; }
+  /* 数学课程 */
+  .mc-chap { font-size: 12px; font-weight: 700; letter-spacing: .04em; color: var(--color-text-tertiary); margin: 16px 0 4px; }
+  .mc-row { display: flex; align-items: center; gap: 10px; padding: 11px 6px; margin: 0 -6px; border-bottom: 0.5px solid var(--color-border-tertiary); cursor: pointer; border-radius: 8px; transition: background .15s var(--ease); }
+  .mc-row:active { background: var(--color-background-secondary); }
+  .mc-row .mc-ico { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; min-width: 30px; border-radius: 50%; background: var(--color-background-secondary); color: var(--color-text-info); }
+  .mc-row .mc-ico svg { width: 15px; height: 15px; }
+  .mc-row .mc-meta { flex: 1; min-width: 0; }
+  .mc-row .mc-title { font-size: 14px; color: var(--color-text-primary); line-height: 1.4; }
+  .mc-badge { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: var(--radius-pill); white-space: nowrap; }
+  .mc-badge.done { background: var(--color-background-info, #edf3ec); color: var(--color-success); }
+  .mc-badge.ing { background: var(--color-background-secondary); color: var(--color-text-secondary); }
+  .mc-row .mc-del { width: 30px; height: 30px; min-width: 30px; min-height: 30px; color: var(--color-text-tertiary); }
+  .mc-row .mc-del svg { width: 15px; height: 15px; }
+  .mc-help { margin-top: 16px; padding: 12px 14px; border-radius: 10px; background: var(--color-background-secondary); }
   /* 背单词增强：灯泡详情 + 可点击例句 + 查词弹窗（百词斩风格） */
   .vocab-lamp { display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 50%; border: 0.5px solid var(--color-border-secondary); background: var(--color-background-secondary); cursor: pointer; font-size: 18px; margin: 10px 0 0 8px; vertical-align: middle; }
   .vocab-lamp.on { background: #fde68a; border-color: #f59e0b; }
@@ -1287,6 +1301,39 @@
         <div class="row" style="justify-content:flex-end;gap:8px;margin-top:8px;">
           <button class="btn-sm" id="mathImpCancel">取消</button>
           <button class="btn-sm" id="mathImpSave" style="background:var(--color-text-info);color:#fff;border-color:var(--color-text-info);">导入</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== 数学课程（自托管直链视频·章节·续播） ====== -->
+  <div id="pageLearnMathCourse" style="display:none;">
+    <div id="mcHome"></div>
+    <div id="mcPlayer" style="display:none;"></div>
+    <!-- 添加 / 编辑单节 -->
+    <div class="modal-overlay" id="mcEdit" style="display:none;">
+      <div class="modal" style="max-width:460px;max-height:90vh;overflow-y:auto;">
+        <h3 id="mcEditTitle">添加课程</h3>
+        <p class="tiny muted" style="margin:4px 0 8px;">视频需为<strong>可直接播放的直链</strong>（.mp4/.m3u8，建议放对象存储 OSS/COS 并设公共读）。百度网盘分享链接无法内嵌播放。</p>
+        <input id="mcChapter" placeholder="章节（如：第1章 函数极限）" maxlength="40"><br>
+        <input id="mcLessonTitle" placeholder="课程标题（如：1-3 两个重要极限）" maxlength="80"><br>
+        <input id="mcUrl" placeholder="视频直链 https://….mp4 或 ….m3u8"><br>
+        <div id="mcUrlHint" class="tiny" style="margin:2px 0 0;min-height:16px;"></div>
+        <div class="row" style="justify-content:flex-end;gap:8px;margin-top:8px;">
+          <button class="btn-sm" id="mcEditCancel">取消</button>
+          <button class="btn-sm" id="mcEditSave" style="background:var(--color-text-info);color:#fff;border-color:var(--color-text-info);">保存</button>
+        </div>
+      </div>
+    </div>
+    <!-- 批量导入 -->
+    <div class="modal-overlay" id="mcImport" style="display:none;">
+      <div class="modal" style="max-width:460px;max-height:90vh;overflow-y:auto;">
+        <h3>批量导入课程</h3>
+        <p class="tiny muted" style="margin:4px 0 8px;">粘贴 JSON 数组，每项：<code>{"chapter":"第1章","title":"1-1 ...","url":"https://….mp4"}</code>。url 须为可直链播放地址。</p>
+        <textarea id="mcImpJson" placeholder='[{"chapter":"第1章 函数与极限","title":"1-1 映射与函数","url":"https://oss.example.com/math/1-1.mp4"}]' style="width:100%;min-height:200px;font-family:monospace;font-size:12px;"></textarea>
+        <div class="row" style="justify-content:flex-end;gap:8px;margin-top:8px;">
+          <button class="btn-sm" id="mcImpCancel">取消</button>
+          <button class="btn-sm" id="mcImpSave" style="background:var(--color-text-info);color:#fff;border-color:var(--color-text-info);">导入</button>
         </div>
       </div>
     </div>
@@ -3314,6 +3361,7 @@
     { key:'vocab',     icon:I.book,     title:'背单词',   sub:'多词库 · 斩词 · 艾宾浩斯',   ready:true,  todo:'' },
     { key:'reading',   icon:I.bookOpen, title:'阅读',     sub:'精读 · 点词查义 · 加入背单词', ready:true,  todo:'' },
     { key:'math',      icon:I.sigma,    title:'数学',     sub:'分类练习 · 错题本 · AI讲解', ready:true,  todo:'' },
+    { key:'mathcourse',icon:I.play,     title:'数学课程', sub:'视频课 · 章节 · 续播',     ready:true,  todo:'' },
     { key:'syntax',    icon:I.layers,   title:'长难句',   sub:'真题难句 · 成分拆解 · AI讲解', ready:true,  todo:'' },
     { key:'writing',   icon:I.pen,      title:'作文',     sub:'AI 批改 · 范文 · 模板',     ready:true,  todo:'' },
     { key:'mistakes',  icon:I.bookmark, title:'错题中心', sub:'跨模块错题 · 一键再练',     ready:true,  todo:'' },
@@ -3340,8 +3388,9 @@
     setTimeout(function(){ grid.classList.remove('ky-stagger'); }, 600);
   }
 
-  const LEARN_PAGES = ['pageLearn','pageLearnTodo','pageResources','pageLearnVocab','pageLearnReading','pageLearnMath','pageLearnMistakes','pageLearnSyntax','pageLearnWriting'];
+  const LEARN_PAGES = ['pageLearn','pageLearnTodo','pageResources','pageLearnVocab','pageLearnReading','pageLearnMath','pageLearnMathCourse','pageLearnMistakes','pageLearnSyntax','pageLearnWriting'];
   window.showLearnView = function(name) {
+    if(window._mcStop) window._mcStop();
     LEARN_PAGES.forEach(function(id){ const el=$(id); if(el) el.style.display='none'; });
     window._learnView = name;
     if (name === 'hub') { $('pageLearn').style.display=''; renderLearnHub(); return; }
@@ -3352,8 +3401,9 @@
     if (name === 'mistakes') { $('pageLearnMistakes').style.display=''; openMistakes(); return; }
     if (name === 'syntax') { $('pageLearnSyntax').style.display=''; openSyntax(); return; }
     if (name === 'writing') { $('pageLearnWriting').style.display=''; openWriting(); return; }
+    if (name === 'mathcourse') { $('pageLearnMathCourse').style.display=''; openMathCourse(); return; }
     const m = LEARN_MODULES.find(function(x){ return x.key===name; });
-    $('learnTodoTitle').textContent = m ? (m.icon+' '+m.title) : '敬请期待';
+    $('learnTodoTitle').textContent = m ? m.title : '敬请期待';
     $('learnTodoDesc').textContent = m ? m.todo : '';
     $('pageLearnTodo').style.display='';
   };
@@ -4409,6 +4459,168 @@
   };
   window.quitReading = function(){ readingStopPlay(); $('readingPop').style.display='none'; _readingCur=null; openReading(); };
 
+  // ===== 数学课程（自托管直链视频：章节 + 续播 + 进度）=====
+  let _mcSeed=null, _mcCur=null, _mcVideoEl=null;
+  function ensureMathCourse(){
+    const m = state.learn.mathcourse = state.learn.mathcourse || {};
+    if(!Array.isArray(m.lessons)) m.lessons=[];
+    if(!m.progress) m.progress={};
+    return m;
+  }
+  function loadMcSeed(){
+    if(_mcSeed) return Promise.resolve(_mcSeed);
+    return fetch('data/courses/math.json').then(function(r){return r.ok?r.json():null;})
+      .then(function(j){ _mcSeed=(j&&Array.isArray(j.lessons))?j.lessons:[]; return _mcSeed; })
+      .catch(function(){ _mcSeed=[]; return _mcSeed; });
+  }
+  function mcAllLessons(){
+    const m=ensureMathCourse();
+    const seed=(_mcSeed||[]).map(function(l,i){ return {id:l.id||('seed_'+i), chapter:l.chapter||'未分章', title:l.title||('第'+(i+1)+'节'), url:l.url||'', seed:true}; });
+    const user=m.lessons.map(function(l){ return {id:l.id, chapter:l.chapter||'未分章', title:l.title, url:l.url, seed:false}; });
+    return seed.concat(user);
+  }
+  window.openMathCourse = function(){
+    ensureMathCourse(); mcStopVideo();
+    $('mcPlayer').style.display='none'; $('mcHome').style.display='';
+    loadMcSeed().then(renderMcHome);
+  };
+  function mcHelpHtml(){
+    return '<div class="mc-help"><div class="rw-sec-t" style="margin-bottom:6px;">怎么把网盘视频变成可播直链</div>'
+      +'<div class="tiny" style="line-height:1.85;color:var(--color-text-secondary);">1. 从百度网盘把课程视频下载到本地<br>'
+      +'2. 上传到对象存储（阿里云 OSS / 腾讯云 COS / Cloudflare R2 等），设为公共读<br>'
+      +'3. 复制文件直链（形如 https://你的桶.oss-cn-…/math/1-1.mp4）<br>'
+      +'4. 回这里「添加」粘贴即可应用内播放；HLS(.m3u8) 需给存储桶配 CORS 允许跨域</div></div>';
+  }
+  function renderMcHome(){
+    const m=ensureMathCourse(); const lessons=mcAllLessons();
+    let done=0; lessons.forEach(function(l){ if((m.progress[l.id]||{}).done) done++; });
+    let html='<div class="card">';
+    html+='<button class="btn-sm learn-back" onclick="showLearnView(\'hub\')" style="margin-bottom:10px;">'+I.arrowLeft+'返回学习</button>';
+    html+='<div class="row" style="justify-content:space-between;align-items:center;gap:8px;"><h2 style="margin:0;">数学课程</h2><div class="row" style="gap:8px;"><button class="btn-sm" onclick="mcOpenImport()">'+I.layers+'导入</button><button class="btn-sm" onclick="mcOpenEdit()">'+I.plus+'添加</button></div></div>';
+    if(lessons.length){
+      const pct=Math.round(done/lessons.length*100);
+      html+='<div class="vocab-progbar" style="margin-top:12px;"><i style="width:'+pct+'%"></i></div>';
+      html+='<div class="tiny muted">已学 '+done+' / '+lessons.length+' 节（'+pct+'%）</div>';
+    } else {
+      html+='<div class="learn-soon" style="padding:18px 4px;text-align:center;">还没有课程<br><span class="tiny muted">点「添加」或「批量导入」粘贴视频直链</span></div>';
+      html+=mcHelpHtml(); html+='</div>'; $('mcHome').innerHTML=html; return;
+    }
+    const groups=[], idx={};
+    lessons.forEach(function(l){ const c=l.chapter||'未分章'; if(idx[c]===undefined){ idx[c]=groups.length; groups.push({chapter:c, items:[]}); } groups[idx[c]].items.push(l); });
+    groups.forEach(function(g){
+      html+='<div class="mc-chap">'+escAttr(g.chapter)+'</div>';
+      g.items.forEach(function(l){
+        const p=m.progress[l.id]||{};
+        const badge = p.done ? '<span class="mc-badge done">已学</span>' : (p.percent>0?'<span class="mc-badge ing">'+p.percent+'%</span>':'');
+        const bad = !l.url || PAN_RE.test(l.url);
+        html+='<div class="mc-row" onclick="mcPlay(\''+l.id+'\')">';
+        html+=  '<span class="mc-ico">'+I.play+'</span>';
+        html+=  '<div class="mc-meta"><div class="mc-title">'+escAttr(l.title)+'</div>'+(bad?'<div class="tiny" style="color:var(--color-accent);">链接非直链，可能无法内嵌</div>':(p.time>3&&!p.done?'<div class="tiny muted">上次看到 '+fmtTime(p.time)+'</div>':''))+'</div>';
+        html+=  (badge||'');
+        if(!l.seed) html+='<button class="btn-icon mc-del" onclick="event.stopPropagation();mcDelete(\''+l.id+'\')" aria-label="删除">'+I.trash+'</button>';
+        html+='</div>';
+      });
+    });
+    html+='</div>';
+    $('mcHome').innerHTML=html;
+  }
+  window.mcPlay = function(id){
+    if(!id) return;
+    const lessons=mcAllLessons();
+    const i=lessons.findIndex(function(l){return l.id===id;});
+    if(i<0) return; const l=lessons[i]; mcStopVideo(); _mcCur=l;
+    const mode=detectPlayMode({url:l.url, type:'video'});
+    const prev=lessons[i-1], next=lessons[i+1];
+    let html='<div class="card">';
+    html+='<button class="btn-sm learn-back" onclick="mcBackToList()" style="margin-bottom:10px;">'+I.arrowLeft+'课程列表</button>';
+    html+='<div id="mcStage"></div>';
+    if(!l.url || mode==='pan' || mode==='link' || mode==='extvideo'){
+      html+='<div class="tiny" style="color:var(--color-accent);margin-top:6px;line-height:1.7;">该链接不是可内嵌的直链（百度网盘/外链无法应用内播放）。请改用 .mp4/.m3u8 直链'+(l.url?('，或 <a href="'+escAttr(l.url)+'" target="_blank" rel="noopener" style="color:var(--color-text-info);">新窗口打开</a>'):'')+'。</div>';
+    }
+    html+='<h2 style="margin:12px 0 2px;font-size:17px;">'+escAttr(l.title)+'</h2>';
+    html+='<div class="tiny muted">'+escAttr(l.chapter||'')+'</div>';
+    html+='<div class="row" style="gap:8px;margin-top:12px;">';
+    html+='<button class="btn-sm" style="flex:1;'+(prev?'':'opacity:.4;pointer-events:none;')+'" onclick="mcPlay(\''+(prev?prev.id:'')+'\')">'+I.arrowLeft+'上一节</button>';
+    html+='<button class="btn-sm" style="flex:1;" onclick="mcMarkDone(\''+l.id+'\')">'+I.check+'标记已学</button>';
+    html+='<button class="btn-sm" style="flex:1;'+(next?'':'opacity:.4;pointer-events:none;')+'" onclick="mcPlay(\''+(next?next.id:'')+'\')">下一节 →</button>';
+    html+='</div>';
+    html+='</div>';
+    $('mcHome').style.display='none'; $('mcPlayer').style.display=''; $('mcPlayer').innerHTML=html;
+    if(l.url && (mode==='video'||mode==='hls')) mcMountVideo(l, mode);
+  };
+  function mcMountVideo(l, mode){
+    const m=ensureMathCourse(); const stage=$('mcStage'); if(!stage) return;
+    const v=document.createElement('video'); v.setAttribute('controls',''); v.setAttribute('playsinline','');
+    v.style.cssText='width:100%;max-height:60vh;background:#000;border-radius:10px;';
+    stage.appendChild(v); _mcVideoEl=v;
+    const p=m.progress[l.id]||{}; const resumeAt=p.time||0;
+    const startPlay=function(){ if(resumeAt>3 && v.duration && resumeAt<v.duration-2) v.currentTime=resumeAt; };
+    if(mode==='video'){ v.src=l.url; v.addEventListener('loadedmetadata', startPlay, {once:true}); }
+    else if(v.canPlayType('application/vnd.apple.mpegurl')){ v.src=l.url; v.addEventListener('loadedmetadata', startPlay, {once:true}); }
+    else { loadHls(function(Hls){ if(Hls&&Hls.isSupported()){ const hls=new Hls(); hls.loadSource(l.url); hls.attachMedia(v); hls.on(Hls.Events.MANIFEST_PARSED, startPlay); window._mcHls=hls; } }); }
+    let last=0;
+    v.addEventListener('timeupdate', function(){ const now=Date.now(); if(now-last>4000){ last=now; mcSaveProgress(l.id, v); } });
+    v.addEventListener('ended', function(){ mcMarkDone(l.id, true); });
+  }
+  function mcSaveProgress(id, v){
+    const m=ensureMathCourse(); const p=m.progress[id]=m.progress[id]||{};
+    if(v.currentTime>0) p.time=v.currentTime;
+    if(v.duration&&isFinite(v.duration)){ p.percent=Math.min(100, Math.round(v.currentTime/v.duration*100)); if(p.percent>=95) p.done=true; }
+    p.seenAt=new Date().toISOString(); save();
+  }
+  window.mcMarkDone=function(id, silent){
+    const m=ensureMathCourse(); const p=m.progress[id]=m.progress[id]||{}; p.done=true; p.percent=100; p.seenAt=new Date().toISOString(); save();
+    try{ window.logEvent && window.logEvent('mathcourse','watch',{refId:id, tag:'math', cat:'数学课程', title:(_mcCur&&_mcCur.title)||id}); }catch(e){}
+    if(!silent && typeof event!=='undefined' && event && event.target){ const btn=event.target.closest('button'); if(btn){ btn.innerHTML=I.check+'已学'; btn.style.background='var(--color-success)'; btn.style.color='#fff'; btn.style.borderColor='var(--color-success)'; } }
+  };
+  function mcStopVideo(){
+    if(_mcVideoEl){ try{ if(_mcCur) mcSaveProgress(_mcCur.id,_mcVideoEl); _mcVideoEl.pause(); _mcVideoEl.removeAttribute('src'); _mcVideoEl.load(); }catch(e){} }
+    if(window._mcHls){ try{ window._mcHls.destroy(); }catch(e){} window._mcHls=null; }
+    _mcVideoEl=null;
+  }
+  window._mcStop = mcStopVideo;
+  window.mcBackToList=function(){ mcStopVideo(); _mcCur=null; openMathCourse(); };
+  window.mcOpenEdit=function(id){
+    const m=ensureMathCourse(); let l=null; if(id){ l=m.lessons.find(function(x){return x.id===id;}); }
+    window._mcEditId = l?l.id:null;
+    $('mcEditTitle').textContent = l?'编辑课程':'添加课程';
+    $('mcChapter').value=l?(l.chapter||''):''; $('mcLessonTitle').value=l?l.title:''; $('mcUrl').value=l?l.url:''; $('mcUrlHint').textContent='';
+    $('mcEdit').style.display='';
+  };
+  function mcUrlCheck(){
+    const u=$('mcUrl').value.trim(); const el=$('mcUrlHint'); if(!u){ el.textContent=''; return; }
+    const mode=detectPlayMode({url:u, type:'video'});
+    if(mode==='video'||mode==='hls'){ el.style.color='var(--color-success)'; el.textContent='可内嵌播放的直链'; }
+    else if(mode==='pan'){ el.style.color='var(--color-accent)'; el.textContent='网盘链接无法内嵌，请用对象存储直链'; }
+    else { el.style.color='var(--color-accent)'; el.textContent='非 .mp4/.m3u8 直链，可能无法内嵌播放'; }
+  }
+  window.mcSaveEdit=function(){
+    const m=ensureMathCourse();
+    const chapter=$('mcChapter').value.trim()||'未分章', title=$('mcLessonTitle').value.trim(), url=$('mcUrl').value.trim();
+    if(!title){ alert('请填课程标题'); return; }
+    if(!url){ alert('请填视频直链'); return; }
+    if(window._mcEditId){ const l=m.lessons.find(function(x){return x.id===window._mcEditId;}); if(l){ l.chapter=chapter; l.title=title; l.url=url; } }
+    else { m.lessons.push({ id:'mc_'+Date.now().toString(36)+Math.random().toString(36).slice(2,5), chapter:chapter, title:title, url:url }); }
+    save(); $('mcEdit').style.display='none'; openMathCourse();
+  };
+  window.mcDelete=function(id){
+    const m=ensureMathCourse(); if(!confirm('删除这节课程？（不影响视频源本身）')) return;
+    m.lessons=m.lessons.filter(function(x){return x.id!==id;}); delete m.progress[id]; save(); openMathCourse();
+  };
+  window.mcOpenImport=function(){ $('mcImpJson').value=''; $('mcImport').style.display=''; };
+  window.mcDoImport=function(){
+    const m=ensureMathCourse(); let arr;
+    try{ arr=JSON.parse($('mcImpJson').value); }catch(e){ alert('JSON 解析失败：'+e.message); return; }
+    if(!Array.isArray(arr)||!arr.length){ alert('需要一个非空数组'); return; }
+    let added=0;
+    arr.forEach(function(o){ if(o&&o.title&&o.url){ m.lessons.push({ id:'mc_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6)+(added++), chapter:(o.chapter||'未分章'), title:String(o.title), url:String(o.url) }); } });
+    save(); $('mcImport').style.display='none'; openMathCourse();
+    alert('已导入 '+added+' 节');
+  };
+  // 模态按钮绑定
+  if($('mcEditCancel')){ $('mcEditCancel').onclick=function(){ $('mcEdit').style.display='none'; }; $('mcEditSave').onclick=mcSaveEdit; $('mcUrl').addEventListener('input', mcUrlCheck); }
+  if($('mcImpCancel')){ $('mcImpCancel').onclick=function(){ $('mcImport').style.display='none'; }; $('mcImpSave').onclick=mcDoImport; }
+
   window.readingOpenImport=function(){ $('readingImpJson').value=''; $('readingImport').style.display=''; };
   $('readingImpCancel').onclick=function(){ $('readingImport').style.display='none'; };
   $('readingImpSave').onclick=function(){
@@ -4552,6 +4764,7 @@
 
   function showPage(idx) {
     window._page = idx;
+    if(window._mcStop) window._mcStop();
     // Show/hide checkin cards
     const checkinCards = document.querySelectorAll('.wrap > .card, .wrap > .phaseToggle, .wrap > .tiny, .wrap > .home-only');
     checkinCards.forEach(el => { el.style.display = idx === 0 ? '' : 'none'; });
@@ -4560,7 +4773,7 @@
     const pt = $('phaseToggle');
     if (pt) pt.style.display = idx === 0 ? '' : 'none';
     // Hide all secondary pages
-    ['pageLearn','pageLearnTodo','pageResources','pageLearnVocab','pageLearnReading','pageLearnMath','pageLearnMistakes','pageLearnSyntax','pageLearnWriting','pageAI'].forEach(id => { const el = $(id); if(el) el.style.display = 'none'; });
+    ['pageLearn','pageLearnTodo','pageResources','pageLearnVocab','pageLearnReading','pageLearnMath','pageLearnMathCourse','pageLearnMistakes','pageLearnSyntax','pageLearnWriting','pageAI'].forEach(id => { const el = $(id); if(el) el.style.display = 'none'; });
     // Update nav
     document.querySelectorAll('.bn-btn').forEach(b => { b.className = 'bn-btn' + (b.dataset.page == idx ? ' on' : ''); });
     // Render target
@@ -5823,7 +6036,7 @@
   }, 100);
 
   // Hide learn/resource/AI pages on startup
-  ['pageLearn','pageLearnTodo','pageResources','pageLearnVocab','pageLearnReading','pageLearnMath','pageLearnMistakes','pageLearnSyntax','pageLearnWriting','pageAI'].forEach(function(id) { var el = $(id); if(el) el.style.display = 'none'; });
+  ['pageLearn','pageLearnTodo','pageResources','pageLearnVocab','pageLearnReading','pageLearnMath','pageLearnMathCourse','pageLearnMistakes','pageLearnSyntax','pageLearnWriting','pageAI'].forEach(function(id) { var el = $(id); if(el) el.style.display = 'none'; });
 })();
 </script>
 </body>

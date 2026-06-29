@@ -1,0 +1,5 @@
+{
+  "course": "考研数学",
+  "desc": "内置课程位（可留空）。用户也可在应用内「添加 / 批量导入」自己的视频直链。lessons 每项：{ chapter, title, url(.mp4/.m3u8 直链) }",
+  "lessons": []
+}
