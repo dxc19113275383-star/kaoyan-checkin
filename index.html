@@ -543,6 +543,16 @@
   .mc-row .mc-del { width: 30px; height: 30px; min-width: 30px; min-height: 30px; color: var(--color-text-tertiary); }
   .mc-row .mc-del svg { width: 15px; height: 15px; }
   .mc-help { margin-top: 16px; padding: 12px 14px; border-radius: 10px; background: var(--color-background-secondary); }
+  /* 数学课程：章节卡（一级菜单） */
+  .mc-chap-card { display: flex; align-items: center; gap: 12px; padding: 14px 12px; margin: 10px 0 0; border: 1px solid var(--color-border); border-radius: 12px; background: var(--color-surface-solid); cursor: pointer; transition: transform .12s var(--ease-out), box-shadow .2s var(--ease); }
+  .mc-chap-card:active { transform: scale(.985); }
+  @media (hover:hover){ .mc-chap-card:hover { box-shadow: var(--shadow-soft); } }
+  .mc-chap-card .mc-chap-ic { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; min-width: 40px; border-radius: 10px; background: var(--color-primary-soft); color: var(--color-primary); }
+  .mc-chap-card .mc-chap-ic svg { width: 20px; height: 20px; }
+  .mc-chap-card .mc-chap-meta { flex: 1; min-width: 0; }
+  .mc-chap-card .mc-chap-name { font-size: 16px; font-weight: 600; color: var(--color-text-primary); }
+  .mc-chap-card .mc-go { color: var(--color-text-tertiary); display: inline-flex; }
+  .mc-chap-card .mc-go svg { width: 18px; height: 18px; }
   .mc-rate button { font-size: 12px; font-weight: 600; padding: 0 4px; }
   .mc-notes { margin-top: 16px; }
   .mc-note-ta { width: 100%; min-height: 96px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--color-border-strong); background: var(--color-background-primary); color: var(--color-text-primary); font-size: 14px; line-height: 1.7; font-family: var(--font-sans); resize: vertical; box-sizing: border-box; }
@@ -3567,7 +3577,7 @@
 
   // ===== AI 后端地址（可配）：默认旧 Netlify；可在设置里换成你自己的 Cloudflare Worker =====
   // Worker 路由 /chat、/r2 与 Netlify 的 /.netlify/functions/chat 同构（base+'/chat'）
-  const DEFAULT_BACKEND = 'https://inquisitive-chimera-50c9e9.netlify.app/.netlify/functions';
+  const DEFAULT_BACKEND = 'https://kaoyan-ai.dxc19113275383.workers.dev';
   function backendBase(){ try{ const u=(localStorage.getItem('backend_url')||'').trim().replace(/\/+$/,''); return u||DEFAULT_BACKEND; }catch(e){ return DEFAULT_BACKEND; } }
 
   // ===== AI 内容生成（例句 / 句子翻译）：localStorage 缓存，失败/离线自动降级 =====
@@ -4599,7 +4609,7 @@
   window.quitReading = function(){ readingStopPlay(); $('readingPop').style.display='none'; _readingCur=null; openReading(); };
 
   // ===== 数学课程（自托管直链视频：章节 + 续播 + 进度）=====
-  let _mcSeed=null, _mcCur=null, _mcVideoEl=null;
+  let _mcSeed=null, _mcCur=null, _mcVideoEl=null, _mcChapter=null;
   function ensureMathCourse(){
     const m = state.learn.mathcourse = state.learn.mathcourse || {};
     if(!Array.isArray(m.lessons)) m.lessons=[];
@@ -4643,9 +4653,14 @@
     return seed.concat(user);
   }
   window.openMathCourse = function(){
-    ensureMathCourse(); mcStopVideo();
+    ensureMathCourse(); mcStopVideo(); _mcChapter=null;
     $('mcPlayer').style.display='none'; $('mcHome').style.display='';
     loadMcSeed().then(renderMcHome);
+  };
+  window.mcOpenChapter = function(c){
+    _mcChapter = c || null; mcStopVideo();
+    $('mcPlayer').style.display='none'; $('mcHome').style.display='';
+    renderMcHome();
   };
   function mcHelpHtml(){
     return '<div class="mc-help"><div class="rw-sec-t" style="margin-bottom:6px;">怎么把网盘视频变成可播直链</div>'
@@ -4654,42 +4669,55 @@
       +'3. 复制文件直链（形如 https://你的桶.oss-cn-…/math/1-1.mp4）<br>'
       +'4. 回这里「添加」粘贴即可应用内播放；HLS(.m3u8) 需给存储桶配 CORS 允许跨域</div></div>';
   }
+  function mcRowHtml(l, m){
+    const p=m.progress[l.id]||{};
+    const badge = p.done ? '<span class="mc-badge done">已学</span>' : (p.percent>0?'<span class="mc-badge ing">'+p.percent+'%</span>':'');
+    const bad = !l.url || PAN_RE.test(l.url);
+    const lead = l.cover ? '<span class="mc-thumb"><img loading="lazy" src="'+escAttr(l.cover)+'" alt="">'+I.play+'</span>' : '<span class="mc-ico">'+I.play+'</span>';
+    const durTxt = l.dur ? '<span class="mc-dur">'+fmtTime(l.dur)+'</span>' : '';
+    let subline='';
+    if(bad) subline='<div class="tiny" style="color:var(--color-accent);">链接非直链，可能无法内嵌</div>';
+    else if(p.time>3&&!p.done) subline='<div class="tiny muted">上次看到 '+fmtTime(p.time)+'</div>';
+    else if(durTxt) subline='<div class="tiny muted">'+durTxt+'</div>';
+    let h='<div class="mc-row" onclick="mcPlay(\''+l.id+'\')">'+lead;
+    h+='<div class="mc-meta"><div class="mc-title">'+escAttr(l.title)+'</div>'+subline+'</div>'+(badge||'');
+    if(!l.seed) h+='<button class="btn-icon mc-del" onclick="event.stopPropagation();mcDelete(\''+l.id+'\')" aria-label="删除">'+I.trash+'</button>';
+    return h+'</div>';
+  }
   function renderMcHome(){
     const m=ensureMathCourse(); const lessons=mcAllLessons();
-    let done=0; lessons.forEach(function(l){ if((m.progress[l.id]||{}).done) done++; });
+    const groups=[], idx={};
+    lessons.forEach(function(l){ const c=l.chapter||'未分章'; if(idx[c]===undefined){ idx[c]=groups.length; groups.push({chapter:c, items:[]}); } groups[idx[c]].items.push(l); });
     let html='<div class="card">';
     html+='<button class="btn-sm learn-back" onclick="showLearnView(\'hub\')" style="margin-bottom:10px;">'+I.arrowLeft+'返回学习</button>';
     html+='<div class="row" style="justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;"><h2 style="margin:0;">数学课程</h2><div class="row" style="gap:6px;flex-wrap:wrap;justify-content:flex-end;"><button class="btn-sm" onclick="mcExport()">'+I.download+'备份</button><button class="btn-sm" onclick="mcOpenImport()">'+I.layers+'导入</button><button class="btn-sm" onclick="mcOpenEdit()">'+I.plus+'添加</button></div></div>';
-    if(lessons.length){
-      const pct=Math.round(done/lessons.length*100);
-      html+='<div class="vocab-progbar" style="margin-top:12px;"><i style="width:'+pct+'%"></i></div>';
-      html+='<div class="tiny muted">已学 '+done+' / '+lessons.length+' 节（'+pct+'%）</div>';
-    } else {
+    if(!lessons.length){
       html+='<div class="learn-soon" style="padding:18px 4px;text-align:center;">还没有课程<br><span class="tiny muted">点「添加」或「批量导入」粘贴视频直链</span></div>';
       html+=mcHelpHtml(); html+='</div>'; $('mcHome').innerHTML=html; return;
     }
-    const groups=[], idx={};
-    lessons.forEach(function(l){ const c=l.chapter||'未分章'; if(idx[c]===undefined){ idx[c]=groups.length; groups.push({chapter:c, items:[]}); } groups[idx[c]].items.push(l); });
-    groups.forEach(function(g){
-      html+='<div class="mc-chap">'+escAttr(g.chapter)+'</div>';
-      g.items.forEach(function(l){
-        const p=m.progress[l.id]||{};
-        const badge = p.done ? '<span class="mc-badge done">已学</span>' : (p.percent>0?'<span class="mc-badge ing">'+p.percent+'%</span>':'');
-        const bad = !l.url || PAN_RE.test(l.url);
-        const lead = l.cover ? '<span class="mc-thumb"><img loading="lazy" src="'+escAttr(l.cover)+'" alt="">'+I.play+'</span>' : '<span class="mc-ico">'+I.play+'</span>';
-        const durTxt = l.dur ? '<span class="mc-dur">'+fmtTime(l.dur)+'</span>' : '';
-        let subline='';
-        if(bad) subline='<div class="tiny" style="color:var(--color-accent);">链接非直链，可能无法内嵌</div>';
-        else if(p.time>3&&!p.done) subline='<div class="tiny muted">上次看到 '+fmtTime(p.time)+'</div>';
-        else if(durTxt) subline='<div class="tiny muted">'+durTxt+'</div>';
-        html+='<div class="mc-row" onclick="mcPlay(\''+l.id+'\')">';
-        html+=  lead;
-        html+=  '<div class="mc-meta"><div class="mc-title">'+escAttr(l.title)+'</div>'+subline+'</div>';
-        html+=  (badge||'');
-        if(!l.seed) html+='<button class="btn-icon mc-del" onclick="event.stopPropagation();mcDelete(\''+l.id+'\')" aria-label="删除">'+I.trash+'</button>';
+    let doneAll=0; lessons.forEach(function(l){ if((m.progress[l.id]||{}).done) doneAll++; });
+    // —— 一级：章节菜单 ——
+    if(!_mcChapter || !idx.hasOwnProperty(_mcChapter)){
+      const pct=Math.round(doneAll/lessons.length*100);
+      html+='<div class="vocab-progbar" style="margin-top:12px;"><i style="width:'+pct+'%"></i></div>';
+      html+='<div class="tiny muted" style="margin-bottom:4px;">共 '+groups.length+' 章 · '+lessons.length+' 节 · 已学 '+doneAll+'（'+pct+'%）</div>';
+      groups.forEach(function(g){
+        let gd=0; g.items.forEach(function(l){ if((m.progress[l.id]||{}).done) gd++; });
+        const gp=Math.round(gd/g.items.length*100);
+        const cEsc=escAttr(g.chapter).replace(/\x27/g,"\\\x27");
+        html+='<div class="mc-chap-card" onclick="mcOpenChapter(\''+cEsc+'\')">';
+        html+=  '<div class="mc-chap-ic">'+I.folder+'</div>';
+        html+=  '<div class="mc-chap-meta"><div class="mc-chap-name">'+escAttr(g.chapter)+'</div><div class="tiny muted">'+g.items.length+' 节 · 已学 '+gd+'/'+g.items.length+'</div><div class="vocab-progbar" style="margin-top:6px;"><i style="width:'+gp+'%"></i></div></div>';
+        html+=  '<span class="mc-go">'+I.arrowRight+'</span>';
         html+='</div>';
       });
-    });
+      html+='</div>'; $('mcHome').innerHTML=html; return;
+    }
+    // —— 二级：某章课程列表 ——
+    const g=groups[idx[_mcChapter]];
+    let gd=0; g.items.forEach(function(l){ if((m.progress[l.id]||{}).done) gd++; });
+    html+='<div class="row" style="align-items:center;gap:10px;margin-top:12px;"><button class="btn-sm" onclick="mcOpenChapter(null)">'+I.arrowLeft+'章节</button><div style="flex:1;min-width:0;"><div style="font-weight:600;">'+escAttr(g.chapter)+'</div><div class="tiny muted">已学 '+gd+' / '+g.items.length+' 节</div></div></div>';
+    g.items.forEach(function(l){ html+=mcRowHtml(l, m); });
     html+='</div>';
     $('mcHome').innerHTML=html;
   }
@@ -4781,7 +4809,7 @@
     _mcVideoEl=null;
   }
   window._mcStop = mcStopVideo;
-  window.mcBackToList=function(){ mcStopVideo(); _mcCur=null; openMathCourse(); };
+  window.mcBackToList=function(){ const ch=_mcCur&&_mcCur.chapter; mcStopVideo(); _mcCur=null; if(ch) _mcChapter=ch; $('mcPlayer').style.display='none'; $('mcHome').style.display=''; loadMcSeed().then(renderMcHome); };
   window.mcOpenEdit=function(id){
     const m=ensureMathCourse(); let l=null; if(id){ l=m.lessons.find(function(x){return x.id===id;}); }
     window._mcEditId = l?l.id:null;

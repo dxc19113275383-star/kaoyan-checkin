@@ -5,6 +5,7 @@
 ## [Unreleased]
 
 ### Added
+- **Worker 地址内置 + 数学课程二级菜单**：`DEFAULT_BACKEND` 直接写成已部署的 Worker `https://kaoyan-ai.dxc19113275383.workers.dev`（实测 /chat 返回 OK、/r2 拉到 course.json），开箱即用无需手填。数学课程改**两级下钻**：一级章节卡（高数/线代/概率/综合，含节数+进度），点进去才看该章课程列表，消除「134 节一屏眼花」；播放返回回到所在章。SW 升 v20。
 - **可配 AI 后端 + Cloudflare Worker**：AI 端点改为可配 `backendBase()`（`localStorage.backend_url` || 旧 Netlify 默认）；设置抽屉加「AI 后端」输入框（填 Worker 地址 → 保存刷新 / 测试）。新增 `cloudflare-worker/worker.js`：DeepSeek 代理（qa/err/plan/gen 模式，gen 支持 maxTokens）+ R2 JSON 代理（`/r2?key=`），免费、无构建额度问题，替代已停的 Netlify 函数。数学课程加载新增「后端 `/r2` 代理拉 R2 → 直连 R2 → 内置文件」三级兜底（配 Worker 即自动同步新课，无需 R2 CORS）。
 - **对接 R2 资源库（周洋鑫396数学）**：本地 `kaoyan_asset_organizer` 整理 → 上传 Cloudflare R2 → App 接入。
   - **数学课程**：133 节视频（高数74/线代24/概率14/综合21）接入「数学课程」模块，每节 R2 直链 mp4(h264) + 封面缩略图 + 时长。加载策略「直连 R2 `index/course.json`（配了 CORS 则自动同步）→ 回退仓库内置 `data/courses/math.json`（由 course.json 生成，80KB）」；视频/封面 `<video>/<img>` 跨域免 CORS。
