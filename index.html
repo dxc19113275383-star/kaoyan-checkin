@@ -3461,16 +3461,102 @@
     try{ speechSynthesis.onvoiceschanged=_reset; }catch(e){}
     setTimeout(function(){ _pickVoice('en-US'); }, 300);
   }
-  function vSpeak(t, lang){
+  // —— 系统语音（speechSynthesis）：兜底 ——
+  function _sysSpeak(text, lang, onend){
     try{
-      if(!('speechSynthesis' in window)) return;
-      const u=new SpeechSynthesisUtterance(t);
+      if(!('speechSynthesis' in window)){ if(onend) onend(); return; }
+      const u=new SpeechSynthesisUtterance(text);
       u.lang = lang || 'en-US';
       const v=_pickVoice(u.lang); if(v) u.voice=v;
-      u.rate=0.96; u.pitch=1.02; // 略快+略高，听感更接近真人
+      u.rate=0.96; u.pitch=1.02;
+      if(onend) u.onend=function(){ onend(); };
       speechSynthesis.cancel(); speechSynthesis.speak(u);
-    }catch(e){}
+    }catch(e){ if(onend) onend(); }
   }
+
+  // —— Edge 神经语音（客户端直连，用本机/家庭网络 IP；服务端代理会被微软封 IP）——
+  const EDGE_TOKEN='6A5AA1D4EAFF4E9FB37E23D68491D6F4';
+  const EDGE_WSS='wss://speech.platform.bing.com/consumer/speech/synthesize/readaloud/edge/v1?TrustedClientToken='+EDGE_TOKEN;
+  const EDGE_VER='1-131.0.2903.86';
+  const _edgeCache={};
+  let _neuralOn = (localStorage.getItem('tts_neural')!=='0');
+  let _neuralFails=0;
+  let _speakGen=0;
+  function _edgeEsc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;'); }
+  function _edgeGec(){
+    let ticks=(BigInt(Math.floor(Date.now()/1000))+11644473600n); ticks=ticks-(ticks%300n); ticks=ticks*10000000n;
+    const data=new TextEncoder().encode(ticks.toString()+EDGE_TOKEN);
+    return crypto.subtle.digest('SHA-256', data).then(function(h){ return Array.from(new Uint8Array(h)).map(function(b){return b.toString(16).padStart(2,'0');}).join('').toUpperCase(); });
+  }
+  function _edgeVoice(lang){ lang=(lang||'en-US').toLowerCase(); return (lang.indexOf('gb')>=0||lang.indexOf('uk')>=0)?'en-GB-SoniaNeural':'en-US-AriaNeural'; }
+  function _edgeSynth(text, voice, rate){
+    return new Promise(function(resolve,reject){
+      _edgeGec().then(function(gec){
+        const cid=((crypto.randomUUID?crypto.randomUUID():(Date.now()+''+Math.random())).replace(/-/g,''));
+        let ws; try{ ws=new WebSocket(EDGE_WSS+'&Sec-MS-GEC='+gec+'&Sec-MS-GEC-Version='+EDGE_VER+'&ConnectionId='+cid); }catch(e){ return reject(e); }
+        ws.binaryType='arraybuffer';
+        const parts=[]; let done=false;
+        const fail=function(e){ if(done)return; done=true; clearTimeout(to); try{ws.close();}catch(_){}; reject(e); };
+        const to=setTimeout(function(){ fail(new Error('timeout')); }, 9000);
+        ws.onopen=function(){
+          ws.send('X-Timestamp:'+new Date().toString()+'\r\nContent-Type:application/json; charset=utf-8\r\nPath:speech.config\r\n\r\n{"context":{"synthesis":{"audio":{"metadataoptions":{"sentenceBoundaryEnabled":"false","wordBoundaryEnabled":"false"},"outputFormat":"audio-24khz-48kbitrate-mono-mp3"}}}}');
+          const ssml="<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='en-US'><voice name='"+voice+"'><prosody rate='"+rate+"' pitch='+0Hz'>"+_edgeEsc(text)+"</prosody></voice></speak>";
+          ws.send('X-RequestId:'+cid+'\r\nContent-Type:application/ssml+xml\r\nX-Timestamp:'+new Date().toString()+'Z\r\nPath:ssml\r\n\r\n'+ssml);
+        };
+        ws.onmessage=function(ev){
+          if(typeof ev.data==='string'){ if(ev.data.indexOf('Path:turn.end')>=0){ done=true; clearTimeout(to); try{ws.close();}catch(_){}; resolve(new Blob(parts,{type:'audio/mpeg'})); } }
+          else { const b=new Uint8Array(ev.data); const hl=(b[0]<<8)|b[1]; parts.push(ev.data.slice(2+hl)); }
+        };
+        ws.onerror=function(){ fail(new Error('ws')); };
+        ws.onclose=function(){ if(!done) fail(new Error('closed')); };
+      }).catch(reject);
+    });
+  }
+  function _edgePrefetch(text, lang, rate){
+    if(!_neuralOn || !('WebSocket' in window) || !(window.crypto&&crypto.subtle) || !text) return;
+    const voice=_edgeVoice(lang||'en-US'), r=rate||'+0%', key=voice+'|'+r+'|'+text;
+    if(_edgeCache[key]) return;
+    _edgeSynth(text, voice, r).then(function(b){ if(b&&b.size>200) _edgeCache[key]=b; }).catch(function(){});
+  }
+  let _curAudio=null;
+  function stopSpeak(){
+    _speakGen++;
+    try{ if(_curAudio){ _curAudio.onended=null; _curAudio.onerror=null; _curAudio.pause(); _curAudio=null; } }catch(e){}
+    try{ if('speechSynthesis' in window) speechSynthesis.cancel(); }catch(e){}
+  }
+  window._stopSpeak=stopSpeak;
+  /** 统一朗读：优先 Edge 神经语音（客户端直连），失败/被封则回退系统语音。opts={lang,rate,onend} */
+  function speak(text, opts){
+    opts=opts||{}; const lang=opts.lang||'en-US', onend=opts.onend;
+    if(!text){ if(onend) onend(); return; }
+    stopSpeak(); const myGen=_speakGen;
+    const useNeural = _neuralOn && ('WebSocket' in window) && (window.crypto&&crypto.subtle) && /^en/i.test(lang);
+    if(!useNeural){ _sysSpeak(text, lang, onend); return; }
+    const voice=_edgeVoice(lang), rate=opts.rate||'+0%', key=voice+'|'+rate+'|'+text;
+    const playBlob=function(blob){
+      if(myGen!==_speakGen) return; // 已被打断
+      try{ const url=URL.createObjectURL(blob); const a=new Audio(url); _curAudio=a;
+        a.onended=function(){ try{URL.revokeObjectURL(url);}catch(e){}; if(_curAudio===a)_curAudio=null; if(onend) onend(); };
+        a.onerror=function(){ _sysSpeak(text, lang, onend); };
+        a.play().catch(function(){ if(myGen===_speakGen) _sysSpeak(text, lang, onend); });
+      }catch(e){ _sysSpeak(text, lang, onend); }
+    };
+    if(_edgeCache[key]){ playBlob(_edgeCache[key]); return; }
+    _edgeSynth(text, voice, rate).then(function(blob){
+      if(myGen!==_speakGen) return;
+      if(blob && blob.size>200){ _neuralFails=0; _edgeCache[key]=blob; playBlob(blob); }
+      else { _sysSpeak(text, lang, onend); }
+    }).catch(function(){
+      if(myGen!==_speakGen) return;
+      _neuralFails++; if(_neuralFails>=3) _neuralOn=false; // 连续失败（多半被封 IP）→ 本会话改系统语音
+      _sysSpeak(text, lang, onend);
+    });
+  }
+  window._speak=speak;
+  window.ttsNeuralSet=function(on){ _neuralOn=!!on; _neuralFails=0; try{ localStorage.setItem('tts_neural', on?'1':'0'); }catch(e){} };
+  window.ttsNeuralGet=function(){ return _neuralOn; };
+
+  function vSpeak(t, lang){ speak(t, {lang: lang||'en-US'}); }
   window._vSpeak = vSpeak;
   // 通用：朗读元素 data-say 文本（避免把含引号的句子塞进 onclick 字符串）；data-lang 可指定口音
   window.vSpeakEl = function(el){ if(el) vSpeak(el.getAttribute('data-say')||'', el.getAttribute('data-lang')||''); };
@@ -4046,7 +4132,7 @@
   }
   function readingStopPlay(){
     _rdPlayer.playing=false;
-    try{ speechSynthesis.cancel(); }catch(e){}
+    stopSpeak();
     const btn=$('rdPlayBtn'); if(btn) btn.innerHTML=I.play+'试听全文';
     readingHighlight(null);
   }
@@ -4057,11 +4143,9 @@
     if(pl.idx>=pl.units.length){ readingStopPlay(); return; }
     const unit=pl.units[pl.idx];
     readingHighlight(unit.id);
-    const u=new SpeechSynthesisUtterance(unit.text); u.lang='en-US';
-    const _vv=_pickVoice('en-US'); if(_vv) u.voice=_vv;
-    u.rate=0.96; u.pitch=1.02;
-    u.onend=function(){ if(_rdPlayer.playing){ _rdPlayer.idx++; readingPlayNext(); } };
-    try{ speechSynthesis.cancel(); speechSynthesis.speak(u); }catch(e){ readingStopPlay(); }
+    speak(unit.text, { lang:'en-US', rate:'-3%', onend:function(){ if(_rdPlayer.playing){ _rdPlayer.idx++; readingPlayNext(); } } });
+    // 预取下一句，减少句间停顿
+    const nx=pl.units[pl.idx+1]; if(nx) _edgePrefetch(nx.text, 'en-US', '-3%');
   }
   window.readingPlayToggle=function(){
     if(!('speechSynthesis' in window)){ alert('当前浏览器不支持朗读'); return; }
@@ -4845,7 +4929,20 @@
   // ===== 设置抽屉（收纳阶段以外的配置：提醒 / 数据备份） =====
   function initSettingsDrawer(){
     const body = $('settingsBody'), rc = $('reminderCard'), tb = $('toolbarRow');
-    if(body){ if(rc) body.appendChild(rc); if(tb) body.appendChild(tb); }
+    if(body){
+      const tts=document.createElement('div'); tts.className='card'; tts.style.marginBottom='1rem';
+      tts.innerHTML='<div style="font-weight:600;margin-bottom:8px;">朗读语音</div>'
+        +'<label class="row" style="justify-content:space-between;align-items:center;gap:10px;cursor:pointer;">'
+        +  '<span class="tiny muted" style="flex:1;line-height:1.6;">神经语音（Edge·更自然，需联网；被拦截会自动回退系统语音）</span>'
+        +  '<input type="checkbox" id="ttsNeuralChk" style="width:20px;height:20px;flex-shrink:0;">'
+        +'</label>'
+        +'<button class="btn-sm" style="margin-top:10px;" id="ttsTestBtn">'+I.sound+'试听一句</button>'
+        +'<div class="tiny muted" id="ttsTestTip" style="margin-top:6px;line-height:1.6;"></div>';
+      body.appendChild(tts);
+      if(rc) body.appendChild(rc); if(tb) body.appendChild(tb);
+      const chk=$('ttsNeuralChk'); if(chk){ chk.checked=ttsNeuralGet(); chk.onchange=function(){ ttsNeuralSet(chk.checked); }; }
+      const tbtn=$('ttsTestBtn'); if(tbtn){ tbtn.onclick=function(){ const tip=$('ttsTestTip'); if(tip) tip.textContent='播放中…'; speak('This is a natural voice test for your reading practice.', {lang:'en-US', onend:function(){ if(tip) tip.textContent = ttsNeuralGet()?'听起来自然=神经语音生效；仍是机器人腔=被网络拦截、已回退系统语音':'当前用系统语音'; }}); }; }
+    }
     const gear = $('openSettings'); if(gear) gear.onclick = openSettings;
     const cl = $('settingsClose'); if(cl) cl.onclick = closeSettings;
     const mask = $('settingsMask'); if(mask) mask.onclick = function(e){ if(e.target===mask) closeSettings(); };

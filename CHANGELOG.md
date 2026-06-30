@@ -4,6 +4,14 @@
 
 ## [Unreleased]
 
+### Added
+- **Edge 神经语音朗读（客户端直连）**：阅读/单词/例句朗读优先用微软 Edge 神经语音（`en-US-AriaNeural` / 英式 `en-GB-SoniaNeural`），音质接近真人。
+  - **为何客户端**：edge-tts 的 read-aloud WebSocket 会**封数据中心 IP**（实测 Netlify/Lambda 等服务端 403），只有住宅 IP 能用——故直接在**浏览器端**发起 WS（用用户自己的网络），无需 Key、免费。
+  - 实现：`crypto.subtle` 算 `Sec-MS-GEC` 签名 → WSS 连 `speech.platform.bing.com` → 收 MP3 二进制 → `Audio` 播放；统一 `speak({lang,rate,onend})`，阅读逐句播放并**预取下一句**减少停顿；blob 内存缓存。
+  - **稳健回退**：失败/离线/被拦截自动回退系统 `speechSynthesis`（保留自然嗓音挑选）；连续 3 次失败本会话停用神经语音。
+  - 设置抽屉新增「朗读语音」开关 + 「试听一句」自检；偏好存 `localStorage.tts_neural`。
+  - SW 缓存升 v19。
+
 ### Changed
 - **首页精简 + 修顶部留白 + TTS 更自然**：
   - 删除首页「学习中心 / 资料·网课 / AI 学习教练」快捷入口 bento（与底栏 Tab 重复）。
