@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Fixed
+- **数学课程视频加载失败有提示了（SW 升 v21）**：`mcMountVideo` 给 `<video>` 与 HLS 加 `error` 处理——视频取不到（多为该节尚未上传到 R2 → 404）时，不再是一片黑无反馈，改为清晰提示「该节视频暂时打不开（可能尚未上传），可先学已上传章节」+ 重试 / 新窗口打开。排查确认数据通路正常（Worker `/r2` 拉 course.json OK、已上传视频 206 可播），"看不了"根因是 R2 上传覆盖率不全（133 节登记、桶内仅部分已传）。
+- 新增 `CLAUDE.md` 接手须知（真实架构/部署拓扑/内容管线/红线），并约定**每次改动同步回写该文档**。
+
 ### Added
 - **Worker 地址内置 + 数学课程二级菜单**：`DEFAULT_BACKEND` 直接写成已部署的 Worker `https://kaoyan-ai.dxc19113275383.workers.dev`（实测 /chat 返回 OK、/r2 拉到 course.json），开箱即用无需手填。数学课程改**两级下钻**：一级章节卡（高数/线代/概率/综合，含节数+进度），点进去才看该章课程列表，消除「134 节一屏眼花」；播放返回回到所在章。SW 升 v20。
 - **可配 AI 后端 + Cloudflare Worker**：AI 端点改为可配 `backendBase()`（`localStorage.backend_url` || 旧 Netlify 默认）；设置抽屉加「AI 后端」输入框（填 Worker 地址 → 保存刷新 / 测试）。新增 `cloudflare-worker/worker.js`：DeepSeek 代理（qa/err/plan/gen 模式，gen 支持 maxTokens）+ R2 JSON 代理（`/r2?key=`），免费、无构建额度问题，替代已停的 Netlify 函数。数学课程加载新增「后端 `/r2` 代理拉 R2 → 直连 R2 → 内置文件」三级兜底（配 Worker 即自动同步新课，无需 R2 CORS）。

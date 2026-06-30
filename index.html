@@ -4785,9 +4785,21 @@
     const applyRate=function(){ try{ v.playbackRate=rate; }catch(e){} };
     v.addEventListener('loadedmetadata', applyRate); v.addEventListener('play', applyRate);
     const startPlay=function(){ applyRate(); if(resumeAt>3 && v.duration && resumeAt<v.duration-2) v.currentTime=resumeAt; };
+    // 视频加载失败（多为该节尚未上传到 R2 → 404）：替换成清晰提示，避免一片黑无反馈
+    const showVidErr=function(){
+      const stg=$('mcStage'); if(!stg) return;
+      stg.innerHTML='<div style="padding:24px 16px;text-align:center;background:var(--color-surface-2,#f2f2f7);border:1px solid var(--color-border,#e2e2e7);border-radius:12px;">'
+        +'<div style="color:var(--color-accent);font-weight:600;margin-bottom:6px;">该节视频暂时打不开</div>'
+        +'<div class="tiny muted" style="line-height:1.8;">可能尚未上传到 R2（课程正在陆续上传），或链接已失效。<br>可先学已上传的章节，稍后再回来。</div>'
+        +'<div class="row" style="gap:8px;justify-content:center;margin-top:14px;flex-wrap:wrap;">'
+        +'<button class="btn-sm" onclick="mcPlay(\''+l.id+'\')">重试</button>'
+        +'<a class="btn-sm" href="'+escAttr(l.url)+'" target="_blank" rel="noopener" style="text-decoration:none;">新窗口打开</a>'
+        +'</div></div>';
+    };
+    v.addEventListener('error', showVidErr);
     if(mode==='video'){ v.src=l.url; v.addEventListener('loadedmetadata', startPlay, {once:true}); }
     else if(v.canPlayType('application/vnd.apple.mpegurl')){ v.src=l.url; v.addEventListener('loadedmetadata', startPlay, {once:true}); }
-    else { loadHls(function(Hls){ if(Hls&&Hls.isSupported()){ const hls=new Hls(); hls.loadSource(l.url); hls.attachMedia(v); hls.on(Hls.Events.MANIFEST_PARSED, startPlay); window._mcHls=hls; } }); }
+    else { loadHls(function(Hls){ if(Hls&&Hls.isSupported()){ const hls=new Hls(); hls.loadSource(l.url); hls.attachMedia(v); hls.on(Hls.Events.MANIFEST_PARSED, startPlay); hls.on(Hls.Events.ERROR, function(_e,d){ if(d&&d.fatal) showVidErr(); }); window._mcHls=hls; } else { showVidErr(); } }); }
     let last=0;
     v.addEventListener('timeupdate', function(){ const now=Date.now(); if(now-last>4000){ last=now; mcSaveProgress(l.id, v); } });
     v.addEventListener('ended', function(){ mcMarkDone(l.id, true); });
