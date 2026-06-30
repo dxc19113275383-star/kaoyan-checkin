@@ -152,7 +152,7 @@
       radial-gradient(circle at 0% 0%, rgba(0, 112, 224,0.06), transparent 32%),
       radial-gradient(circle at 100% 100%, rgba(194, 87, 15, 0.04), transparent 36%),
       linear-gradient(180deg, #F7F7FA 0%, var(--color-bg) 100%);
-    padding: calc(var(--safe-top) + 12px) 1rem calc(var(--bottom-nav-height) + var(--safe-bottom) + 16px) 1rem;
+    padding: calc(var(--safe-top) + 6px) 1rem calc(var(--bottom-nav-height) + var(--safe-bottom) + 16px) 1rem;
     min-height: 100svh; min-height: 100dvh;
     -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
     font-family: var(--font-sans); font-weight: 400; letter-spacing: -0.003em;
@@ -686,7 +686,7 @@
      P2 — 首页驾驶舱（AppBar / Hero / 快捷 bento / 设置抽屉）
      ============================================================ */
   /* —— AppBar：精致 Apple 顶栏 —— */
-  .appbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 4px 0 16px; padding-top: var(--safe-top); }
+  .appbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 0 0 14px; }
   .ab-brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
   .ab-mark {
     width: 32px; height: 32px; flex-shrink: 0;
@@ -699,7 +699,7 @@
   }
   .ab-name { font-size: 16px; font-weight: 600; letter-spacing: -0.015em; display: flex; align-items: baseline; gap: 6px; }
   .ab-name .ab-sub { font-size: 11px; font-weight: 500; font-style: normal; color: var(--color-text-tertiary); letter-spacing: .04em; }
-  .ab-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+  .ab-actions { display: flex; flex-direction: row-reverse; align-items: center; gap: 8px; flex-shrink: 0; }
   .ab-chip {
     display: inline-flex; align-items: center; gap: 6px;
     padding: 0 14px; height: 40px;
@@ -1149,8 +1149,6 @@
     <div id="notesHistory" style="margin-top:10px;display:none;"></div>
   </div>
 
-  <!-- ====== 快捷入口 bento（仅首页） ====== -->
-  <div class="home-only home-quick" id="homeQuick"></div>
 
   <!-- 提醒设置 -->
   <div class="card" id="reminderCard" style="margin-bottom:1rem;">
@@ -3439,7 +3437,40 @@
     const pfx = lib + ':';
     return (v.wrongBook || []).filter(function(k){ return typeof k==='string' && k.indexOf(pfx)===0; }).length;
   }
-  function vSpeak(t, lang){ try{ if(!('speechSynthesis' in window))return; const u=new SpeechSynthesisUtterance(t); u.lang=lang||'en-US'; u.rate=0.9; speechSynthesis.cancel(); speechSynthesis.speak(u);}catch(e){} }
+  // —— TTS：挑选设备上最自然的英文嗓音（神经/自然/增强版优先），缓解"机器人腔" ——
+  const _ttsVoiceCache = {};
+  function _pickVoice(lang){
+    if(!('speechSynthesis' in window)) return null;
+    lang = lang || 'en-US';
+    if(_ttsVoiceCache[lang]!==undefined) return _ttsVoiceCache[lang];
+    const vs = speechSynthesis.getVoices() || [];
+    if(!vs.length) return null; // 还没加载好，先不缓存
+    const want2 = lang.slice(0,2).toLowerCase();
+    let pool = vs.filter(function(v){ return v.lang && v.lang.slice(0,2).toLowerCase()===want2; });
+    if(!pool.length) pool = vs.filter(function(v){ return /^en/i.test(v.lang); });
+    const region = pool.filter(function(v){ return v.lang && v.lang.replace('_','-').toLowerCase()===lang.toLowerCase(); });
+    const cands = region.length ? region : pool;
+    // 自然音色关键词优先级（各浏览器/系统命名不同，尽量覆盖）
+    const pref = [/natural/i,/neural/i,/online/i,/premium/i,/enhanced/i,/\b(aria|jenny|guy|emma|ava|libby|sonia|ryan|michelle|nova)\b/i,/samantha|siri/i,/google\s*(uk|us)?\s*english/i,/google/i];
+    for(let i=0;i<pref.length;i++){ const hit=cands.find(function(v){ return pref[i].test(v.name); }); if(hit){ _ttsVoiceCache[lang]=hit; return hit; } }
+    const best = cands.find(function(v){ return !v.localService; }) || cands[0] || null; // 在线嗓音通常更自然
+    _ttsVoiceCache[lang]=best; return best;
+  }
+  if('speechSynthesis' in window){
+    const _reset=function(){ Object.keys(_ttsVoiceCache).forEach(function(k){ delete _ttsVoiceCache[k]; }); };
+    try{ speechSynthesis.onvoiceschanged=_reset; }catch(e){}
+    setTimeout(function(){ _pickVoice('en-US'); }, 300);
+  }
+  function vSpeak(t, lang){
+    try{
+      if(!('speechSynthesis' in window)) return;
+      const u=new SpeechSynthesisUtterance(t);
+      u.lang = lang || 'en-US';
+      const v=_pickVoice(u.lang); if(v) u.voice=v;
+      u.rate=0.96; u.pitch=1.02; // 略快+略高，听感更接近真人
+      speechSynthesis.cancel(); speechSynthesis.speak(u);
+    }catch(e){}
+  }
   window._vSpeak = vSpeak;
   // 通用：朗读元素 data-say 文本（避免把含引号的句子塞进 onclick 字符串）；data-lang 可指定口音
   window.vSpeakEl = function(el){ if(el) vSpeak(el.getAttribute('data-say')||'', el.getAttribute('data-lang')||''); };
@@ -4026,7 +4057,9 @@
     if(pl.idx>=pl.units.length){ readingStopPlay(); return; }
     const unit=pl.units[pl.idx];
     readingHighlight(unit.id);
-    const u=new SpeechSynthesisUtterance(unit.text); u.lang='en-US'; u.rate=0.9;
+    const u=new SpeechSynthesisUtterance(unit.text); u.lang='en-US';
+    const _vv=_pickVoice('en-US'); if(_vv) u.voice=_vv;
+    u.rate=0.96; u.pitch=1.02;
     u.onend=function(){ if(_rdPlayer.playing){ _rdPlayer.idx++; readingPlayNext(); } };
     try{ speechSynthesis.cancel(); speechSynthesis.speak(u); }catch(e){ readingStopPlay(); }
   }
