@@ -3565,8 +3565,13 @@
   // 通用：朗读元素 data-say 文本（避免把含引号的句子塞进 onclick 字符串）；data-lang 可指定口音
   window.vSpeakEl = function(el){ if(el) vSpeak(el.getAttribute('data-say')||'', el.getAttribute('data-lang')||''); };
 
+  // ===== AI 后端地址（可配）：默认旧 Netlify；可在设置里换成你自己的 Cloudflare Worker =====
+  // Worker 路由 /chat、/r2 与 Netlify 的 /.netlify/functions/chat 同构（base+'/chat'）
+  const DEFAULT_BACKEND = 'https://inquisitive-chimera-50c9e9.netlify.app/.netlify/functions';
+  function backendBase(){ try{ const u=(localStorage.getItem('backend_url')||'').trim().replace(/\/+$/,''); return u||DEFAULT_BACKEND; }catch(e){ return DEFAULT_BACKEND; } }
+
   // ===== AI 内容生成（例句 / 句子翻译）：localStorage 缓存，失败/离线自动降级 =====
-  const GEN_ENDPOINT = 'https://inquisitive-chimera-50c9e9.netlify.app/.netlify/functions/chat';
+  const GEN_ENDPOINT = backendBase()+'/chat';
   function genCacheGet(key){ try{ return JSON.parse(localStorage.getItem('gen_'+key)||'null'); }catch(e){ return null; } }
   function genCacheSet(key,val){ try{ localStorage.setItem('gen_'+key, JSON.stringify(val)); }catch(e){} }
   async function aiGen(prompt, system){
@@ -4623,8 +4628,12 @@
       return fetch('data/courses/math.json').then(function(r){return r.ok?r.json():null;})
         .then(function(j){ _mcSeed=(j&&Array.isArray(j.lessons))?j.lessons:[]; return _mcSeed; }).catch(function(){ _mcSeed=[]; return _mcSeed; });
     };
-    return fetch(R2_COURSE_URL).then(function(r){ if(!r.ok) throw 0; return r.json(); })
-      .then(function(j){ const ls=_mcFromCourse(j); if(ls.length){ _mcSeed=ls; return ls; } return useCommitted(); })
+    const fromJson=function(j){ const ls=_mcFromCourse(j); if(ls.length){ _mcSeed=ls; return ls; } return useCommitted(); };
+    // 1) 经后端代理拉 R2（配了 Worker 即自动同步，无需 R2 CORS）
+    return fetch(backendBase()+'/r2?key='+encodeURIComponent('index/course.json')).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(fromJson)
+      // 2) 直连 R2（若桶配了 CORS）
+      .catch(function(){ return fetch(R2_COURSE_URL).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(fromJson); })
+      // 3) 仓库内置静态文件
       .catch(function(){ return useCommitted(); });
   }
   function mcAllLessons(){
@@ -4969,7 +4978,18 @@
         +'<button class="btn-sm" style="margin-top:10px;" id="ttsTestBtn">'+I.sound+'试听一句</button>'
         +'<div class="tiny muted" id="ttsTestTip" style="margin-top:6px;line-height:1.6;"></div>';
       body.appendChild(tts);
+      // AI 后端（Cloudflare Worker）地址配置
+      const be=document.createElement('div'); be.className='card'; be.style.marginBottom='1rem';
+      be.innerHTML='<div style="font-weight:600;margin-bottom:8px;">AI 后端</div>'
+        +'<div class="tiny muted" style="line-height:1.6;margin-bottom:8px;">填你的 Cloudflare Worker 地址（如 https://xxx.workers.dev），用于 AI 助手/详解/翻译/数学课程同步。留空则用旧后端。</div>'
+        +'<input id="backendUrlInp" placeholder="https://xxx.workers.dev" style="width:100%;height:40px;padding:0 12px;border-radius:10px;border:1px solid var(--color-border-strong);background:var(--color-background-primary);color:var(--color-text-primary);font-size:13px;box-sizing:border-box;">'
+        +'<div class="row" style="gap:8px;margin-top:10px;"><button class="btn-sm" id="backendSaveBtn" style="flex:1;">保存并刷新</button><button class="btn-sm" id="backendTestBtn" style="flex:1;">测试</button></div>'
+        +'<div class="tiny muted" id="backendTip" style="margin-top:6px;line-height:1.6;"></div>';
+      body.appendChild(be);
       if(rc) body.appendChild(rc); if(tb) body.appendChild(tb);
+      const bInp=$('backendUrlInp'); if(bInp){ try{ bInp.value=(localStorage.getItem('backend_url')||''); }catch(e){} }
+      const bSave=$('backendSaveBtn'); if(bSave){ bSave.onclick=function(){ const v=($('backendUrlInp').value||'').trim().replace(/\/+$/,''); try{ if(v) localStorage.setItem('backend_url', v); else localStorage.removeItem('backend_url'); }catch(e){} location.reload(); }; }
+      const bTest=$('backendTestBtn'); if(bTest){ bTest.onclick=async function(){ const tip=$('backendTip'); const base=(($('backendUrlInp').value||'').trim().replace(/\/+$/,''))||DEFAULT_BACKEND; if(tip) tip.textContent='测试中…'; try{ const r=await fetch(base+'/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mode:'gen',system:'只输出',question:'输出 OK 两个字',maxTokens:10})}); const j=await r.json(); if(tip) tip.textContent = (j&&j.reply)?('后端正常 · 回包：'+String(j.reply).slice(0,20)):('返回异常：'+JSON.stringify(j).slice(0,40)); }catch(e){ if(tip) tip.textContent='连不上：'+e.message; } }; }
       const chk=$('ttsNeuralChk'); if(chk){ chk.checked=ttsNeuralGet(); chk.onchange=function(){ ttsNeuralSet(chk.checked); }; }
       const tbtn=$('ttsTestBtn'); if(tbtn){ tbtn.onclick=function(){ const tip=$('ttsTestTip'); if(tip) tip.textContent='播放中…'; speak('This is a natural voice test for your reading practice.', {lang:'en-US', onend:function(){ if(tip) tip.textContent = ttsNeuralGet()?'听起来自然=神经语音生效；仍是机器人腔=被网络拦截、已回退系统语音':'当前用系统语音'; }}); }; }
     }
@@ -5480,7 +5500,7 @@
   }
 
   // ===== AI SEND =====
-  const API_ENDPOINT = 'https://inquisitive-chimera-50c9e9.netlify.app/.netlify/functions/chat';
+  const API_ENDPOINT = backendBase()+'/chat';
 
   async function sendAIMsg() {
     const input = $('aiInput');
