@@ -4601,36 +4601,31 @@
     if(!m.progress) m.progress={};
     return m;
   }
-  // R2 课程：经 Netlify 代理拉 index/course.json（免 R2 CORS），转成课节；带本地缓存 + 兜底
-  const R2_COURSE_PROXY='https://inquisitive-chimera-50c9e9.netlify.app/.netlify/functions/r2?key='+encodeURIComponent('index/course.json');
-  function _mcHash(s){ let h=0; s=String(s); for(let i=0;i<s.length;i++){ h=(h*31+s.charCodeAt(i))>>>0; } return 'r2_'+h.toString(36); }
+  // R2 课程：优先直连 R2 的 index/course.json（若桶配了 CORS→上传新课自动同步）；
+  // 直连被 CORS/网络拦截时，回退仓库内置 data/courses/math.json（构建时由 course.json 生成，同源稳取）。
+  const R2_COURSE_URL='https://pub-3e6c60a8d9f9400bae5689777ed59538.r2.dev/index/course.json';
   function _mcFromCourse(course){
     const out=[];
     ((course&&course.subjects)||[]).forEach(function(sub){
       (sub.modules||[]).forEach(function(mod){
         (mod.items||[]).forEach(function(it){
           if(it.type!=='video' || !it.url) return;
-          out.push({ id:_mcHash(it.path||it.url), chapter: mod.name||it.module||'未分章', title: it.title||'', url: it.url, cover: it.coverUrl||'', dur: it.duration||0, seed:true });
+          out.push({ id:'r2_'+_hash32(it.path||it.url), chapter: mod.name||it.module||'未分章', title: it.title||'', url: it.url, cover: it.coverUrl||'', dur: it.duration||0, seed:true });
         });
       });
     });
     return out;
   }
+  function _hash32(s){ let h=0; s=String(s); for(let i=0;i<s.length;i++){ h=(h*31+s.charCodeAt(i))>>>0; } return h.toString(36); }
   function loadMcSeed(){
     if(_mcSeed) return Promise.resolve(_mcSeed);
-    const CK='mc_r2_course', CT='mc_r2_course_ts';
-    let cached=null; try{ const raw=localStorage.getItem(CK); if(raw) cached=JSON.parse(raw); }catch(e){}
-    const fresh = cached && cached.length && (Date.now()-(parseInt(localStorage.getItem(CT)||'0',10))<7200000);
-    const fetchR2=function(){
-      return fetch(R2_COURSE_PROXY).then(function(r){ if(!r.ok) throw 0; return r.json(); })
-        .then(function(j){ const ls=_mcFromCourse(j); if(!ls.length) throw 0; try{ localStorage.setItem(CK,JSON.stringify(ls)); localStorage.setItem(CT,Date.now()+''); }catch(e){} return ls; });
-    };
-    if(fresh){ _mcSeed=cached; fetchR2().then(function(ls){ _mcSeed=ls; }).catch(function(){}); return Promise.resolve(_mcSeed); }
-    return fetchR2().then(function(ls){ _mcSeed=ls; return ls; }).catch(function(){
-      if(cached && cached.length){ _mcSeed=cached; return cached; }
+    const useCommitted=function(){
       return fetch('data/courses/math.json').then(function(r){return r.ok?r.json():null;})
         .then(function(j){ _mcSeed=(j&&Array.isArray(j.lessons))?j.lessons:[]; return _mcSeed; }).catch(function(){ _mcSeed=[]; return _mcSeed; });
-    });
+    };
+    return fetch(R2_COURSE_URL).then(function(r){ if(!r.ok) throw 0; return r.json(); })
+      .then(function(j){ const ls=_mcFromCourse(j); if(ls.length){ _mcSeed=ls; return ls; } return useCommitted(); })
+      .catch(function(){ return useCommitted(); });
   }
   function mcAllLessons(){
     const m=ensureMathCourse();
