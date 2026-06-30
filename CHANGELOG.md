@@ -5,6 +5,10 @@
 ## [Unreleased]
 
 ### Added
+- **对接 R2 资源库（周洋鑫396数学）**：本地 `kaoyan_asset_organizer` 整理 → 上传 Cloudflare R2 → App 接入。
+  - **数学课程**：133 节视频（高数74/线代24/概率14/综合21）接入「数学课程」模块，每节 R2 直链 mp4(h264) + 封面缩略图 + 时长。加载策略「直连 R2 `index/course.json`（配了 CORS 则自动同步）→ 回退仓库内置 `data/courses/math.json`（由 course.json 生成，80KB）」；视频/封面 `<video>/<img>` 跨域免 CORS。
+  - **数学题库**：`scripts/clean-questions.mjs` 直连 DeepSeek（本地 key）清洗 OCR 题——只处理已带答案的单选题，AI 仅去扫描水印/修 OCR/规范化、**不解题不改答案**，公式无法还原者丢弃；候选 366 → 可用 325，生成「周洋鑫800题·高数 233 / ·线代 92」两套，标「AI清洗·待校」。
+  - **部署现实**：App 实为 GitHub Pages（纯静态、无函数）；原 Netlify 后端额度不足无法再部署函数——故新内容一律走「离线脚本生成 + 提交为静态 data」，不依赖在线后端。移除无法部署的 `netlify/functions/r2.js`。
 - **Edge 神经语音朗读（客户端直连）**：阅读/单词/例句朗读优先用微软 Edge 神经语音（`en-US-AriaNeural` / 英式 `en-GB-SoniaNeural`），音质接近真人。
   - **为何客户端**：edge-tts 的 read-aloud WebSocket 会**封数据中心 IP**（实测 Netlify/Lambda 等服务端 403），只有住宅 IP 能用——故直接在**浏览器端**发起 WS（用用户自己的网络），无需 Key、免费。
   - 实现：`crypto.subtle` 算 `Sec-MS-GEC` 签名 → WSS 连 `speech.platform.bing.com` → 收 MP3 二进制 → `Audio` 播放；统一 `speak({lang,rate,onend})`，阅读逐句播放并**预取下一句**减少停顿；blob 内存缓存。
