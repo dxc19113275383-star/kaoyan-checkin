@@ -1,8 +1,52 @@
 {
   "sets": [
-    { "id": "calc",   "name": "微积分基础",   "desc": "极限 · 导数 · 积分 · 极值", "cat": "微积分",   "file": "calc.json",   "count": 10 },
-    { "id": "linear", "name": "线性代数基础", "desc": "行列式 · 矩阵 · 方程组",     "cat": "线性代数", "file": "linear.json", "count": 8 },
-    { "id": "prob",   "name": "概率统计基础", "desc": "古典概型 · 期望 · 条件概率", "cat": "概率统计", "file": "prob.json",   "count": 10 },
-    { "id": "logic",  "name": "逻辑·396预留", "desc": "待导入 · 全职阶段填充",       "cat": "逻辑",     "file": "logic.json",  "placeholder": true }
+    {
+      "id": "calc",
+      "name": "微积分基础",
+      "desc": "极限 · 导数 · 积分 · 极值",
+      "cat": "微积分",
+      "file": "calc.json",
+      "count": 10
+    },
+    {
+      "id": "linear",
+      "name": "线性代数基础",
+      "desc": "行列式 · 矩阵 · 方程组",
+      "cat": "线性代数",
+      "file": "linear.json",
+      "count": 8
+    },
+    {
+      "id": "prob",
+      "name": "概率统计基础",
+      "desc": "古典概型 · 期望 · 条件概率",
+      "cat": "概率统计",
+      "file": "prob.json",
+      "count": 10
+    },
+    {
+      "id": "logic",
+      "name": "逻辑·396预留",
+      "desc": "待导入 · 全职阶段填充",
+      "cat": "逻辑",
+      "file": "logic.json",
+      "placeholder": true
+    },
+    {
+      "id": "zyx-xiandai",
+      "name": "周洋鑫800题·线代",
+      "desc": "AI清洗待校 · 92题",
+      "cat": "线代",
+      "file": "zyx-xiandai.json",
+      "count": 92
+    },
+    {
+      "id": "zyx-gaoshu",
+      "name": "周洋鑫800题·高数",
+      "desc": "AI清洗待校 · 233题",
+      "cat": "高数",
+      "file": "zyx-gaoshu.json",
+      "count": 233
+    }
   ]
 }
