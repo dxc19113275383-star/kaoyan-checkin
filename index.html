@@ -531,6 +531,10 @@
   .mc-row:active { background: var(--color-background-secondary); }
   .mc-row .mc-ico { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; min-width: 30px; border-radius: 50%; background: var(--color-background-secondary); color: var(--color-text-info); }
   .mc-row .mc-ico svg { width: 15px; height: 15px; }
+  .mc-row .mc-thumb { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 40px; min-width: 64px; border-radius: 7px; overflow: hidden; background: var(--color-background-secondary); color: #fff; }
+  .mc-row .mc-thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .mc-row .mc-thumb svg { position: relative; width: 16px; height: 16px; filter: drop-shadow(0 1px 2px rgba(0,0,0,.5)); }
+  .mc-dur { font-variant-numeric: tabular-nums; }
   .mc-row .mc-meta { flex: 1; min-width: 0; }
   .mc-row .mc-title { font-size: 14px; color: var(--color-text-primary); line-height: 1.4; }
   .mc-badge { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: var(--radius-pill); white-space: nowrap; }
@@ -4597,16 +4601,41 @@
     if(!m.progress) m.progress={};
     return m;
   }
+  // R2 课程：经 Netlify 代理拉 index/course.json（免 R2 CORS），转成课节；带本地缓存 + 兜底
+  const R2_COURSE_PROXY='https://inquisitive-chimera-50c9e9.netlify.app/.netlify/functions/r2?key='+encodeURIComponent('index/course.json');
+  function _mcHash(s){ let h=0; s=String(s); for(let i=0;i<s.length;i++){ h=(h*31+s.charCodeAt(i))>>>0; } return 'r2_'+h.toString(36); }
+  function _mcFromCourse(course){
+    const out=[];
+    ((course&&course.subjects)||[]).forEach(function(sub){
+      (sub.modules||[]).forEach(function(mod){
+        (mod.items||[]).forEach(function(it){
+          if(it.type!=='video' || !it.url) return;
+          out.push({ id:_mcHash(it.path||it.url), chapter: mod.name||it.module||'未分章', title: it.title||'', url: it.url, cover: it.coverUrl||'', dur: it.duration||0, seed:true });
+        });
+      });
+    });
+    return out;
+  }
   function loadMcSeed(){
     if(_mcSeed) return Promise.resolve(_mcSeed);
-    return fetch('data/courses/math.json').then(function(r){return r.ok?r.json():null;})
-      .then(function(j){ _mcSeed=(j&&Array.isArray(j.lessons))?j.lessons:[]; return _mcSeed; })
-      .catch(function(){ _mcSeed=[]; return _mcSeed; });
+    const CK='mc_r2_course', CT='mc_r2_course_ts';
+    let cached=null; try{ const raw=localStorage.getItem(CK); if(raw) cached=JSON.parse(raw); }catch(e){}
+    const fresh = cached && cached.length && (Date.now()-(parseInt(localStorage.getItem(CT)||'0',10))<7200000);
+    const fetchR2=function(){
+      return fetch(R2_COURSE_PROXY).then(function(r){ if(!r.ok) throw 0; return r.json(); })
+        .then(function(j){ const ls=_mcFromCourse(j); if(!ls.length) throw 0; try{ localStorage.setItem(CK,JSON.stringify(ls)); localStorage.setItem(CT,Date.now()+''); }catch(e){} return ls; });
+    };
+    if(fresh){ _mcSeed=cached; fetchR2().then(function(ls){ _mcSeed=ls; }).catch(function(){}); return Promise.resolve(_mcSeed); }
+    return fetchR2().then(function(ls){ _mcSeed=ls; return ls; }).catch(function(){
+      if(cached && cached.length){ _mcSeed=cached; return cached; }
+      return fetch('data/courses/math.json').then(function(r){return r.ok?r.json():null;})
+        .then(function(j){ _mcSeed=(j&&Array.isArray(j.lessons))?j.lessons:[]; return _mcSeed; }).catch(function(){ _mcSeed=[]; return _mcSeed; });
+    });
   }
   function mcAllLessons(){
     const m=ensureMathCourse();
-    const seed=(_mcSeed||[]).map(function(l,i){ return {id:l.id||('seed_'+i), chapter:l.chapter||'未分章', title:l.title||('第'+(i+1)+'节'), url:l.url||'', seed:true}; });
-    const user=m.lessons.map(function(l){ return {id:l.id, chapter:l.chapter||'未分章', title:l.title, url:l.url, seed:false}; });
+    const seed=(_mcSeed||[]).map(function(l,i){ return {id:l.id||('seed_'+i), chapter:l.chapter||'未分章', title:l.title||('第'+(i+1)+'节'), url:l.url||'', cover:l.cover||'', dur:l.dur||0, seed:true}; });
+    const user=m.lessons.map(function(l){ return {id:l.id, chapter:l.chapter||'未分章', title:l.title, url:l.url, cover:'', dur:0, seed:false}; });
     return seed.concat(user);
   }
   window.openMathCourse = function(){
@@ -4643,9 +4672,15 @@
         const p=m.progress[l.id]||{};
         const badge = p.done ? '<span class="mc-badge done">已学</span>' : (p.percent>0?'<span class="mc-badge ing">'+p.percent+'%</span>':'');
         const bad = !l.url || PAN_RE.test(l.url);
+        const lead = l.cover ? '<span class="mc-thumb"><img loading="lazy" src="'+escAttr(l.cover)+'" alt="">'+I.play+'</span>' : '<span class="mc-ico">'+I.play+'</span>';
+        const durTxt = l.dur ? '<span class="mc-dur">'+fmtTime(l.dur)+'</span>' : '';
+        let subline='';
+        if(bad) subline='<div class="tiny" style="color:var(--color-accent);">链接非直链，可能无法内嵌</div>';
+        else if(p.time>3&&!p.done) subline='<div class="tiny muted">上次看到 '+fmtTime(p.time)+'</div>';
+        else if(durTxt) subline='<div class="tiny muted">'+durTxt+'</div>';
         html+='<div class="mc-row" onclick="mcPlay(\''+l.id+'\')">';
-        html+=  '<span class="mc-ico">'+I.play+'</span>';
-        html+=  '<div class="mc-meta"><div class="mc-title">'+escAttr(l.title)+'</div>'+(bad?'<div class="tiny" style="color:var(--color-accent);">链接非直链，可能无法内嵌</div>':(p.time>3&&!p.done?'<div class="tiny muted">上次看到 '+fmtTime(p.time)+'</div>':''))+'</div>';
+        html+=  lead;
+        html+=  '<div class="mc-meta"><div class="mc-title">'+escAttr(l.title)+'</div>'+subline+'</div>';
         html+=  (badge||'');
         if(!l.seed) html+='<button class="btn-icon mc-del" onclick="event.stopPropagation();mcDelete(\''+l.id+'\')" aria-label="删除">'+I.trash+'</button>';
         html+='</div>';
