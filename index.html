@@ -4443,8 +4443,9 @@
     });
   }
 
-  window.openMath = function(){
-    ensureMath();
+	  window.openMath = function(){
+	    _mcQuizContext = null;
+	    ensureMath();
     $('mathSession').style.display='none';
     $('mathHome').style.display='';
     loadMathSets().then(renderMathHome);
@@ -4485,45 +4486,60 @@
 
   window.mathSwitchSet=function(id){ const m=ensureMath(); m.active=id; save(); loadMathSets().then(renderMathHome); };
 
-  function buildMathQueue(qs, mode){
-    const m=ensureMath(), set=m.active;
-    let items=[];
-    if(mode==='wrong'){
-      m.wrongBook.forEach(function(k){ if(k.indexOf(set+':')===0){ const qid=k.slice(set.length+1); const q=qs.find(function(x){return x.id===qid;}); if(q) items.push(q); } });
-    } else {
-      items=qs.slice();
-    }
-    return _mshuffle(items);
-  }
+	  function buildMathQueue(qs, mode, cats){
+	    const m=ensureMath(), set=m.active;
+	    let items=[];
+	    if(mode==='wrong'){
+	      m.wrongBook.forEach(function(k){ if(k.indexOf(set+':')===0){ const qid=k.slice(set.length+1); const q=qs.find(function(x){return x.id===qid;}); if(q) items.push(q); } });
+	    } else {
+	      items=qs.slice();
+	    }
+	    // 按分类过滤（课程→做题联动）
+	    if(cats && Array.isArray(cats) && cats.length){
+	      items = items.filter(function(q){ return cats.indexOf(q.cat) >= 0; });
+	    }
+	    return _mshuffle(items);
+	  }
 
-  window.startMath=function(mode){
-    const m=ensureMath();
-    loadMathQuestions(m.active).then(function(qs){
-      if(!qs){ alert('该题集暂无内容'); return; }
-      const queue=buildMathQueue(qs, mode);
-      if(!queue.length){ alert(mode==='wrong'?'错题本是空的':'该题集暂无题目'); return; }
-      _msession={ set:m.active, queue:queue, idx:0, mode:mode, correct:0, total:queue.length };
-      $('mathHome').style.display='none'; $('mathSession').style.display='';
-      renderMathCard();
-    });
-  };
+	  window.startMath=function(mode, catFilter){
+	    const m=ensureMath();
+	    loadMathQuestions(m.active).then(function(qs){
+	      if(!qs){ alert('该题集暂无内容'); return; }
+	      const queue=buildMathQueue(qs, mode, catFilter);
+	      if(!queue.length){ alert(mode==='wrong'?'错题本是空的':(catFilter?'该分类暂无题目':'该题集暂无题目')); return; }
+	      _msession={ set:m.active, queue:queue, idx:0, mode:mode, correct:0, total:queue.length, catFilter: catFilter || null };
+	      $('mathHome').style.display='none'; $('mathSession').style.display='';
+	      renderMathCard();
+	    });
+	  };
 
-  function renderMathCard(){
-    const s=_msession; if(!s) return;
-    if(s.idx>=s.queue.length){ renderMathDone(); return; }
-    const q=s.queue[s.idx];
-    s._answered=false;
-    let html='<div class="card">';
-    html+='<div class="row" style="justify-content:space-between;align-items:center;"><button class="btn-sm learn-back" onclick="quitMath()">← 退出</button><span class="tiny muted">'+(s.idx+1)+' / '+s.total+(s.mode==='wrong'?' · 错题重做':'')+'</span></div>';
-    html+='<div class="vocab-progbar" style="margin-top:8px;"><i style="width:'+Math.round(s.idx/s.total*100)+'%"></i></div>';
-    if(q.cat) html+='<div class="tiny muted" style="margin-top:10px;">'+escAttr(q.cat)+(q.level?' · '+escAttr(q.level):'')+'</div>';
-    html+='<div class="math-stem">'+escAttr(q.stem)+'</div>';
-    html+='<div class="vocab-opts" id="mathOpts">';
-    (q.options||[]).forEach(function(o,i){ html+='<button class="vocab-opt" style="text-align:left;" onclick="mathPick(this)" data-i="'+i+'">'+String.fromCharCode(65+i)+'. '+escAttr(o)+'</button>'; });
-    html+='</div>';
-    html+='<div id="mathFb"></div></div>';
-    $('mathSession').innerHTML=html;
-  }
+	  function renderMathCard(){
+	    const s=_msession; if(!s) return;
+	    if(s.idx>=s.queue.length){ renderMathDone(); return; }
+	    const q=s.queue[s.idx];
+	    s._answered=false;
+	    let html='<div class="card">';
+	    // 来自课程跳转：显示课程上下文 & 返回按钮
+	    if(_mcQuizContext){
+	      html+='<div class="row" style="justify-content:space-between;align-items:center;"><button class="btn-sm learn-back" onclick="mcBackFromQuiz()">'+I.arrowLeft+'返回课程</button><span class="tiny muted">'+escAttr(_mcQuizContext.catLabel||'')+'</span></div>';
+	    } else {
+	      html+='<div class="row" style="justify-content:space-between;align-items:center;"><button class="btn-sm learn-back" onclick="quitMath()">← 退出</button><span class="tiny muted">'+(s.idx+1)+' / '+s.total+(s.mode==='wrong'?' · 错题重做':'')+'</span></div>';
+	    }
+	    if(!_mcQuizContext){
+	      html+='<div class="vocab-progbar" style="margin-top:8px;"><i style="width:'+Math.round(s.idx/s.total*100)+'%"></i></div>';
+	    } else {
+	      // 课程跳转时，进度条上方加一行提示
+	      html+='<div class="tiny muted" style="margin:6px 0 2px;">配套练习 · '+(s.idx+1)+' / '+s.total+'</div>';
+	      html+='<div class="vocab-progbar" style="margin-top:4px;"><i style="width:'+Math.round(s.idx/s.total*100)+'%"></i></div>';
+	    }
+	    if(q.cat) html+='<div class="tiny muted" style="margin-top:10px;">'+escAttr(q.cat)+(q.level?' · '+escAttr(q.level):'')+'</div>';
+	    html+='<div class="math-stem">'+escAttr(q.stem)+'</div>';
+	    html+='<div class="vocab-opts" id="mathOpts">';
+	    (q.options||[]).forEach(function(o,i){ html+='<button class="vocab-opt" style="text-align:left;" onclick="mathPick(this)" data-i="'+i+'">'+String.fromCharCode(65+i)+'. '+escAttr(o)+'</button>'; });
+	    html+='</div>';
+	    html+='<div id="mathFb"></div></div>';
+	    $('mathSession').innerHTML=html;
+	  }
 
   window.mathPick=function(btn){
     const s=_msession; if(!s||s._answered) return;
@@ -4580,14 +4596,18 @@
     const inp=$('aiInput'); if(inp){ inp.value=txt; inp.focus(); }
   };
 
-  function renderMathDone(){
-    const s=_msession;
-    const acc=s.total?Math.round(s.correct/s.total*100):0;
-    $('mathSession').innerHTML='<div class="card" style="text-align:center;"><div class="fb-done-ic'+(acc>=80?'':' is-mid')+'">'+I.circleCheck+'</div><h2 style="margin:8px 0;">本组完成</h2><p class="muted">答对 '+s.correct+' / '+s.total+'（'+acc+'%）</p><button class="btn-cta" style="margin-top:14px;" onclick="openMath()">返回</button></div>';
-    _msession=null;
-  }
+	  function renderMathDone(){
+	    const s=_msession;
+	    const acc=s.total?Math.round(s.correct/s.total*100):0;
+	    const backBtn = _mcQuizContext
+	      ? '<button class="btn-sm" style="margin-top:8px;" onclick="mcBackFromQuiz()">'+I.arrowLeft+'返回课程</button>'
+	      : '';
+	    $('mathSession').innerHTML='<div class="card" style="text-align:center;"><div class="fb-done-ic'+(acc>=80?'':' is-mid')+'">'+I.circleCheck+'</div><h2 style="margin:8px 0;">本组完成</h2><p class="muted">答对 '+s.correct+' / '+s.total+'（'+acc+'%）</p><button class="btn-cta" style="margin-top:14px;" onclick="openMath()">返回</button>'+backBtn+'</div>';
+	    _msession=null;
+	  }
 
-  window.quitMath=function(){ _msession=null; openMath(); };
+	window.quitMath=function(){ _msession=null; _mcQuizContext=null; openMath(); };
+
 
   window.mathOpenImport=function(){ $('mathImpName').value=''; $('mathImpJson').value=''; $('mathImport').style.display=''; };
   $('mathImpCancel').onclick=function(){ $('mathImport').style.display='none'; };
@@ -4608,9 +4628,23 @@
   };
   window.quitReading = function(){ readingStopPlay(); $('readingPop').style.display='none'; _readingCur=null; openReading(); };
 
-  // ===== 数学课程（自托管直链视频：章节 + 续播 + 进度）=====
-  let _mcSeed=null, _mcCur=null, _mcVideoEl=null, _mcChapter=null;
-  function ensureMathCourse(){
+	  // ===== 数学课程（自托管直链视频：章节 + 续播 + 进度）=====
+	  let _mcSeed=null, _mcCur=null, _mcVideoEl=null, _mcChapter=null;
+	  // 课程→配套练习映射表：课程章节 → 题集ID + 关键词分类规则
+	  const MC_QUIZ_MAP = {
+	    "高数": { set: "zyx-gaoshu", rules: [
+	      { cats: ["第一章"], kw: ["极限","无穷小","连续","间断","函数"] },
+	      { cats: ["第二章"], kw: ["导数","微分","几何意义","切线"] },
+	      { cats: ["第三章"], kw: ["不定积分"] },
+	    ]},
+	    "线代": { set: "zyx-xiandai", rules: [
+	      { cats: ["第一章"], kw: ["行列式"] },
+	      { cats: ["第二章"], kw: ["矩阵","初等变换","秩","向量","方程组"] },
+	    ]}
+	  };
+	  // 从课程跳转做题的上下文标记
+	  let _mcQuizContext = null;
+	  function ensureMathCourse(){
     const m = state.learn.mathcourse = state.learn.mathcourse || {};
     if(!Array.isArray(m.lessons)) m.lessons=[];
     if(!m.progress) m.progress={};
@@ -4739,13 +4773,18 @@
       const cur=(ensureMathCourse().settings&&ensureMathCourse().settings.rate)||1;
       html+='<div class="row" style="align-items:center;gap:8px;margin-top:10px;"><span class="tiny muted">倍速</span>'+mcRateSeg(cur)+'</div>';
     }
-    html+='<h2 style="margin:12px 0 2px;font-size:17px;">'+escAttr(l.title)+'</h2>';
-    html+='<div class="tiny muted">'+escAttr(l.chapter||'')+'</div>';
-    html+='<div class="row" style="gap:8px;margin-top:12px;">';
-    html+='<button class="btn-sm" style="flex:1;'+(prev?'':'opacity:.4;pointer-events:none;')+'" onclick="mcPlay(\''+(prev?prev.id:'')+'\')">'+I.arrowLeft+'上一节</button>';
-    html+='<button class="btn-sm" style="flex:1;" onclick="mcMarkDone(\''+l.id+'\')">'+I.check+'标记已学</button>';
-    html+='<button class="btn-sm" style="flex:1;'+(next?'':'opacity:.4;pointer-events:none;')+'" onclick="mcPlay(\''+(next?next.id:'')+'\')">下一节 →</button>';
-    html+='</div>';
+	    html+='<h2 style="margin:12px 0 2px;font-size:17px;">'+escAttr(l.title)+'</h2>';
+	    html+='<div class="tiny muted">'+escAttr(l.chapter||'')+'</div>';
+	    // 课程→做题联动：匹配到题集则显示「做配套练习」按钮
+	    const hasQuiz = MC_QUIZ_MAP.hasOwnProperty(l.chapter);
+	    html+='<div class="row" style="gap:8px;margin-top:12px;">';
+	    html+='<button class="btn-sm" style="flex:1;'+(prev?'':'opacity:.4;pointer-events:none;')+'" onclick="mcPlay(\''+(prev?prev.id:'')+'\')">'+I.arrowLeft+'上一节</button>';
+	    html+='<button class="btn-sm" style="flex:1;" onclick="mcMarkDone(\''+l.id+'\')">'+I.check+'标记已学</button>';
+	    if(hasQuiz){
+	      html+='<button class="btn-sm btn-cta" style="flex:1;background:var(--color-text-info);color:#fff;border-color:var(--color-text-info);" onclick="mcQuizForLesson()">'+I.layers+'配套练习</button>';
+	    }
+	    html+='<button class="btn-sm" style="flex:1;'+(next?'':'opacity:.4;pointer-events:none;')+'" onclick="mcPlay(\''+(next?next.id:'')+'\')">下一节 →</button>';
+	    html+='</div>';
     // 课堂笔记
     const note=(ensureMathCourse().progress[l.id]||{}).note||'';
     html+='<div class="mc-notes"><div class="rw-sec-t" style="margin-bottom:6px;">课堂笔记</div><textarea id="mcNote" class="mc-note-ta" placeholder="记点什么…（自动保存）">'+escAttr(note)+'</textarea></div>';
@@ -4821,8 +4860,58 @@
     _mcVideoEl=null;
   }
   window._mcStop = mcStopVideo;
-  window.mcBackToList=function(){ const ch=_mcCur&&_mcCur.chapter; mcStopVideo(); _mcCur=null; if(ch) _mcChapter=ch; $('mcPlayer').style.display='none'; $('mcHome').style.display=''; loadMcSeed().then(renderMcHome); };
-  window.mcOpenEdit=function(id){
+	  window.mcBackToList=function(){ const ch=_mcCur&&_mcCur.chapter; mcStopVideo(); _mcCur=null; if(ch) _mcChapter=ch; $('mcPlayer').style.display='none'; $('mcHome').style.display=''; loadMcSeed().then(renderMcHome); };
+	  // 课程→做题联动：为当前课节寻找配套练习题并跳转
+	  window.mcQuizForLesson = function(){
+	    const l = _mcCur; if(!l) return;
+	    const entry = MC_QUIZ_MAP[l.chapter];
+	    if(!entry){
+	      alert('「'+l.chapter+'」暂未收录配套题集，敬请期待');
+	      return;
+	    }
+	    // 按关键词匹配分类
+	    let matchedCats = null;
+	    for(let ri=0; ri<entry.rules.length; ri++){
+	      const rule = entry.rules[ri];
+	      for(let ki=0; ki<rule.kw.length; ki++){
+	        if(l.title.indexOf(rule.kw[ki]) >= 0){
+	          matchedCats = rule.cats;
+	          break;
+	        }
+	      }
+	      if(matchedCats) break;
+	    }
+	    // 兜底：匹配不到关键词则用全部题集
+	    if(!matchedCats){
+	      const ok = confirm('未能匹配到具体章节分类，是否练习整套「'+entry.set+'」？');
+	      if(!ok) return;
+	    }
+	    mcStopVideo();
+	    _mcQuizContext = { chapter: l.chapter, title: l.title, catLabel: (matchedCats ? (l.chapter+'·'+matchedCats.join('/')) : l.chapter+'·全部'), set: entry.set, cats: matchedCats };
+	    // 切到数学模块，设好题集开始做题
+	    const m = ensureMath();
+	    m.active = entry.set; save();
+	    $('mcPlayer').style.display='none'; $('mcHome').style.display='none';
+	    $('pageLearnMathCourse').style.display='none';
+	    $('pageLearnMath').style.display='';
+	    // 加载题集直接开始练习
+	    loadMathQuestions(entry.set).then(function(qs){
+	      if(!qs || !qs.length){ alert('题集「'+entry.set+'」暂无内容'); _mcQuizContext=null; openMath(); return; }
+	      const queue = buildMathQueue(qs, 'practice', matchedCats);
+	      if(!queue.length){ alert('该分类暂无题目'); _mcQuizContext=null; openMath(); return; }
+	      _msession={ set:entry.set, queue:queue, idx:0, mode:'practice', correct:0, total:queue.length, catFilter:matchedCats||null };
+	      $('mathHome').style.display='none'; $('mathSession').style.display='';
+	      renderMathCard();
+	    });
+	  };
+	  // 从练习返回课程
+	  window.mcBackFromQuiz = function(){
+	    _msession = null; _mcQuizContext = null;
+	    $('pageLearnMath').style.display='none';
+	    $('pageLearnMathCourse').style.display='';
+	    openMathCourse();
+	  };
+	  window.mcOpenEdit=function(id){
     const m=ensureMathCourse(); let l=null; if(id){ l=m.lessons.find(function(x){return x.id===id;}); }
     window._mcEditId = l?l.id:null;
     $('mcEditTitle').textContent = l?'编辑课程':'添加课程';
