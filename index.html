@@ -1285,7 +1285,6 @@
   <section class="card hero home-only" id="heroCard"></section>
 
   <!-- 阶段切换 -->
-  <div class="phaseToggle home-only" id="phaseToggle"></div>
 
   <!-- 周/月导航 -->
   <div class="card">
@@ -1848,7 +1847,6 @@
 
   // ===== DOM REFS =====
   const $ = (id) => document.getElementById(id);
-  const phaseToggle = $('phaseToggle');
   const weekTitle = $('weekTitle');
   const phaseLabel = $('phaseLabel');
   const monthGoal = $('monthGoal');
@@ -3483,13 +3481,6 @@
     const mi = monthIdxFor(state.p, state.wk);
     const m = ph.months[mi];
 
-    // Phase toggle（v9：按当前计划动态生成；单阶段时整条隐藏）
-    let ptHtml = '';
-    PHASES.forEach(function(ph, i){
-      ptHtml += '<button data-p="'+i+'"'+(i===state.p?' class="on"':'')+'>'+escAttr(ph.label)+'（约'+Math.max(1, Math.round(ph.weeks/4))+'个月）</button>';
-    });
-    phaseToggle.innerHTML = ptHtml;
-    phaseToggle.style.display = PHASES.length > 1 ? '' : 'none';
 
     // Countdown
     const remaining = daysUntil(state.examDate);
@@ -3522,9 +3513,19 @@
     }
 
     // Week（v9：月标签/月目标对自定义计划宽容——没有 months 就不显示月块）
+    // 阶段切换收纳为小下拉（原首页大切换条已撤：阶段由起始日期自动定位，翻看是低频操作）
     weekTitle.textContent = '第 ' + state.wk + ' 周';
     const mLabel = m ? (m.name || ('第 ' + (mi + 1) + ' 月')) : '';
-    phaseLabel.textContent = ph.label + (mLabel ? ' · ' + mLabel : '');
+    if (PHASES.length > 1) {
+      let sel = '<select id="phaseSel" class="res-filter" style="max-width:46vw;">';
+      PHASES.forEach(function(x, i){ sel += '<option value="'+i+'"'+(i===state.p?' selected':'')+'>'+escAttr(x.label)+'</option>'; });
+      sel += '</select>';
+      phaseLabel.innerHTML = sel + (mLabel ? ' <span class="tiny muted">· ' + escAttr(mLabel) + '</span>' : '');
+      const ps = $('phaseSel');
+      if (ps) ps.onchange = function(){ state.p = parseInt(this.value, 10) || 0; state.wk = 1; render(); };
+    } else {
+      phaseLabel.textContent = ph.label + (mLabel ? ' · ' + mLabel : '');
+    }
     if (m && m.goal) {
       monthGoal.style.display = '';
       monthGoal.innerHTML = I.target + '<b style="font-weight:500">本月目标</b><br>' + escAttr(m.goal);
@@ -6859,12 +6860,6 @@
   })();
 
   // ===== EVENT BINDINGS =====
-  // v9：阶段按钮动态生成，用事件委托（阶段数量可变）
-  phaseToggle.addEventListener('click', function(e){
-    const b = e.target.closest('button'); if (!b || b.dataset.p === undefined) return;
-    state.p = parseInt(b.dataset.p, 10) || 0; state.wk = 1; render();
-  });
-
   $('prevWk').onclick = () => {
     if (state.wk > 1) { state.wk--; render(); }
     else if (state.p > 0) { state.p--; state.wk = PHASES[state.p].weeks; render(); } // 跨到上一阶段末周
@@ -7325,7 +7320,7 @@
     else results.push('❌ 上一周按钮缺失');
     if (document.getElementById('nextWk')) results.push('✅ 下一周按钮');
     else results.push('❌ 下一周按钮缺失');
-    if (document.querySelector('#phaseToggle button')) results.push('✅ 阶段切换');
+    if (document.getElementById('phaseSel') || document.getElementById('phaseLabel')) results.push('✅ 阶段切换');
     else results.push('❌ 阶段切换缺失');
 
     console.log('[DOM自检]', results.join(' | '));
