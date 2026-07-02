@@ -4354,7 +4354,11 @@
     fb += '<button class="btn-cta" style="margin-top:8px;" onclick="vocabNext()"><span>下一个 →</span></button>';
     $('vocabFb').innerHTML=fb;
     _fbIntoView('vocabFb');
-    if(!correct) vocabWordCard(_vsession.lib, wd.w); // 答错直接弹词义详解
+    // 答错：先看清正确拼写（输入框标红+正确词提示），停 1.6s 再弹词义详解
+    if(!correct){
+      const ses=_vsession, myIdx=ses.idx;
+      setTimeout(function(){ if(_vsession===ses && ses.idx===myIdx) vocabWordCard(ses.lib, wd.w); }, 1600);
+    }
   }
 
   window.vocabPick=function(btn){
@@ -4432,7 +4436,11 @@
     fb+='<button class="btn-sm" style="width:100%;margin-top:8px;background:var(--color-text-info);color:#fff;border-color:var(--color-text-info);padding:10px;" onclick="vocabNext()">下一个 →</button>';
     $('vocabFb').innerHTML=fb;
     _fbIntoView('vocabFb');
-    if(!correct) vocabWordCard(_vsession.lib, wd.w); // 答错直接弹词义详解
+    // 答错：先让用户看清正确答案（绿色项+各选项单词），停 1.6s 再弹词义详解
+    if(!correct){
+      const ses=_vsession, myIdx=ses.idx;
+      setTimeout(function(){ if(_vsession===ses && ses.idx===myIdx) vocabWordCard(ses.lib, wd.w); }, 1600);
+    }
   }
 
   window.vocabKnown=function(){
