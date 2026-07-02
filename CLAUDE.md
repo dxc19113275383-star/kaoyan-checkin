@@ -45,7 +45,7 @@
 - 词汇：5500 大纲词 + 5489 词义详解 + 80 核心词（带例句）。（cet4/cet6/major-en 占位已于 P0.2 移除，需要时再真导入）
 - 数学课程：133 节周洋鑫396视频（高数74/线代24/概率14/综合21），二级下钻菜单；**R2 已全部上传（2026-07-02 核对 133/133）**，`scripts/check-r2-coverage.mjs` 可随时重核。
 - 数学题库：`zyx-gaoshu`(233) + `zyx-xiandai`(92)，标「AI清洗·待校」。（logic 占位已移除，396 逻辑真题待 P1.5 导入）
-- 阅读 6 篇（新增 助推/通胀/零工经济 3 篇双语精读）/ 长难句 16 句（core 8 + clauses 4 + inversion 4，占位已填）/ 作文 7 题（道歉/推荐/感谢/邀请/图表/论点/现象）+ 模板。
+- 阅读 **20 篇**（6 手写 + 14 AI生成·待校，均带 4 道配套题）/ 长难句 **60 句**（core 24 + clauses 20 + inversion 16，AI扩充·待校，parts 拼接 100% 校验）/ 作文 **15 题**（小 9 + 大 6，全带范文可默写）+ 模板。生成脚本 `scripts/gen-english-content.mjs`（本地直连 DeepSeek，幂等续跑）。
 
 ## 红线与工作约定（来自历史约定，务必遵守）
 
@@ -72,6 +72,7 @@ DEEPSEEK_API_KEY=sk-... node scripts/clean-questions.mjs
 - **功能规划看 `PLAN.md`（2026-07-02 立项）**：全面审计后的 P0-P3 分阶段计划，完成一项勾一项，**接手做新功能前先看它**。
 - **P1.1 今日学习聚合页已上线（2026-07-02）**：学习中心置顶通栏卡 → `openToday()`（约 3630 行）一屏聚合三项 quest / 到期复习词 / 错题数 / 长难句待复习数 + 「一键开始」直达第一个未达标项。原"敬请期待"占位页已删，`showLearnView` 未知视图回落 hub。
 - **P1.2 阅读配套题已上线（2026-07-02）**：6 篇 ×4 题手写入各 passage JSON `questions` 字段；`renderPassage` 尾部渲染练习区、`readingAnswer()` 判分（答错入错题中心/重做答对解除/成绩存 `progress[id].quiz`，列表显「题 x/4」）。阅读闭环补全。
+- **P2 英语扩量完成（2026-07-02）**：`scripts/gen-english-content.mjs` 批量生成——阅读 6→20 篇（带配套题）、长难句 16→60 句（parts 硬校验，c15 手写）、作文 7→15 题（含范文）。产出标"待校"，后续抽样校对。用法 `node scripts/gen-english-content.mjs reading|syntax|writing [--limit N]`，幂等只补缺。
 - **P1.3/1.4/1.7 已上线（2026-07-02）**：长难句复习队列（`syntaxDueKeys`/`syntaxStartReview` 遮译自测，记住出队、不熟 due 推明天）；作文范文默写（`writingStartDictation` 逐句 LCS diff 标红，还原度存 `writing.dict`，离线可用）；AI 失败改人话文案 + 问题放回输入框即点即重试。**P1 仅剩 1.5 逻辑题库 / 1.6 MC_QUIZ_MAP 扩章，都在等题源**（用户尚未找到 396 逻辑题库）。
 - **P0 全部完成（2026-07-02）**：0.2 占位大扫除（词库/题库索引去占位 + 学习中心撤三张敬请期待卡 + 加载层过滤/active回退）；0.3 SW v22 同源 `*.json` 改 stale-while-revalidate（内容更新不再吃缓存）；0.4 设置页备份状态行（版本+距上次备份天数）；0.5 `scripts/check-r2-coverage.mjs` 覆盖率核对 + 前端「未上传」灰显（**首跑 133/133 已全部上传，视频问题已消**，R2 传新课后重跑脚本提交 coverage.json）；0.6 streak 漏1天宽恕。下一步 P1.1 今日学习聚合页。
 - **P0.1 打卡×学习已打通（2026-07-02）**：quest 达标自动勾选今日对应打卡任务（`_autoCheckTask`，约 1911 行；关键词映射 + t-rev 回顾类留手动；`_todayPos()` 用起始日期定位"今天"）；`computeStreak()` 统一为全 App 唯一 streak（今天未打不清零）；Hero 训练舱模式改显统一 streak。热力图/周报经自动勾选自然吃到学习行为。已端到端验证。

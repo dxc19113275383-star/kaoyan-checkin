@@ -1,0 +1,151 @@
+{
+  "id": "aging-population",
+  "title": "The Economics of Growing Old",
+  "source": "AI生成·待校 · 经济与社会",
+  "level": "考研英语二",
+  "intro": "老龄化加剧，经济如何应对？",
+  "paragraphs": [
+    "As the global population ages, labor forces shrink and pension systems face unprecedented strain. In many developed nations, the ratio of workers to retirees has declined sharply, threatening the sustainability of pay-as-you-go social security. Governments are thus compelled to consider raising retirement ages or overhauling benefits to prevent fiscal collapse.",
+    "The economic logic behind delaying retirement is straightforward: extending working years boosts labor supply, reduces pension payouts, and keeps experienced workers in the workforce. However, this approach conflicts with the health and productivity of older employees. For instance, physically demanding jobs become harder to perform, requiring adaptive measures such as flexible schedules or ergonomic improvements.",
+    "Critics argue that delayed retirement alone cannot solve the demographic crisis. Instead, they advocate for automation to replace declining human labor. Advanced robotics and AI can sustain output even with fewer workers, potentially offsetting the negative effects of aging. Yet this transition raises concerns about job displacement and income inequality, as low-skilled workers may be left behind.",
+    "In conclusion, no single policy suffices. A combination of gradual retirement age increases, targeted automation, and social safety nets is necessary. Societies must balance efficiency with equity, ensuring that the elderly are not marginalized while the young find opportunities. The economics of aging ultimately demand innovative, inclusive strategies."
+  ],
+  "cn": [
+    "随着全球人口老龄化，劳动力萎缩，养老金体系面临前所未有的压力。在许多发达国家，劳动者与退休人员的比例大幅下降，威胁到现收现付社会保障的可持续性。因此，政府被迫考虑提高退休年龄或改革福利以防止财政崩溃。",
+    "延迟退休的经济逻辑很简单：延长工作年限增加劳动力供给，减少养老金支出，并让有经验的工人留在职场。然而，这种方法与老年员工的健康和生产力相冲突。例如，体力要求高的工作变得更难完成，需要灵活工作时间或人体工学改进等适应性措施。",
+    "批评者认为，仅靠延迟退休无法解决人口危机。相反，他们主张用自动化替代减少的人力。先进的机器人和人工智能可以在工人更少的情况下维持产出，可能抵消老龄化的负面影响。但这种转变引发了对失业和收入不平等的担忧，因为低技能工人可能被抛在后面。",
+    "总之，没有单一政策足够。需要逐步提高退休年龄、有针对性的自动化和社会保障网络的组合。社会必须平衡效率与公平，确保老年人不被边缘化，同时年轻人找到机会。老龄化经济学最终需要创新、包容的策略。"
+  ],
+  "glossary": [
+    {
+      "w": "strain",
+      "ph": "/streɪn/",
+      "def": "n.压力；紧张",
+      "ex": "unprecedented strain",
+      "exCn": "前所未有的压力"
+    },
+    {
+      "w": "sustainability",
+      "ph": "/səˌsteɪnəˈbɪləti/",
+      "def": "n.可持续性",
+      "ex": "sustainability of social security",
+      "exCn": "社会保障的可持续性"
+    },
+    {
+      "w": "overhaul",
+      "ph": "/ˈoʊvərhɔːl/",
+      "def": "v.彻底改革",
+      "ex": "overhauling benefits",
+      "exCn": "改革福利"
+    },
+    {
+      "w": "compel",
+      "ph": "/kəmˈpel/",
+      "def": "v.迫使",
+      "ex": "compelled to consider",
+      "exCn": "被迫考虑"
+    },
+    {
+      "w": "conflict",
+      "ph": "/ˈkɑːnflɪkt/",
+      "def": "v.冲突",
+      "ex": "conflicts with health",
+      "exCn": "与健康冲突"
+    },
+    {
+      "w": "adaptive",
+      "ph": "/əˈdæptɪv/",
+      "def": "adj.适应的",
+      "ex": "adaptive measures",
+      "exCn": "适应性措施"
+    },
+    {
+      "w": "advocate",
+      "ph": "/ˈædvəkeɪt/",
+      "def": "v.提倡",
+      "ex": "advocate for automation",
+      "exCn": "提倡自动化"
+    },
+    {
+      "w": "offset",
+      "ph": "/ˈɔːfset/",
+      "def": "v.抵消",
+      "ex": "offset negative effects",
+      "exCn": "抵消负面影响"
+    },
+    {
+      "w": "displacement",
+      "ph": "/dɪsˈpleɪsmənt/",
+      "def": "n.取代；失业",
+      "ex": "job displacement",
+      "exCn": "工作被取代"
+    },
+    {
+      "w": "marginalize",
+      "ph": "/ˈmɑːrdʒɪnəlaɪz/",
+      "def": "v.使边缘化",
+      "ex": "elderly are marginalized",
+      "exCn": "老年人被边缘化"
+    },
+    {
+      "w": "inclusive",
+      "ph": "/ɪnˈkluːsɪv/",
+      "def": "adj.包容的",
+      "ex": "inclusive strategies",
+      "exCn": "包容性策略"
+    },
+    {
+      "w": "demographic",
+      "ph": "/ˌdeməˈɡræfɪk/",
+      "def": "adj.人口的",
+      "ex": "demographic crisis",
+      "exCn": "人口危机"
+    }
+  ],
+  "questions": [
+    {
+      "q": "What is the main idea of the passage?",
+      "options": [
+        "Automation can completely replace human workers.",
+        "Delaying retirement is the best solution to aging.",
+        "A mix of policies is required to address aging economics.",
+        "Aging populations cause labor shortages and pension crises."
+      ],
+      "answer": 2,
+      "explain": "主旨题。文章最后一段总结说没有单一政策足够，需要退休年龄、自动化和安全网的组合，因此「A mix of policies is required」一项正确。其他三项过于片面：第一项只是现象，第二项过度强调延迟退休，第三项说自动化完全替代，与文中的担忧相悖。"
+    },
+    {
+      "q": "According to the passage, why are governments forced to raise retirement ages?",
+      "options": [
+        "To prevent the collapse of pension systems.",
+        "To increase the health of older workers.",
+        "To reduce the use of automation.",
+        "To create more jobs for young people."
+      ],
+      "answer": 0,
+      "explain": "细节题。第一段末尾提到政府被迫提高退休年龄或改革福利以防止财政崩溃，即防止养老金体系崩溃。因此「To prevent the collapse of pension systems」一项正确。其他三项：第一段未提健康或年轻人就业，第四项与原文自动化主张相反。"
+    },
+    {
+      "q": "What can be inferred from the third paragraph?",
+      "options": [
+        "Automation will definitely worsen income inequality.",
+        "Low-skilled workers may suffer from automation.",
+        "Delayed retirement is more effective than automation.",
+        "Critics believe automation can fully resolve aging issues."
+      ],
+      "answer": 1,
+      "explain": "推断题。第三段提到自动化可能使低技能工人被抛在后面，即他们可能受害。因此「Low-skilled workers may suffer from automation」一项可以推断。其他三项：第一项「definitely worsen」过于绝对，原文只说担忧；第二项「fully resolve」也绝对，批评者只是主张自动化；第四项文中未比较有效性。"
+    },
+    {
+      "q": "The word 'overhaul' in paragraph 1 most probably means ______.",
+      "options": [
+        "temporarily suspend",
+        "gradually increase",
+        "completely reform",
+        "carefully examine"
+      ],
+      "answer": 2,
+      "explain": "语义题。第一段中「overhauling benefits」与提高退休年龄并列作为防止财政崩溃的手段，结合上下文，overhaul 意为彻底改革。因此「completely reform」一项正确。其他三项：第一项与语境不符，第三项「仔细检查」不表示改革，第四项「暂停」意思相反。"
+    }
+  ]
+}

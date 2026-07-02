@@ -11,22 +11,78 @@
       "en": "The report reveals that companies which invest heavily in employee training tend to retain the talent that their rivals desperately want.",
       "cn": "报告显示，那些在员工培训上大力投入的公司，往往能留住竞争对手求之不得的人才。",
       "parts": [
-        {"text":"The report","role":"subj","note":"主句主语"},
-        {"text":" ","role":"plain"},
-        {"text":"reveals","role":"verb","note":"主句谓语"},
-        {"text":" ","role":"plain"},
-        {"text":"that","role":"mark","note":"宾语从句引导词"},
-        {"text":" ","role":"plain"},
-        {"text":"companies","role":"subj","note":"宾语从句的主语"},
-        {"text":" ","role":"plain"},
-        {"text":"which invest heavily in employee training","role":"attr","note":"定语从句1，修饰 companies"},
-        {"text":" ","role":"plain"},
-        {"text":"tend to retain","role":"verb","note":"宾语从句的谓语"},
-        {"text":" ","role":"plain"},
-        {"text":"the talent","role":"obj","note":"宾语"},
-        {"text":" ","role":"plain"},
-        {"text":"that their rivals desperately want","role":"attr","note":"定语从句2，修饰 talent（want 后缺宾语）"},
-        {"text":".","role":"plain"}
+        {
+          "text": "The report",
+          "role": "subj",
+          "note": "主句主语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "reveals",
+          "role": "verb",
+          "note": "主句谓语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "that",
+          "role": "mark",
+          "note": "宾语从句引导词"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "companies",
+          "role": "subj",
+          "note": "宾语从句的主语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "which invest heavily in employee training",
+          "role": "attr",
+          "note": "定语从句1，修饰 companies"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "tend to retain",
+          "role": "verb",
+          "note": "宾语从句的谓语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "the talent",
+          "role": "obj",
+          "note": "宾语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "that their rivals desperately want",
+          "role": "attr",
+          "note": "定语从句2，修饰 talent（want 后缺宾语）"
+        },
+        {
+          "text": ".",
+          "role": "plain"
+        }
       ],
       "tip": "主干是 The report reveals that...（宾语从句）。宾语从句内部又套了两层定语从句：which... 修饰 companies，that their rivals... want 修饰 talent。层层剥开：先抓主干谓语 reveals，再找 that 引导的宾语从句，最后处理从句里修饰名词的两个定语从句。",
       "trap": "which 和第二个 that 都是定语从句引导词，别和引导宾语从句的 that 混淆。区分：reveals 后的 that 引导完整句子作宾语；talent 后的 that，其后 want 缺宾语，是定语从句。"
@@ -38,20 +94,69 @@
       "en": "The belief that hard work guarantees success persists even though many people discover, sometimes too late, that luck plays a role as well.",
       "cn": "「努力必定带来成功」这一信念依然根深蒂固，尽管许多人（有时为时已晚地）发现，运气同样起着作用。",
       "parts": [
-        {"text":"The belief","role":"subj","note":"主句主语"},
-        {"text":" ","role":"plain"},
-        {"text":"that hard work guarantees success","role":"appos","note":"同位语从句，说明 belief 的内容"},
-        {"text":" ","role":"plain"},
-        {"text":"persists","role":"verb","note":"主句谓语"},
-        {"text":" ","role":"plain"},
-        {"text":"even though","role":"mark","note":"让步状语从句引导词"},
-        {"text":" ","role":"plain"},
-        {"text":"many people","role":"subj","note":"状语从句主语"},
-        {"text":" ","role":"plain"},
-        {"text":"discover","role":"verb","note":"状语从句谓语"},
-        {"text":", sometimes too late, ","role":"plain"},
-        {"text":"that luck plays a role as well","role":"obj","note":"discover 的宾语从句"},
-        {"text":".","role":"plain"}
+        {
+          "text": "The belief",
+          "role": "subj",
+          "note": "主句主语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "that hard work guarantees success",
+          "role": "appos",
+          "note": "同位语从句，说明 belief 的内容"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "persists",
+          "role": "verb",
+          "note": "主句谓语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "even though",
+          "role": "mark",
+          "note": "让步状语从句引导词"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "many people",
+          "role": "subj",
+          "note": "状语从句主语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "discover",
+          "role": "verb",
+          "note": "状语从句谓语"
+        },
+        {
+          "text": ", sometimes too late, ",
+          "role": "plain"
+        },
+        {
+          "text": "that luck plays a role as well",
+          "role": "obj",
+          "note": "discover 的宾语从句"
+        },
+        {
+          "text": ".",
+          "role": "plain"
+        }
       ],
       "tip": "主干 The belief persists。belief 后的 that hard work guarantees success 是同位语从句（解释 belief 的内容，that 后主谓宾完整）。even though 引导让步状语从句，从句内部又用 that 引导 discover 的宾语从句。",
       "trap": "belief 后的 that 是同位语从句不是定语从句：that 后成分完整。插入语 sometimes too late 用逗号隔开，跳过它读主干更清楚。"
@@ -63,22 +168,78 @@
       "en": "What surprises economists most is that consumers who claim to value privacy often hand over their personal data for trivial rewards.",
       "cn": "最让经济学家意外的是，那些声称重视隐私的消费者，往往为了微不足道的回报就交出了自己的个人数据。",
       "parts": [
-        {"text":"What surprises economists most","role":"subj","note":"主语从句（What 引导，= The thing that...）"},
-        {"text":" ","role":"plain"},
-        {"text":"is","role":"verb","note":"系动词"},
-        {"text":" ","role":"plain"},
-        {"text":"that","role":"mark","note":"表语从句引导词"},
-        {"text":" ","role":"plain"},
-        {"text":"consumers","role":"subj","note":"表语从句主语"},
-        {"text":" ","role":"plain"},
-        {"text":"who claim to value privacy","role":"attr","note":"定语从句，修饰 consumers"},
-        {"text":" ","role":"plain"},
-        {"text":"often hand over","role":"verb","note":"表语从句谓语"},
-        {"text":" ","role":"plain"},
-        {"text":"their personal data","role":"obj","note":"宾语"},
-        {"text":" ","role":"plain"},
-        {"text":"for trivial rewards","role":"adv","note":"目的/原因状语"},
-        {"text":".","role":"plain"}
+        {
+          "text": "What surprises economists most",
+          "role": "subj",
+          "note": "主语从句（What 引导，= The thing that...）"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "is",
+          "role": "verb",
+          "note": "系动词"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "that",
+          "role": "mark",
+          "note": "表语从句引导词"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "consumers",
+          "role": "subj",
+          "note": "表语从句主语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "who claim to value privacy",
+          "role": "attr",
+          "note": "定语从句，修饰 consumers"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "often hand over",
+          "role": "verb",
+          "note": "表语从句谓语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "their personal data",
+          "role": "obj",
+          "note": "宾语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "for trivial rewards",
+          "role": "adv",
+          "note": "目的/原因状语"
+        },
+        {
+          "text": ".",
+          "role": "plain"
+        }
       ],
       "tip": "主干是 What... is that...。What 引导主语从句作主语，is 是系动词，that 引导表语从句。表语从句里 who claim to value privacy 是修饰 consumers 的定语从句。",
       "trap": "句首 What 不是疑问词，而是引导主语从句（相当于 The thing that）。整个 What 从句就是主语，别再去别处找主语。"
@@ -90,27 +251,1397 @@
       "en": "Although the technology that powers these platforms is more sophisticated than ever, the rules that govern how our data is used remain far less advanced.",
       "cn": "尽管驱动这些平台的技术比以往任何时候都更为先进，规范我们数据使用方式的规则却依旧落后得多。",
       "parts": [
-        {"text":"Although","role":"mark","note":"让步状语从句引导词"},
-        {"text":" ","role":"plain"},
-        {"text":"the technology","role":"subj","note":"状语从句主语"},
-        {"text":" ","role":"plain"},
-        {"text":"that powers these platforms","role":"attr","note":"定语从句，修饰 technology"},
-        {"text":" ","role":"plain"},
-        {"text":"is","role":"verb","note":"从句系动词"},
-        {"text":" ","role":"plain"},
-        {"text":"more sophisticated than ever","role":"obj","note":"表语（比较结构 more ... than ever）"},
-        {"text":", ","role":"plain"},
-        {"text":"the rules","role":"subj","note":"主句主语"},
-        {"text":" ","role":"plain"},
-        {"text":"that govern how our data is used","role":"attr","note":"定语从句，修饰 rules（内含 how 引导的宾语从句）"},
-        {"text":" ","role":"plain"},
-        {"text":"remain","role":"verb","note":"主句谓语"},
-        {"text":" ","role":"plain"},
-        {"text":"far less advanced","role":"obj","note":"表语（比较结构 far less ...）"},
-        {"text":".","role":"plain"}
+        {
+          "text": "Although",
+          "role": "mark",
+          "note": "让步状语从句引导词"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "the technology",
+          "role": "subj",
+          "note": "状语从句主语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "that powers these platforms",
+          "role": "attr",
+          "note": "定语从句，修饰 technology"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "is",
+          "role": "verb",
+          "note": "从句系动词"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "more sophisticated than ever",
+          "role": "obj",
+          "note": "表语（比较结构 more ... than ever）"
+        },
+        {
+          "text": ", ",
+          "role": "plain"
+        },
+        {
+          "text": "the rules",
+          "role": "subj",
+          "note": "主句主语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "that govern how our data is used",
+          "role": "attr",
+          "note": "定语从句，修饰 rules（内含 how 引导的宾语从句）"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "remain",
+          "role": "verb",
+          "note": "主句谓语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "far less advanced",
+          "role": "obj",
+          "note": "表语（比较结构 far less ...）"
+        },
+        {
+          "text": ".",
+          "role": "plain"
+        }
       ],
       "tip": "Although 引导让步状语从句，主句是 the rules... remain...。两个 that 都是定语从句：一个修饰 technology，一个修饰 rules；后者内部还含 how 引导的宾语从句。抓两个主干：从句 the technology is...，主句 the rules remain...。",
       "trap": "别被从句里的 is 误当主句谓语。主句主语是 the rules，谓语是 remain。比较结构 more...than 与 far less... 在前后两半句对照出现，注意呼应。"
+    },
+    {
+      "id": "c5",
+      "cat": "定语从句嵌套",
+      "level": "偏难",
+      "en": "The theory that economic growth inevitably leads to environmental degradation is one that many policymakers are now questioning.",
+      "cn": "经济增长必然导致环境恶化的理论是许多政策制定者现在正在质疑的。",
+      "parts": [
+        {
+          "text": "The theory",
+          "role": "subj",
+          "note": "主语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "that economic growth inevitably leads to environmental degradation",
+          "role": "appos",
+          "note": "同位语从句，说明theory的内容"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "is",
+          "role": "verb",
+          "note": "系动词"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "one",
+          "role": "obj",
+          "note": "表语，指代theory"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "that many policymakers are now questioning",
+          "role": "attr",
+          "note": "定语从句修饰one"
+        },
+        {
+          "text": ".",
+          "role": "plain"
+        }
+      ],
+      "tip": "主干是The theory is one。第一个that引导同位语从句修饰theory，第二个that引导定语从句修饰one。识别时注意两个that的不同功能。",
+      "trap": "易把第二个that从句误认为修饰theory，实际是修饰one。注意先行词是one（指代theory）。"
+    },
+    {
+      "id": "c6",
+      "cat": "同位语+定语从句",
+      "level": "中等",
+      "en": "The belief that economic growth inevitably leads to environmental degradation is a view that many experts now dispute.",
+      "cn": "经济增长必然导致环境恶化的信念是许多专家现在质疑的观点。",
+      "parts": [
+        {
+          "text": "The belief",
+          "role": "subj",
+          "note": "主语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "that economic growth inevitably leads to environmental degradation",
+          "role": "appos",
+          "note": "同位语从句，说明belief的内容"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "is",
+          "role": "verb",
+          "note": "系动词"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "a view",
+          "role": "obj",
+          "note": "表语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "that many experts now dispute",
+          "role": "attr",
+          "note": "定语从句，修饰a view"
+        },
+        {
+          "text": ".",
+          "role": "plain"
+        }
+      ],
+      "tip": "主干为：The belief is a view。第一个that引导同位语从句，解释belief；第二个that引导定语从句，修饰view。",
+      "trap": "注意两个that从句的语法功能不同：第一个是同位语从句，第二个是定语从句；不要混淆。"
+    },
+    {
+      "id": "c7",
+      "cat": "宾语从句+定语从句",
+      "level": "偏难",
+      "en": "The economist argued that the policy, which was intended to boost growth, had actually slowed it down.",
+      "cn": "这位经济学家认为，原本旨在促进增长的政策实际上却减缓了增长。",
+      "parts": [
+        {
+          "text": "The economist",
+          "role": "subj",
+          "note": "主语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "argued",
+          "role": "verb",
+          "note": "谓语动词"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "that",
+          "role": "mark",
+          "note": "宾语从句引导词"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "the policy",
+          "role": "subj",
+          "note": "宾语从句主语"
+        },
+        {
+          "text": ",",
+          "role": "plain"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "which was intended to boost growth",
+          "role": "attr",
+          "note": "非限制性定语从句修饰policy"
+        },
+        {
+          "text": ",",
+          "role": "plain"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "had actually slowed",
+          "role": "verb",
+          "note": "宾语从句谓语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "it",
+          "role": "obj",
+          "note": "宾语从句宾语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "down",
+          "role": "adv",
+          "note": "副词作状语"
+        },
+        {
+          "text": ".",
+          "role": "plain"
+        }
+      ],
+      "tip": "主干是The economist argued that...，宾语从句中插入了一个非限制性定语从句which was intended to boost growth，修饰policy。注意had actually slowed是过去完成时，表示比argued更早发生的动作。",
+      "trap": "易将which从句误认为是修饰economist，实际上修饰policy；注意间接引语中时态变化（原句是slows，间接引语用had slowed）。"
+    },
+    {
+      "id": "c8",
+      "cat": "让步状语+转折",
+      "level": "中等",
+      "en": "Although the economy showed signs of recovery, many small businesses still struggled to secure loans from banks.",
+      "cn": "尽管经济显示出复苏迹象，但许多小企业仍难以从银行获得贷款。",
+      "parts": [
+        {
+          "text": "Although",
+          "role": "mark",
+          "note": "从属连词，引导让步状语从句"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "the economy",
+          "role": "subj",
+          "note": "从句主语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "showed",
+          "role": "verb",
+          "note": "从句谓语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "signs",
+          "role": "obj",
+          "note": "从句宾语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "of recovery",
+          "role": "attr",
+          "note": "介词短语作定语修饰signs"
+        },
+        {
+          "text": ",",
+          "role": "plain"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "many small businesses",
+          "role": "subj",
+          "note": "主句主语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "still",
+          "role": "adv",
+          "note": "副词，表转折强调"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "struggled",
+          "role": "verb",
+          "note": "主句谓语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "to secure loans",
+          "role": "obj",
+          "note": "不定式短语作宾语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "from banks",
+          "role": "adv",
+          "note": "介词短语作状语"
+        },
+        {
+          "text": ".",
+          "role": "plain"
+        }
+      ],
+      "tip": "**主干**：many small businesses struggled to secure loans from banks。**让步状语从句** Although...recovery 置于句首，与主句形成转折。**注意**：still 强化对比。",
+      "trap": "易将从句中的'signs of recovery'误认为主句主语；注意从句主语是the economy，谓语是showed。"
+    },
+    {
+      "id": "c10",
+      "cat": "not because...",
+      "level": "中等",
+      "en": "Many companies adopt flexible work policies not because they are trendy but because they boost productivity.",
+      "cn": "许多公司采纳弹性工作政策，不是因为它们时髦，而是因为它们能提高生产力。",
+      "parts": [
+        {
+          "text": "Many companies",
+          "role": "subj",
+          "note": "主语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "adopt",
+          "role": "verb",
+          "note": "谓语动词"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "flexible work policies",
+          "role": "obj",
+          "note": "宾语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "not because",
+          "role": "adv",
+          "note": "原因状语从句引导词，表否定原因"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "they",
+          "role": "subj",
+          "note": "从句主语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "are",
+          "role": "verb",
+          "note": "从句系动词"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "trendy",
+          "role": "obj",
+          "note": "从句表语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "but because",
+          "role": "adv",
+          "note": "转折原因状语从句引导词"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "they",
+          "role": "subj",
+          "note": "从句主语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "boost",
+          "role": "verb",
+          "note": "从句谓语动词"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "productivity",
+          "role": "obj",
+          "note": "从句宾语"
+        },
+        {
+          "text": ".",
+          "role": "plain"
+        }
+      ],
+      "tip": "主干是 Many companies adopt flexible work policies...，后接not because...but because引导两个并列的原因状语从句，否定前因，肯定后果。",
+      "trap": "注意not because...but because结构中的否定转移，翻译时需明确表达“不是因为...而是因为...”。"
+    },
+    {
+      "id": "c11",
+      "cat": "条件状语从句",
+      "level": "中等",
+      "en": "Unless firms invest heavily in employee training, they cannot maintain a competitive edge in the rapidly evolving market.",
+      "cn": "除非公司大力投资员工培训，否则它们无法在快速变化的市场中保持竞争优势。",
+      "parts": [
+        {
+          "text": "Unless",
+          "role": "mark",
+          "note": "连词引导条件状语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "firms",
+          "role": "subj",
+          "note": "条件从句主语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "invest heavily",
+          "role": "verb",
+          "note": "谓语+状语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "in employee training",
+          "role": "adv",
+          "note": "介宾短语作状语"
+        },
+        {
+          "text": ",",
+          "role": "plain"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "they",
+          "role": "subj",
+          "note": "主句主语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "cannot maintain",
+          "role": "verb",
+          "note": "主句谓语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "a competitive edge",
+          "role": "obj",
+          "note": "主句宾语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "in the rapidly evolving market",
+          "role": "adv",
+          "note": "介宾短语作状语"
+        },
+        {
+          "text": ".",
+          "role": "plain"
+        }
+      ],
+      "tip": "主干是**they cannot maintain a competitive edge**。**Unless**引导条件状语从句，表示'除非...否则...'，从句中**firms**是主语，**invest heavily**是谓语，**in employee training**是状语修饰投资方向。主句中的**in the rapidly evolving market**是地点状语。",
+      "trap": "注意**Unless**引导的从句中动词用一般现在时表示将来，主句用将来时或情态动词。不要将**unless**误译为'如果不'，它强调唯一条件。"
+    },
+    {
+      "id": "c12",
+      "cat": "目的状语从句",
+      "level": "中等",
+      "en": "Companies invest heavily in employee training so that they can adapt to rapidly changing market demands.",
+      "cn": "公司大力投资员工培训，以便他们能够适应快速变化的市场需求。",
+      "parts": [
+        {
+          "text": "Companies",
+          "role": "subj",
+          "note": "主语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "invest",
+          "role": "verb",
+          "note": "谓语动词"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "heavily",
+          "role": "adv",
+          "note": "状语，修饰invest"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "in",
+          "role": "plain"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "employee training",
+          "role": "obj",
+          "note": "介词宾语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "so that",
+          "role": "mark",
+          "note": "目的状语从句引导词"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "they",
+          "role": "subj",
+          "note": "从句主语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "can adapt",
+          "role": "verb",
+          "note": "从句谓语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "to",
+          "role": "plain"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "rapidly changing market demands",
+          "role": "obj",
+          "note": "介词to的宾语"
+        },
+        {
+          "text": ".",
+          "role": "plain"
+        }
+      ],
+      "tip": "主干是**Companies invest heavily in employee training**，后面**so that**引导目的状语从句，说明投资的目的。从句中**they**指代**Companies**，**adapt to**是固定短语，**rapidly changing**是现在分词短语作定语修饰**market demands**。",
+      "trap": "注意**so that**引导的是目的状语从句，而非结果状语从句；**adapt to**中的**to**是介词，后接名词短语。"
+    },
+    {
+      "id": "c14",
+      "cat": "同位语+定语从句",
+      "level": "偏难",
+      "en": "The argument that economic growth inevitably harms the environment, which many policymakers still embrace, is one that lacks empirical support.",
+      "cn": "认为经济增长必然损害环境的论点——许多政策制定者仍信奉这一观点——是一个缺乏实证支持的论点。",
+      "parts": [
+        {
+          "text": "The argument",
+          "role": "subj",
+          "note": "主语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "that economic growth inevitably harms the environment",
+          "role": "appos",
+          "note": "同位语从句，说明argument的内容"
+        },
+        {
+          "text": ",",
+          "role": "plain"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "which many policymakers still embrace",
+          "role": "attr",
+          "note": "非限制性定语从句，修饰environment"
+        },
+        {
+          "text": ",",
+          "role": "plain"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "is",
+          "role": "verb",
+          "note": "系动词"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "one",
+          "role": "obj",
+          "note": "表语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "that lacks empirical support",
+          "role": "attr",
+          "note": "限制性定语从句，修饰one"
+        },
+        {
+          "text": ".",
+          "role": "plain"
+        }
+      ],
+      "tip": "主干：**The argument is one**。第一个that引导同位语从句，补充argument内容；which引导非限制性定语从句，补充环境的相关信息，有逗号隔开；第二个that引导限制性定语从句，限定one的范围。",
+      "trap": "易混淆**同位语从句**与**定语从句**：同位语从句的that不充当成分，而定语从句的that充当成分（本句中第二个that作lacks的主语）。非限制性定语从句which有逗号，翻译时常用“，……”或加括号。"
+    },
+    {
+      "id": "c15",
+      "cat": "省略引导词的定语从句",
+      "level": "中等",
+      "en": "The economic forecasts analysts released last week suggest that consumer confidence is recovering faster than most experts had predicted.",
+      "cn": "分析师上周发布的经济预测表明，消费者信心的恢复速度快于多数专家的预期。",
+      "parts": [
+        {
+          "text": "The economic forecasts",
+          "role": "subj",
+          "note": "主语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "analysts released last week",
+          "role": "attr",
+          "note": "省略了引导词 that/which 的定语从句，修饰 forecasts（先行词在从句中作宾语，故可省）"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "suggest",
+          "role": "verb",
+          "note": "谓语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "that consumer confidence is recovering faster than most experts had predicted",
+          "role": "obj",
+          "note": "宾语从句，内含 than 比较结构"
+        },
+        {
+          "text": ".",
+          "role": "plain"
+        }
+      ],
+      "tip": "主干是 **The forecasts suggest that...**。forecasts 后直接跟 analysts released last week——两个名词短语紧挨着，接缝处就是省略了引导词的定语从句（先行词在从句中作宾语时才能省略 that/which）。",
+      "trap": "看到「名词+名词+动词」连排（forecasts analysts released），别误以为句子有两个主语打架：第二个名词是定语从句的主语，真正的谓语是后面的 suggest。还原方法：在两个名词之间补一个 that 再读。"
+    },
+    {
+      "id": "c16",
+      "cat": "what宾语从句",
+      "level": "中等",
+      "en": "Economists now understand what they previously overlooked: the crucial role of consumer confidence in shaping market trends.",
+      "cn": "经济学家现在明白了他们之前忽视的东西：消费者信心在塑造市场趋势中的关键作用。",
+      "parts": [
+        {
+          "text": "Economists",
+          "role": "subj",
+          "note": "主语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "now",
+          "role": "adv",
+          "note": "状语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "understand",
+          "role": "verb",
+          "note": "谓语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "what they previously overlooked",
+          "role": "obj",
+          "note": "what引导的宾语从句"
+        },
+        {
+          "text": ":",
+          "role": "plain"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "the crucial role of consumer confidence in shaping market trends",
+          "role": "appos",
+          "note": "同位语，解释说明宾语从句的内容"
+        },
+        {
+          "text": ".",
+          "role": "plain"
+        }
+      ],
+      "tip": "主干是**Economists understand what...**，其中**what they previously overlooked**是宾语从句，冒号后**the crucial role...**是同位语，进一步说明前面内容。",
+      "trap": "注意**what**引导的宾语从句中，**what**在从句中作动词**overlooked**的宾语，不要误认为关系代词或连接副词。"
+    },
+    {
+      "id": "c18",
+      "cat": "多重宾语从句",
+      "level": "偏难",
+      "en": "The economist argues that the data show that the policy will not stimulate growth as many assume.",
+      "cn": "这位经济学家认为，数据显示该政策不会像许多人假设的那样刺激增长。",
+      "parts": [
+        {
+          "text": "The economist",
+          "role": "subj",
+          "note": "主语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "argues",
+          "role": "verb",
+          "note": "谓语动词"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "that",
+          "role": "mark",
+          "note": "引导第一个宾语从句"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "the data",
+          "role": "subj",
+          "note": "第一个宾语从句的主语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "show",
+          "role": "verb",
+          "note": "第一个宾语从句的谓语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "that",
+          "role": "mark",
+          "note": "引导第二个宾语从句"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "the policy",
+          "role": "subj",
+          "note": "第二个宾语从句的主语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "will not stimulate",
+          "role": "verb",
+          "note": "第二个宾语从句的谓语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "growth",
+          "role": "obj",
+          "note": "第二个宾语从句的宾语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "as many assume",
+          "role": "adv",
+          "note": "方式状语从句，修饰stimulate"
+        },
+        {
+          "text": ".",
+          "role": "plain"
+        }
+      ],
+      "tip": "主干是**The economist argues that...**，其中argues后接第一个宾语从句**the data show that...**，而show后又接第二个宾语从句**the policy will not stimulate growth as many assume**。识别时注意层层嵌套的that引导词。",
+      "trap": "容易忽略第二个that引导的是另一个宾语从句，误将as many assume理解为独立句子。注意as引导的是方式状语从句，表示正如……一样。"
+    },
+    {
+      "id": "c20",
+      "cat": "同位语从句",
+      "level": "中等",
+      "en": "The claim that economic growth inevitably leads to environmental degradation has been challenged by recent evidence.",
+      "cn": "经济增长不可避免地导致环境恶化的说法受到了最新证据的挑战。",
+      "parts": [
+        {
+          "text": "The claim",
+          "role": "subj",
+          "note": "主语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "that economic growth inevitably leads to environmental degradation",
+          "role": "appos",
+          "note": "同位语从句，解释claim"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "has been challenged",
+          "role": "verb",
+          "note": "谓语动词（现在完成时的被动语态）"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "by recent evidence",
+          "role": "adv",
+          "note": "状语，表示动作的执行者"
+        },
+        {
+          "text": ".",
+          "role": "plain"
+        }
+      ],
+      "tip": "主干是**The claim has been challenged**，其中主语The claim由同位语从句**that economic growth inevitably leads to environmental degradation**修饰，解释claim的具体内容。by recent evidence是动作的执行者。",
+      "trap": "注意同位语从句的引导词that在从句中不作成分，但不可省略；主句谓语是被动语态，需识别出by短语后的名词是动作发出者。"
+    },
+    {
+      "id": "c9",
+      "cat": "时间状语+倒装主句",
+      "level": "偏难",
+      "en": "Only when the government implements stricter regulations will the market begin to stabilize, which is essential for sustainable growth.",
+      "cn": "只有当政府实施更严格的监管时，市场才会开始稳定，这对于可持续增长至关重要。",
+      "parts": [
+        {
+          "text": "Only",
+          "role": "adv",
+          "note": "强调状语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "when",
+          "role": "mark",
+          "note": "时间状语从句连词"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "the government",
+          "role": "subj",
+          "note": "从句主语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "implements",
+          "role": "verb",
+          "note": "从句谓语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "stricter regulations",
+          "role": "obj",
+          "note": "从句宾语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "will",
+          "role": "verb",
+          "note": "主句助动词倒装"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "the market",
+          "role": "subj",
+          "note": "主句主语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "begin",
+          "role": "verb",
+          "note": "主句谓语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "to stabilize",
+          "role": "obj",
+          "note": "不定式作宾语"
+        },
+        {
+          "text": ",",
+          "role": "plain"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "which",
+          "role": "mark",
+          "note": "非限制性定语从句关系代词"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "is",
+          "role": "verb",
+          "note": "从句系动词"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "essential",
+          "role": "obj",
+          "note": "从句表语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "for sustainable growth",
+          "role": "adv",
+          "note": "从句状语"
+        },
+        {
+          "text": ".",
+          "role": "plain"
+        }
+      ],
+      "tip": "主干是主句will the market begin to stabilize，但用了倒装。句首Only when引导时间状语从句，主句主谓倒装：will + 主语 + 动词原形。后面的which从句修饰前面整个主句。",
+      "trap": "倒装结构中容易误把will the market当作疑问句；注意Only when位于句首时主句必须部分倒装。"
+    },
+    {
+      "id": "c13",
+      "cat": "which定语从句",
+      "level": "中等",
+      "en": "Many employees find it hard to adapt to new technologies, which often leads to a decline in productivity.",
+      "cn": "许多员工发现很难适应新技术，这常常导致生产力下降。",
+      "parts": [
+        {
+          "text": "Many employees",
+          "role": "subj",
+          "note": "主语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "find",
+          "role": "verb",
+          "note": "谓语动词"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "it",
+          "role": "obj",
+          "note": "形式宾语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "hard",
+          "role": "obj",
+          "note": "宾语补足语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "to adapt to new technologies",
+          "role": "obj",
+          "note": "真正宾语（不定式短语）"
+        },
+        {
+          "text": ",",
+          "role": "plain"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "which",
+          "role": "mark",
+          "note": "关系代词，引导非限制性定语从句，指代前句"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "often",
+          "role": "adv",
+          "note": "频度副词"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "leads",
+          "role": "verb",
+          "note": "从句谓语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "to",
+          "role": "plain"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "a decline",
+          "role": "obj",
+          "note": "宾语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "in productivity",
+          "role": "attr",
+          "note": "后置定语修饰decline"
+        },
+        {
+          "text": ".",
+          "role": "plain"
+        }
+      ],
+      "tip": "主干是 Many employees find it hard to adapt to new technologies，其中 it 为形式宾语，hard 为宾语补足语，不定式 to adapt... 为真正宾语。逗号后 which 引导非限制性定语从句，指代整个主句，在从句中作主语。注意 which 指代的是前文整个观点或现象，而非某个名词。",
+      "trap": "易误以为 which 指代 new technologies，但根据逻辑，导致生产力下降的是‘难以适应新技术’这一事实，而非技术本身。"
+    },
+    {
+      "id": "c17",
+      "cat": "主语从句+定语从句",
+      "level": "中等",
+      "en": "That the digital economy is reshaping traditional industries is a fact that cannot be ignored by policymakers.",
+      "cn": "数字经济正在重塑传统产业，这是一个政策制定者不能忽视的事实。",
+      "parts": [
+        {
+          "text": "That the digital economy is reshaping traditional industries",
+          "role": "subj",
+          "note": "主语从句"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "is",
+          "role": "verb",
+          "note": "系动词"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "a fact",
+          "role": "obj",
+          "note": "表语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "that cannot be ignored by policymakers",
+          "role": "attr",
+          "note": "定语从句修饰fact"
+        },
+        {
+          "text": ".",
+          "role": "plain"
+        }
+      ],
+      "tip": "主干是 That... is a fact...。主语从句由That引导，说明一个客观现象；表语a fact后接定语从句，修饰fact。",
+      "trap": "注意主语从句中的谓语动词is reshaping是现在进行时，不要误以为是主句谓语。"
+    },
+    {
+      "id": "c19",
+      "cat": "介词前置定语从句",
+      "level": "中等",
+      "en": "The CEO to whom the board entrusted the restructuring plan is known for his decisive leadership.",
+      "cn": "董事会委托其重组计划的那位首席执行官以其果断的领导力而闻名。",
+      "parts": [
+        {
+          "text": "The CEO",
+          "role": "subj",
+          "note": "主语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "to whom",
+          "role": "mark",
+          "note": "介词+关系代词引导定语从句"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "the board",
+          "role": "subj",
+          "note": "定语从句主语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "entrusted",
+          "role": "verb",
+          "note": "定语从句谓语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "the restructuring plan",
+          "role": "obj",
+          "note": "定语从句宾语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "is known",
+          "role": "verb",
+          "note": "主句谓语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "for",
+          "role": "mark",
+          "note": "介词"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "his decisive leadership",
+          "role": "obj",
+          "note": "介词宾语"
+        },
+        {
+          "text": ".",
+          "role": "plain"
+        }
+      ],
+      "tip": "主干是 **The CEO is known for his decisive leadership**。主语后紧跟定语从句 **to whom the board entrusted the restructuring plan**，其中 **to whom** 为介词前置结构，whom指代CEO，作entrust的间接宾语（entrust sth to sb）。",
+      "trap": "注意 **to whom** 中的介词to不可省略，且whom不能用who替换。同时注意entrust的用法：entrust sb with sth 或 entrust sth to sb，此处为后者。"
     }
   ]
 }

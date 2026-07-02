@@ -1,6 +1,19 @@
 {
   "sets": [
-    { "id": "kaoyan-eng2-prompts", "name": "考研英语二·真题风作文", "desc": "小作文 4 题（道歉/推荐/感谢/邀请）+ 大作文 3 题（图表/论点/现象）", "cat": "题目", "file": "kaoyan-eng2-prompts.json", "count": 7 },
-    { "id": "kaoyan-eng2-templates", "name": "高频模板库", "desc": "小/大作文开头·主体·结尾·过渡句型", "cat": "模板", "file": "kaoyan-eng2-templates.json" }
+    {
+      "id": "kaoyan-eng2-prompts",
+      "name": "考研英语二·真题风作文",
+      "desc": "小作文 9 题 + 大作文 6 题",
+      "cat": "题目",
+      "file": "kaoyan-eng2-prompts.json",
+      "count": 15
+    },
+    {
+      "id": "kaoyan-eng2-templates",
+      "name": "高频模板库",
+      "desc": "小/大作文开头·主体·结尾·过渡句型",
+      "cat": "模板",
+      "file": "kaoyan-eng2-templates.json"
+    }
   ]
 }

@@ -1,0 +1,144 @@
+{
+  "id": "brand-loyalty",
+  "title": "The Hidden Value of a Name",
+  "source": "AI生成·待校 · 经济与社会",
+  "level": "考研英语二",
+  "intro": "名字如何影响品牌价值？本文揭秘品牌溢价与信任的作用。",
+  "paragraphs": [
+    "In a crowded marketplace, a name can be a company's most valuable asset. Think of iconic brands like Apple or Nike—their names alone evoke trust, quality, and a sense of belonging. This phenomenon, known as brand equity, allows firms to charge premium prices because consumers believe the product is worth more. Essentially, a strong name reduces the uncertainty of a purchase, making decision-making easier for buyers.",
+    "Beyond mere recognition, a brand name functions as a shortcut for trust, lowering transaction costs. When you buy a familiar brand, you skip the research needed for an unknown product. Economists argue that this trust reduces the 'search costs'—time and effort spent comparing options. For instance, a customer might pay more for a branded detergent simply because they trust its cleaning power, saving the hassle of testing alternatives.",
+    "However, brand power is fragile. A single scandal can shatter years of trust. Take the case of a food company caught using unsafe ingredients: its brand value plummeted overnight, and sales dropped sharply. This illustrates that brand equity is built on consistent delivery of promises. Once broken, regaining consumer confidence becomes a costly struggle, often requiring massive marketing campaigns or product reforms.",
+    "Thus, the hidden value of a name lies in its ability to facilitate trust and efficiency, but it demands constant care. Companies must protect their reputation through quality control and ethical practices. In the digital age, where information spreads instantly, a brand's vulnerability is amplified. Ultimately, a name is not just a label—it is a promise that must be kept."
+  ],
+  "cn": [
+    "在一个拥挤的市场中，名字可以成为公司最有价值的资产。想想苹果或耐克这样的标志性品牌——它们的名字本身就唤起信任、品质和归属感。这种被称为品牌资产的现象，使企业能够收取溢价，因为消费者相信产品更值钱。本质上，一个强大的名字降低了购买的不确定性，让买家的决策更轻松。",
+    "除了简单的识别，品牌名称还充当信任的捷径，降低了交易成本。当你购买熟悉的品牌时，你跳过了研究未知产品所需的步骤。经济学家认为，这种信任减少了“搜索成本”——即比较选择所花费的时间和精力。例如，顾客可能只为某个品牌洗涤剂支付更多，仅仅是因为他们信任其清洁能力，省去了测试替代品的麻烦。",
+    "然而，品牌力量是脆弱的。一个丑闻就能摧毁多年的信任。以一家食品公司为例，该公司被发现使用不安全的原料：其品牌价值一夜暴跌，销售额大幅下滑。这说明品牌资产建立在持续兑现承诺之上。一旦破裂，重获消费者信心就成为一场昂贵的斗争，往往需要大规模营销活动或产品改革。",
+    "因此，名字的隐藏价值在于它促进信任和效率的能力，但这需要持续的呵护。企业必须通过质量控制和道德实践来保护声誉。在信息瞬间传播的数字时代，品牌的脆弱性被放大。最终，名字不仅仅是一个标签——它是一个必须遵守的承诺。"
+  ],
+  "glossary": [
+    {
+      "w": "equity",
+      "ph": "/ˈekwɪti/",
+      "def": "n. 资产；权益",
+      "ex": "brand equity",
+      "exCn": "品牌资产"
+    },
+    {
+      "w": "premium",
+      "ph": "/ˈpriːmiəm/",
+      "def": "adj. 高价的；优质的",
+      "ex": "premium prices",
+      "exCn": "溢价"
+    },
+    {
+      "w": "evoke",
+      "ph": "/ɪˈvoʊk/",
+      "def": "v. 唤起；引起",
+      "ex": "evoke trust",
+      "exCn": "唤起信任"
+    },
+    {
+      "w": "transaction",
+      "ph": "/trænˈzækʃən/",
+      "def": "n. 交易；事务",
+      "ex": "transaction costs",
+      "exCn": "交易成本"
+    },
+    {
+      "w": "scandal",
+      "ph": "/ˈskændl/",
+      "def": "n. 丑闻；丑事",
+      "ex": "a single scandal",
+      "exCn": "一个丑闻"
+    },
+    {
+      "w": "plummet",
+      "ph": "/ˈplʌmɪt/",
+      "def": "v. 暴跌；陡降",
+      "ex": "plummeted overnight",
+      "exCn": "一夜暴跌"
+    },
+    {
+      "w": "consistent",
+      "ph": "/kənˈsɪstənt/",
+      "def": "adj. 一致的；始终如一的",
+      "ex": "consistent delivery",
+      "exCn": "持续交付"
+    },
+    {
+      "w": "vulnerability",
+      "ph": "/ˌvʌlnərəˈbɪləti/",
+      "def": "n. 脆弱性；弱点",
+      "ex": "brand's vulnerability",
+      "exCn": "品牌的脆弱性"
+    },
+    {
+      "w": "amplify",
+      "ph": "/ˈæmplɪfaɪ/",
+      "def": "v. 放大；增强",
+      "ex": "amplified vulnerability",
+      "exCn": "放大的脆弱性"
+    },
+    {
+      "w": "ethical",
+      "ph": "/ˈeθɪkl/",
+      "def": "adj. 道德的；伦理的",
+      "ex": "ethical practices",
+      "exCn": "道德实践"
+    },
+    {
+      "w": "facilitate",
+      "ph": "/fəˈsɪlɪteɪt/",
+      "def": "v. 促进；使便利",
+      "ex": "facilitate trust",
+      "exCn": "促进信任"
+    }
+  ],
+  "questions": [
+    {
+      "q": "What is the main idea of the passage?",
+      "options": [
+        "Brand scandals are unavoidable in the digital age.",
+        "Brand names are the only factor in a company's success.",
+        "Consumers always prefer cheaper products over branded ones.",
+        "A brand name has hidden value but requires careful maintenance."
+      ],
+      "answer": 3,
+      "explain": "文章主旨题。文章第一段提出品牌名称具有价值，第二段解释其降低交易成本的作用，第三段指出品牌脆弱性，最后一段总结品牌需要维护。因此主旨是品牌有隐藏价值但需精心维护。选项「品牌名称是公司成功的唯一因素」过于绝对；「消费者总是更青睐便宜产品」与文中溢价相反；「品牌丑闻在数字时代不可避免」文中未提及。"
+    },
+    {
+      "q": "According to paragraph 2, how does a strong brand name help consumers?",
+      "options": [
+        "By providing more choices for comparison.",
+        "By offering products at lower prices.",
+        "By guaranteeing the highest quality in the market.",
+        "By reducing the need for extensive product research."
+      ],
+      "answer": 3,
+      "explain": "细节题，定位第二段。文中提到「当你购买熟悉的品牌时，你跳过了研究未知产品所需的步骤」以及「减少了搜索成本」，因此品牌帮助消费者减少研究需求。选项「提供更低价格」与溢价矛盾；「保证最高质量」过于绝对；「提供更多比较选择」与减少搜索成本相反。"
+    },
+    {
+      "q": "What can be inferred from the example of the food company in paragraph 3?",
+      "options": [
+        "Brand value can be rebuilt quickly after a scandal.",
+        "Scandals only affect small companies, not big brands.",
+        "Consumer trust is hard to regain once lost.",
+        "Companies should avoid using any ingredients to prevent crises."
+      ],
+      "answer": 2,
+      "explain": "推断题，定位第三段。文中描述品牌价值暴跌、销售下滑，并说明「一旦破裂，重获消费者信心就成为一场昂贵的斗争」，因此可推断消费者信任一旦失去很难恢复。选项「丑闻后品牌价值能快速重建」与文中「昂贵的斗争」矛盾；「公司应避免使用任何原料」过度推断且不合理；「丑闻只影响小公司」文中未提及。"
+    },
+    {
+      "q": "The word 'plummeted' in paragraph 3 is closest in meaning to:",
+      "options": [
+        "dropped sharply",
+        "remained stable",
+        "increased slightly",
+        "rose slowly"
+      ],
+      "answer": 0,
+      "explain": "语义题。根据上下文，「品牌价值一夜暴跌」中'plummeted'意为暴跌，与「急剧下降」同义。「缓慢上升」「保持稳定」「轻微增加」均不符合。"
+    }
+  ]
+}

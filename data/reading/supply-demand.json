@@ -1,0 +1,151 @@
+{
+  "id": "supply-demand",
+  "title": "The Invisible Hand of Supply and Demand",
+  "source": "AI生成·待校 · 经济与社会",
+  "level": "考研英语二",
+  "intro": "看不见的手：价格如何无声协调亿万人的决策？",
+  "paragraphs": [
+    "When a drought reduces the wheat harvest, the price of bread rises. This simple signal sets off a chain of adjustments. Farmers, seeing higher profits, shift to wheat cultivation. Consumers, facing higher prices, may buy more rice instead. No central planner orders these changes; they emerge spontaneously from thousands of individual choices.",
+    "The price mechanism acts as an invisible hand, coordinating supply and demand across markets. A shortage drives prices up, encouraging producers to supply more and consumers to use less. Conversely, a surplus pushes prices down, signaling producers to cut back and consumers to increase consumption. This self-correcting process brings the market toward equilibrium.",
+    "Critics argue that the invisible hand has flaws. Externalities, like pollution, are not captured by prices. Monopolies can distort the signal, leading to inefficient outcomes. Moreover, during crises—such as the 2008 financial meltdown—markets failed to self-correct rapidly, causing widespread hardship. These examples suggest that pure market mechanisms are not always sufficient.",
+    "Despite its limitations, the price system remains a powerful coordinator of human activity. It conveys information, provides incentives, and allocates resources without centralized direction. Understanding this invisible hand helps us appreciate how complex economies function, while also recognizing when government intervention might be necessary to correct market failures."
+  ],
+  "cn": [
+    "当干旱导致小麦歉收，面包价格就会上涨。这个简单的信号引发一连串调整。农民看到利润更高，转而种植小麦。消费者面对更高的价格，可能会改买更多大米。没有中央计划者下令这些变化；它们从成千上万的个人选择中自发涌现。",
+    "价格机制像一只看不见的手，在市场中协调供需。短缺推高价格，促使生产者增加供给、消费者减少使用。反之，过剩压低价格，向生产者发出减产信号，并鼓励消费者增加消费。这种自我修正的过程使市场趋向均衡。",
+    "批评者认为看不见的手存在缺陷。外部性，如污染，没有被价格反映。垄断可能扭曲信号，导致低效结果。此外，在危机时期——例如2008年金融危机——市场未能迅速自我修正，造成广泛困难。这些例子表明，纯粹的市场机制并不总是足够的。",
+    "尽管有局限性，价格体系仍然是人类活动的强大协调者。它传递信息、提供激励、分配资源，无需中央指挥。理解这只看不见的手有助于我们认识复杂经济如何运行，同时也能认识到何时政府干预对于纠正市场失灵是必要的。"
+  ],
+  "glossary": [
+    {
+      "w": "drought",
+      "ph": "/draʊt/",
+      "def": "n. 干旱",
+      "ex": "a severe drought",
+      "exCn": "严重干旱"
+    },
+    {
+      "w": "harvest",
+      "ph": "/ˈhɑːrvɪst/",
+      "def": "n. 收成",
+      "ex": "wheat harvest",
+      "exCn": "小麦收成"
+    },
+    {
+      "w": "adjustment",
+      "ph": "/əˈdʒʌstmənt/",
+      "def": "n. 调整",
+      "ex": "a chain of adjustments",
+      "exCn": "一连串调整"
+    },
+    {
+      "w": "shift",
+      "ph": "/ʃɪft/",
+      "def": "v. 转变",
+      "ex": "shift to wheat cultivation",
+      "exCn": "转向小麦种植"
+    },
+    {
+      "w": "mechanism",
+      "ph": "/ˈmekənɪzəm/",
+      "def": "n. 机制",
+      "ex": "price mechanism",
+      "exCn": "价格机制"
+    },
+    {
+      "w": "coordinate",
+      "ph": "/koʊˈɔːrdɪneɪt/",
+      "def": "v. 协调",
+      "ex": "coordinate supply and demand",
+      "exCn": "协调供需"
+    },
+    {
+      "w": "shortage",
+      "ph": "/ˈʃɔːrtɪdʒ/",
+      "def": "n. 短缺",
+      "ex": "a shortage drives prices up",
+      "exCn": "短缺推高价格"
+    },
+    {
+      "w": "surplus",
+      "ph": "/ˈsɜːrpləs/",
+      "def": "n. 过剩",
+      "ex": "a surplus pushes prices down",
+      "exCn": "过剩压低价格"
+    },
+    {
+      "w": "equilibrium",
+      "ph": "/ˌiːkwɪˈlɪbriəm/",
+      "def": "n. 均衡",
+      "ex": "market toward equilibrium",
+      "exCn": "市场趋向均衡"
+    },
+    {
+      "w": "externality",
+      "ph": "/ˌekstɜːrˈnæləti/",
+      "def": "n. 外部性",
+      "ex": "Externalities, like pollution",
+      "exCn": "外部性，如污染"
+    },
+    {
+      "w": "monopoly",
+      "ph": "/məˈnɑːpəli/",
+      "def": "n. 垄断",
+      "ex": "Monopolies can distort the signal",
+      "exCn": "垄断可能扭曲信号"
+    },
+    {
+      "w": "intervention",
+      "ph": "/ˌɪntərˈvenʃən/",
+      "def": "n. 干预",
+      "ex": "government intervention",
+      "exCn": "政府干预"
+    }
+  ],
+  "questions": [
+    {
+      "q": "What is the main idea of the passage?",
+      "options": [
+        "Government intervention is always necessary to correct market failures.",
+        "The price mechanism is a perfect system that never fails.",
+        "Droughts and other natural disasters cause price fluctuations.",
+        "The invisible hand coordinates economic activities but has limitations."
+      ],
+      "answer": 3,
+      "explain": "主旨题。文章第一段引入价格信号如何自发协调，第二段说明价格机制的作用，第三段指出其缺陷，第四段总结其重要性并承认需要政府干预。因此主旨是「看不见的手协调经济活动但有局限性」。「价格机制是完美系统从不失败」过于绝对，与第三段批评矛盾；「政府干预总是必要」过于绝对，文章仅说有时需要；「干旱等自然灾害导致价格波动」只是第一段例子，非全文主旨。"
+    },
+    {
+      "q": "According to paragraph 1, what happens when a drought reduces the wheat harvest?",
+      "options": [
+        "Consumers immediately stop buying bread.",
+        "Farmers plant more wheat to increase supply.",
+        "The price of bread rises, prompting farmers to shift to wheat.",
+        "A central planner orders farmers to grow more wheat."
+      ],
+      "answer": 2,
+      "explain": "细节题。第一段明确说「当干旱导致小麦歉收，面包价格就会上涨」以及「农民看到利润更高，转而种植小麦」。因此「面包价格上涨，促使农民转向小麦」正确。「消费者立即停止购买面包」原文未提，只说了可能改买大米；「农民种植更多小麦以增加供应」原文说的是转向小麦，并非增加；「中央计划者下令」与原文「没有中央计划者」矛盾。"
+    },
+    {
+      "q": "What can be inferred about the 2008 financial crisis from paragraph 3?",
+      "options": [
+        "It showed that government intervention is unnecessary.",
+        "It demonstrated that markets always self-correct quickly.",
+        "It was a result of excessive government regulation.",
+        "It was caused by a failure of the invisible hand."
+      ],
+      "answer": 3,
+      "explain": "推断题。第三段说「在危机时期——例如2008年金融危机——市场未能迅速自我修正，造成广泛困难」，并指出纯市场机制并不总是足够。由此可推断，金融危机表明看不见的手失灵了，因此「它是由看不见的手失灵导致的」正确。「市场总是快速自我修正」与原文「未能迅速自我修正」矛盾；「政府干预不必要」与原文暗示可能需要干预相反；「过度政府监管导致」文中未提。"
+    },
+    {
+      "q": "The word \"distort\" in paragraph 3 is closest in meaning to:",
+      "options": [
+        "strengthen",
+        "ignore",
+        "clarify",
+        "twist"
+      ],
+      "answer": 3,
+      "explain": "语义题。第三段中「Monopolies can distort the signal」指垄断扭曲价格信号，使信号不能准确反映供需。distort 意为「扭曲、歪曲」，与「twist」同义。「strengthen」加强、「clarify」澄清、「ignore」忽视均不符合语境。"
+    }
+  ]
+}

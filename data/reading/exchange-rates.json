@@ -1,0 +1,151 @@
+{
+  "id": "exchange-rates",
+  "title": "Why Currencies Rise and Fall",
+  "source": "AI生成·待校 · 经济与社会",
+  "level": "考研英语二",
+  "intro": "汇率波动如何影响你的钱袋子？",
+  "paragraphs": [
+    "When a country's currency appreciates, its exports become more expensive for foreign buyers, potentially reducing sales abroad. Conversely, a weaker currency can boost exports by making goods cheaper internationally. For instance, Japan's export-driven economy often benefits from a weaker yen, as it makes Japanese cars and electronics more competitive in global markets.",
+    "Central banks frequently intervene in foreign exchange markets to stabilize or influence their currency's value. They may buy or sell large amounts of domestic currency, adjust interest rates, or implement quantitative easing. For example, the Swiss National Bank once set a cap on the franc's value to prevent excessive appreciation that could harm its export sector.",
+    "However, currency intervention is not without controversy. Critics argue that such actions can lead to trade disputes and retaliation from trading partners. Moreover, prolonged manipulation may distort market signals and create asset bubbles. The United States has often accused China of keeping the yuan undervalued to gain an unfair trade advantage.",
+    "In conclusion, currency movements are shaped by a complex interplay of market forces and policy decisions. While a weaker currency can stimulate exports, it may also fuel inflation and reduce purchasing power. Understanding these dynamics helps investors and policymakers navigate the global economy."
+  ],
+  "cn": [
+    "当一个国家的货币升值时，其出口商品对外国买家来说变得更贵，可能减少海外销售。相反，货币贬值可以通过使商品在国际上更便宜来促进出口。例如，日本出口导向型经济常常受益于日元走弱，因为这使得日本汽车和电子产品在全球市场上更具竞争力。",
+    "中央银行经常干预外汇市场以稳定或影响其货币价值。它们可能大量买入或卖出本币、调整利率或实施量化宽松。例如，瑞士国家银行曾设定瑞士法郎的汇率上限，以防止过度升值损害其出口部门。",
+    "然而，货币干预并非没有争议。批评者认为此类行动可能导致贸易争端和贸易伙伴的报复。此外，长期操纵可能扭曲市场信号并催生资产泡沫。美国常指责中国压低人民币汇率以获得不公平的贸易优势。",
+    "总之，货币变动是由市场力量和政策决策的复杂相互作用塑造的。虽然货币贬值可以刺激出口，但也可能加剧通胀并降低购买力。理解这些动态有助于投资者和政策制定者驾驭全球经济。"
+  ],
+  "glossary": [
+    {
+      "w": "appreciate",
+      "ph": "/əˈpriːʃieɪt/",
+      "def": "v.升值；增值",
+      "ex": "currency appreciates",
+      "exCn": "货币升值"
+    },
+    {
+      "w": "depreciate",
+      "ph": "/dɪˈpriːʃieɪt/",
+      "def": "v.贬值",
+      "ex": "weaker currency depreciates",
+      "exCn": "货币贬值"
+    },
+    {
+      "w": "export",
+      "ph": "/ˈekspɔːrt/",
+      "def": "n.出口；v.出口",
+      "ex": "boost exports",
+      "exCn": "促进出口"
+    },
+    {
+      "w": "import",
+      "ph": "/ˈɪmpɔːrt/",
+      "def": "n.进口；v.进口",
+      "ex": "import costs",
+      "exCn": "进口成本"
+    },
+    {
+      "w": "central bank",
+      "ph": "/ˈsentrəl bæŋk/",
+      "def": "n.中央银行",
+      "ex": "central banks intervene",
+      "exCn": "中央银行干预"
+    },
+    {
+      "w": "intervene",
+      "ph": "/ˌɪntərˈviːn/",
+      "def": "v.干预；干涉",
+      "ex": "intervene in currency markets",
+      "exCn": "干预货币市场"
+    },
+    {
+      "w": "quantitative easing",
+      "ph": "/ˈkwɒntɪtətɪv ˈiːzɪŋ/",
+      "def": "n.量化宽松",
+      "ex": "implement quantitative easing",
+      "exCn": "实施量化宽松"
+    },
+    {
+      "w": "appreciation",
+      "ph": "/əˌpriːʃiˈeɪʃn/",
+      "def": "n.升值；欣赏",
+      "ex": "excessive appreciation",
+      "exCn": "过度升值"
+    },
+    {
+      "w": "competitive",
+      "ph": "/kəmˈpetɪtɪv/",
+      "def": "adj.有竞争力的",
+      "ex": "competitive in global markets",
+      "exCn": "在全球市场有竞争力"
+    },
+    {
+      "w": "distort",
+      "ph": "/dɪˈstɔːrt/",
+      "def": "v.扭曲",
+      "ex": "distort market signals",
+      "exCn": "扭曲市场信号"
+    },
+    {
+      "w": "bubble",
+      "ph": "/ˈbʌbl/",
+      "def": "n.泡沫",
+      "ex": "asset bubbles",
+      "exCn": "资产泡沫"
+    },
+    {
+      "w": "purchasing power",
+      "ph": "/ˈpɜːrtʃəsɪŋ ˈpaʊər/",
+      "def": "n.购买力",
+      "ex": "reduce purchasing power",
+      "exCn": "降低购买力"
+    }
+  ],
+  "questions": [
+    {
+      "q": "What is the main idea of the passage?",
+      "options": [
+        "A stronger currency is beneficial for all economies.",
+        "Central banks always prefer a weak currency.",
+        "Currency intervention is widely accepted without criticism.",
+        "Currency fluctuations affect trade and are influenced by central bank policies."
+      ],
+      "answer": 3,
+      "explain": "主旨题。文章第一段讲货币升值贬值对出口的影响，第二段讲央行干预，第三段讲干预的争议，最后总结货币变动由市场与政策共同决定。因此，文章主要讨论汇率波动如何影响贸易以及央行的角色。选项「货币波动影响贸易且受央行政策影响」正确。选项「央行总是偏好弱势货币」过于绝对；选项「货币干预毫无批评」与第三段争议矛盾；选项「强势货币对所有经济体有利」与第一段日本例子矛盾。"
+    },
+    {
+      "q": "According to Paragraph 1, how does a weaker currency affect a country's exports?",
+      "options": [
+        "It makes exports cheaper abroad.",
+        "It makes exports more expensive.",
+        "It has no effect on exports.",
+        "It reduces the competitiveness of exports."
+      ],
+      "answer": 0,
+      "explain": "细节题。第一段明确指出「a weaker currency can boost exports by making goods cheaper internationally」，即货币贬值使商品在国际上更便宜，从而促进出口。选项「使出口更便宜」正确。选项「使出口更贵」是升值的影响；选项「降低出口竞争力」与原文相反；选项「没有影响」错误。"
+    },
+    {
+      "q": "What can be inferred about the Swiss National Bank's decision to set a cap on the franc?",
+      "options": [
+        "It was to encourage imports.",
+        "It was to increase inflation.",
+        "It was to prevent the franc from becoming too strong.",
+        "It was to weaken the euro."
+      ],
+      "answer": 2,
+      "explain": "推断题。第二段提到瑞士国家银行设定瑞郎汇率上限是为了防止过度升值损害出口部门。由此可推断，此举旨在防止瑞郎过强。选项「防止瑞郎过强」正确。选项「鼓励进口」文中未提；选项「增加通胀」文中未提；选项「削弱欧元」文中未提。"
+    },
+    {
+      "q": "The word 'distort' in Paragraph 3 is closest in meaning to:",
+      "options": [
+        "twist",
+        "clarify",
+        "stabilize",
+        "enhance"
+      ],
+      "answer": 0,
+      "explain": "语义题。第三段中「prolonged manipulation may distort market signals」，distort 意为扭曲、歪曲。选项「twist」扭曲，最接近。选项「enhance」增强；选项「clarify」澄清；选项「stabilize」稳定，均不符合上下文。"
+    }
+  ]
+}

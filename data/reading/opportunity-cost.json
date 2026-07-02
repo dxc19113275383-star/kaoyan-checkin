@@ -1,0 +1,151 @@
+{
+  "id": "opportunity-cost",
+  "title": "What Everything Really Costs",
+  "source": "AI生成·待校 · 经济与社会",
+  "level": "考研英语二",
+  "intro": "机会成本与沉没成本，你真的懂吗？",
+  "paragraphs": [
+    "Every decision we make carries a hidden price tag. When you choose to spend an evening studying, you give up the chance to watch a movie or hang out with friends. Economists call this trade-off the opportunity cost — the value of the next best alternative foregone. Understanding this concept is crucial because it forces us to recognize that every choice has a real cost, even when no money changes hands.",
+    "Opportunity cost is often overlooked because it is not recorded in any account book. For instance, a farmer deciding whether to plant wheat or corn must consider not only the expected profit from each crop but also the lost benefit of the alternative not chosen. This principle applies to everyday life: the time spent scrolling social media could have been used for exercise or learning a new skill. The key is to weigh these invisible costs consciously.",
+    "However, people frequently fall into the sunk cost fallacy. This error occurs when we continue investing in a losing project simply because we have already invested money, time, or effort. A classic example is staying in a boring movie because you paid for the ticket. Rational decision-making should ignore sunk costs, as they are irrecoverable and should not influence future choices.",
+    "To make better decisions, we must distinguish between opportunity costs and sunk costs. Before committing to a course of action, ask yourself what you will have to give up. Once a cost is sunk, move on without regret. By applying this mindset, we can allocate our limited resources — time, money, energy — more wisely and ultimately lead more fulfilling lives."
+  ],
+  "cn": [
+    "我们做的每一个决定都带有隐藏的代价。当你选择花一个晚上学习时，你就放弃了看电影或与朋友出去玩的机会。经济学家称这种权衡为机会成本——即被放弃的次优选择的价值。理解这一概念至关重要，因为它迫使我们认识到每个选择都有实际代价，即使没有金钱易手。",
+    "机会成本常被忽视，因为它不记录在任何账本中。例如，农民决定种小麦还是玉米时，不仅要考虑每种作物的预期利润，还要考虑未选方案的损失。这一原则适用于日常生活：刷社交媒体的时间本可用于锻炼或学习新技能。关键在于有意识地权衡这些无形代价。",
+    "然而，人们经常陷入沉没成本误区。当我们仅仅因为已经投入了金钱、时间或精力而继续投资于一个亏损项目时，就犯了这种错误。一个经典例子是：因为买了票而坚持看一部无聊的电影。理性决策应忽略沉没成本，因为它们不可收回，不应影响未来的选择。",
+    "为了做出更好的决策，我们必须区分机会成本和沉没成本。在承诺采取行动之前，问问自己将放弃什么。一旦成本沉没，就果断放手，不要后悔。通过运用这种思维，我们可以更明智地分配有限资源——时间、金钱、精力——并最终过上更充实的生活。"
+  ],
+  "glossary": [
+    {
+      "w": "price tag",
+      "ph": "/praɪs tæɡ/",
+      "def": "n. 价格标签；代价",
+      "ex": "hidden price tag",
+      "exCn": "隐藏的代价"
+    },
+    {
+      "w": "trade-off",
+      "ph": "/ˈtreɪd ɒf/",
+      "def": "n. 权衡，交易",
+      "ex": "the trade-off called opportunity cost",
+      "exCn": "称为机会成本的权衡"
+    },
+    {
+      "w": "opportunity cost",
+      "ph": "/ˌɒpəˈtjuːnɪti kɒst/",
+      "def": "n. 机会成本",
+      "ex": "the opportunity cost of choosing something",
+      "exCn": "选择某物的机会成本"
+    },
+    {
+      "w": "foregone",
+      "ph": "/fɔːˈɡɒn/",
+      "def": "adj. 过去的，已放弃的",
+      "ex": "the next best alternative foregone",
+      "exCn": "被放弃的次优选择"
+    },
+    {
+      "w": "overlook",
+      "ph": "/ˌəʊvəˈlʊk/",
+      "def": "v. 忽视",
+      "ex": "often overlooked",
+      "exCn": "常被忽视"
+    },
+    {
+      "w": "account book",
+      "ph": "/əˈkaʊnt bʊk/",
+      "def": "n. 账簿",
+      "ex": "not recorded in any account book",
+      "exCn": "不记录在任何账本中"
+    },
+    {
+      "w": "fallacy",
+      "ph": "/ˈfæləsi/",
+      "def": "n. 谬误，错误观念",
+      "ex": "sunk cost fallacy",
+      "exCn": "沉没成本谬误"
+    },
+    {
+      "w": "sunk cost",
+      "ph": "/sʌŋk kɒst/",
+      "def": "n. 沉没成本",
+      "ex": "ignore sunk costs",
+      "exCn": "忽略沉没成本"
+    },
+    {
+      "w": "irrecoverable",
+      "ph": "/ˌɪrɪˈkʌvərəbl/",
+      "def": "adj. 不可收回的",
+      "ex": "irrecoverable costs",
+      "exCn": "不可收回的成本"
+    },
+    {
+      "w": "distinguish",
+      "ph": "/dɪˈstɪŋɡwɪʃ/",
+      "def": "v. 区分，辨别",
+      "ex": "distinguish between opportunity costs and sunk costs",
+      "exCn": "区分机会成本和沉没成本"
+    },
+    {
+      "w": "allocate",
+      "ph": "/ˈæləkeɪt/",
+      "def": "v. 分配",
+      "ex": "allocate limited resources",
+      "exCn": "分配有限资源"
+    },
+    {
+      "w": "fulfilling",
+      "ph": "/fʊlˈfɪlɪŋ/",
+      "def": "adj. 令人满足的",
+      "ex": "lead more fulfilling lives",
+      "exCn": "过上更充实的生活"
+    }
+  ],
+  "questions": [
+    {
+      "q": "What is the main purpose of the passage?",
+      "options": [
+        "To argue that all costs are ultimately monetary.",
+        "To criticize the way people make everyday choices.",
+        "To compare the financial costs of different decisions.",
+        "To explain the concepts of opportunity cost and sunk cost fallacy."
+      ],
+      "answer": 3,
+      "explain": "主旨题。文章第一段引入机会成本概念，第二段举例说明其应用，第三段介绍沉没成本误区，第四段总结如何更好决策。整体旨在解释这两个经济学概念。选项「比较不同决策的财务成本」过于狭窄，文章强调非货币成本；「所有成本最终是金钱的」与原文矛盾；「批评人们日常选择的方式」不是主要目的。"
+    },
+    {
+      "q": "According to the passage, why is opportunity cost often ignored?",
+      "options": [
+        "Because it is a concept only understood by economists.",
+        "Because people are too busy to think about it.",
+        "Because it does not involve any monetary loss.",
+        "Because it is not recorded in any formal account."
+      ],
+      "answer": 3,
+      "explain": "细节题。第二段第一句明确指出「Opportunity cost is often overlooked because it is not recorded in any account book.」选项「因为它不涉及金钱损失」虽有一定道理但非原文直接原因；「因为人们太忙而不考虑」未提及；「只有经济学家理解的概念」与原文不符。"
+    },
+    {
+      "q": "What can be inferred from the example of staying in a boring movie?",
+      "options": [
+        "Watching a boring movie is a waste of time and money.",
+        "People should always finish what they start.",
+        "People tend to ignore opportunity costs in daily life.",
+        "Sunk costs often cause irrational decision-making."
+      ],
+      "answer": 3,
+      "explain": "推断题。第三段以无聊电影为例说明沉没成本谬误：人们因为已买票而继续看，这导致非理性决策。选项「人们倾向于忽略机会成本」虽相关但例子主要说明沉没成本；「看无聊电影浪费时间和金钱」是表面现象而非推断；「应该坚持完成开始的事」与原文观点相反。"
+    },
+    {
+      "q": "The word \"foregone\" in paragraph 1 most probably means ______.",
+      "options": [
+        "valuable",
+        "hidden",
+        "previous",
+        "abandoned"
+      ],
+      "answer": 3,
+      "explain": "语义题。第一段中「the next best alternative foregone」意为被放弃的次优选择，foregone 是过去分词表示「被放弃的」。选项「先前的」不准确；「有价值的」和「隐藏的」均不符合语境。"
+    }
+  ]
+}

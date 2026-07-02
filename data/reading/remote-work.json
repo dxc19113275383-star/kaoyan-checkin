@@ -1,0 +1,151 @@
+{
+  "id": "remote-work",
+  "title": "The Office Is Not Dead Yet",
+  "source": "AI生成·待校 · 经济与社会",
+  "level": "考研英语二",
+  "intro": "远程办公真的会终结办公室时代吗？",
+  "paragraphs": [
+    "The pandemic forced a massive shift to remote work, leading many to predict the death of the office. Yet, as the world adapts, a more nuanced picture emerges. Companies like Google and Apple have adopted hybrid models, requiring employees to be in the office three days a week. This suggests that the office, though transformed, remains relevant. The key lies in balancing flexibility with collaboration, as face-to-face interactions often spark innovation that virtual meetings cannot replicate.",
+    "Hybrid work models aim to capture the best of both worlds. Employees enjoy reduced commuting time and greater autonomy, which boosts morale and productivity. Meanwhile, designated office days facilitate team bonding, brainstorming, and mentorship. Studies show that in-person collaboration enhances creativity and problem-solving. By alternating between remote and on-site work, companies can maintain culture while embracing flexibility. This balance is crucial for long-term success, as purely remote setups risk weakening social ties and organizational cohesion.",
+    "However, hybrid work also presents challenges. Not all tasks suit a split schedule; some require continuous physical presence, such as lab research or manufacturing. Additionally, managing a dispersed workforce can lead to inequities—remote workers may feel overlooked for promotions, while on-site employees bear commuting burdens. Urban centers initially suffered from reduced foot traffic, harming local businesses. Yet, some cities are adapting by repurposing office space for residential or mixed-use developments.",
+    "In conclusion, the office is not dead but evolving. The rise of hybrid work reflects a pragmatic compromise, acknowledging both the benefits of remote flexibility and the irreplaceable value of physical collaboration. As companies refine their policies, the future workplace will likely be more human-centric, prioritizing well-being and efficiency. The office's survival depends on its ability to adapt, serving as a hub for connection rather than a mandatory daily destination."
+  ],
+  "cn": [
+    "疫情迫使大规模转向远程办公，导致许多人预测办公室的终结。然而，随着世界适应，一幅更微妙的图景浮现。谷歌和苹果等公司已采用混合模式，要求员工每周在办公室工作三天。这表明办公室虽经转变，仍具相关性。关键在于平衡灵活性与协作，因为面对面互动常能激发虚拟会议无法复制的创新。",
+    "混合办公模式旨在兼顾两者优点。员工享受减少通勤时间和更大自主权，从而提升士气和生产力。同时，指定的办公室日促进团队凝聚、头脑风暴和指导。研究表明，面对面协作能增强创造力和问题解决能力。通过在远程和现场工作间交替，公司可维持文化同时拥抱灵活性。这种平衡对长期成功至关重要，因为纯远程设置可能削弱社会联系和组织凝聚力。",
+    "然而，混合办公也带来挑战。并非所有任务都适合分时安排；有些需要持续在场，如实验室研究或制造业。此外，管理分散的员工可能导致不公平——远程工作者可能觉得在晋升中被忽视，而现场员工承担通勤负担。城市中心最初因人流减少而受损，伤害本地企业。但一些城市正通过将办公空间改造为住宅或混合用途开发来适应。",
+    "总之，办公室并未消亡，而是在演变。混合办公的兴起反映了务实的妥协，承认了远程灵活性的好处和面对面协作不可替代的价值。随着公司完善政策，未来的工作场所将更以人为中心，优先考虑福祉和效率。办公室的存续取决于其适应能力，成为连接的枢纽而非强制性的每日目的地。"
+  ],
+  "glossary": [
+    {
+      "w": "massive",
+      "ph": "/ˈmæsɪv/",
+      "def": "adj.大规模的",
+      "ex": "a massive shift",
+      "exCn": "大规模转变"
+    },
+    {
+      "w": "nuanced",
+      "ph": "/ˈnjuːɑːnst/",
+      "def": "adj.微妙的",
+      "ex": "a nuanced picture",
+      "exCn": "微妙的图景"
+    },
+    {
+      "w": "hybrid",
+      "ph": "/ˈhaɪbrɪd/",
+      "def": "adj.混合的",
+      "ex": "hybrid models",
+      "exCn": "混合模式"
+    },
+    {
+      "w": "collaboration",
+      "ph": "/kəˌlæbəˈreɪʃn/",
+      "def": "n.协作",
+      "ex": "face-to-face collaboration",
+      "exCn": "面对面协作"
+    },
+    {
+      "w": "autonomy",
+      "ph": "/ɔːˈtɒnəmi/",
+      "def": "n.自主权",
+      "ex": "greater autonomy",
+      "exCn": "更大自主权"
+    },
+    {
+      "w": "morale",
+      "ph": "/məˈrɑːl/",
+      "def": "n.士气",
+      "ex": "boost morale",
+      "exCn": "提升士气"
+    },
+    {
+      "w": "mentorship",
+      "ph": "/ˈmentɔːʃɪp/",
+      "def": "n.指导",
+      "ex": "facilitate mentorship",
+      "exCn": "促进指导"
+    },
+    {
+      "w": "cohesion",
+      "ph": "/kəʊˈhiːʒn/",
+      "def": "n.凝聚力",
+      "ex": "organizational cohesion",
+      "exCn": "组织凝聚力"
+    },
+    {
+      "w": "inequity",
+      "ph": "/ɪnˈekwəti/",
+      "def": "n.不公平",
+      "ex": "lead to inequities",
+      "exCn": "导致不公平"
+    },
+    {
+      "w": "foot traffic",
+      "ph": "/fʊt ˈtræfɪk/",
+      "def": "n.客流量",
+      "ex": "reduced foot traffic",
+      "exCn": "减少的客流量"
+    },
+    {
+      "w": "repurpose",
+      "ph": "/ˌriːˈpɜːpəs/",
+      "def": "v.重新利用",
+      "ex": "repurposing office space",
+      "exCn": "重新利用办公空间"
+    },
+    {
+      "w": "pragmatic",
+      "ph": "/præɡˈmætɪk/",
+      "def": "adj.务实的",
+      "ex": "a pragmatic compromise",
+      "exCn": "务实的妥协"
+    }
+  ],
+  "questions": [
+    {
+      "q": "What is the main idea of the passage?",
+      "options": [
+        "Hybrid work causes more problems than it solves.",
+        "The office is declining but will eventually disappear.",
+        "Hybrid work models represent a balanced future for offices.",
+        "Remote work has completely replaced the traditional office."
+      ],
+      "answer": 2,
+      "explain": "主旨题。文章核心是混合办公模式代表了办公室的未来平衡，中心句出现在最后一段。第一段开头虽提到办公室死亡预测，但后文否定；「远程工作完全取代传统办公室」与主旨相反；「混合办公弊大于利」是片面观点；「办公室衰退并最终消失」与结论矛盾。"
+    },
+    {
+      "q": "According to paragraph 2, what is a benefit of in-person collaboration?",
+      "options": [
+        "It ensures fairness in promotions.",
+        "It reduces commuting time for employees.",
+        "It eliminates the need for office space.",
+        "It enhances creativity and problem-solving."
+      ],
+      "answer": 3,
+      "explain": "细节题。第二段明确提到「面对面协作增强创造力和问题解决能力」。减少通勤是远程办公的好处，非面对面协作；确保晋升公平和消除办公空间需求文中未提及。"
+    },
+    {
+      "q": "What can be inferred about urban centers from paragraph 3?",
+      "options": [
+        "They are encouraging all employees to work remotely.",
+        "They have fully recovered from the pandemic.",
+        "They are being negatively impacted by hybrid work.",
+        "They are investing more in office construction."
+      ],
+      "answer": 2,
+      "explain": "推断题。第三段指出城市中心最初因客流量减少受损，但一些城市正通过改造办公空间适应，暗示负面影响存在。「完全恢复」与原文矛盾；「增加办公楼建设」无依据；「鼓励全员远程」与适应措施相反。"
+    },
+    {
+      "q": "The word \"pragmatic\" in the last paragraph most probably means ______.",
+      "options": [
+        "practical",
+        "idealistic",
+        "controversial",
+        "theoretical"
+      ],
+      "answer": 0,
+      "explain": "语义题。根据最后一段上下文，混合办公是「务实的妥协」，承认两者好处。pragmatic 意为「实用的、务实的」，与 practical 同义。idealistic（理想主义的）、controversial（有争议的）、theoretical（理论上的）均不符合语境。"
+    }
+  ]
+}

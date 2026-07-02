@@ -1,0 +1,151 @@
+{
+  "id": "externalities",
+  "title": "When Markets Fail: The Problem of Externalities",
+  "source": "AI生成·待校 · 经济与社会",
+  "level": "考研英语二",
+  "intro": "市场失灵时，外部性如何影响你我？",
+  "paragraphs": [
+    "When a factory emits pollutants into the air, it imposes health costs on nearby residents, yet the market price of its products rarely reflects this damage. This phenomenon, known as a negative externality, represents a classic market failure. Without intervention, the factory produces more than the socially optimal level, as it ignores the external costs borne by others. The result is overproduction and environmental degradation, illustrating why unregulated markets can harm social welfare.",
+    "To correct such inefficiencies, economists often recommend government intervention through taxes or regulations. A pollution tax, for instance, forces firms to internalize external costs by paying for each unit of emission. This raises production costs, reduces output to the socially efficient level, and incentivizes cleaner technologies. Similarly, subsidies can encourage activities with positive externalities, such as vaccination, which benefits not only the individual but also society by reducing disease transmission.",
+    "However, implementing these policies is not straightforward. Critics argue that estimating the precise social cost of pollution is difficult, leading to either under- or over-regulation. Moreover, firms may relocate to countries with lax environmental laws, causing a 'race to the bottom' in global standards. The effectiveness of taxes also depends on how revenues are used; if earmarked for environmental projects, public support may increase, but misallocation can erode trust.",
+    "Ultimately, externalities reveal a fundamental limitation of free markets: they fail to account for costs and benefits that spill over to third parties. While taxes and subsidies offer practical solutions, their success hinges on accurate measurement and political will. As global challenges like climate change intensify, understanding and addressing externalities becomes crucial for sustainable development, reminding us that markets need guidance to serve the common good."
+  ],
+  "cn": [
+    "当工厂向空气中排放污染物时，它给附近居民带来了健康成本，但产品的市场价格很少反映这种损害。这种现象被称为负外部性，是经典的市场失灵。如果没有干预，工厂的生产会超过社会最优水平，因为它忽视了他人承担的外部成本。结果就是过度生产和环境恶化，说明不受监管的市场为何会损害社会福利。",
+    "为了纠正这种低效率，经济学家通常建议通过税收或法规进行政府干预。例如，污染税迫使企业通过为每单位排放付费来内化外部成本。这提高了生产成本，将产出减少到社会有效水平，并激励清洁技术。同样，补贴可以鼓励具有正外部性的活动，例如疫苗接种，它不仅使个人受益，还通过减少疾病传播使社会受益。",
+    "然而，实施这些政策并非易事。批评者认为，估算污染的确切社会成本很困难，会导致监管不足或过度。此外，企业可能迁往环境法规宽松的国家，引发全球标准的'逐底竞争'。税收的有效性还取决于收入的使用方式；如果专用于环境项目，公众支持可能会增加，但资金错配会侵蚀信任。",
+    "最终，外部性揭示了自由市场的一个根本局限：它们无法核算外溢给第三方的成本和收益。虽然税收和补贴提供了实用的解决方案，但其成功取决于准确的测量和政治意愿。随着气候变化等全球挑战加剧，理解和应对外部性对可持续发展至关重要，提醒我们市场需要引导才能服务于公共利益。"
+  ],
+  "glossary": [
+    {
+      "w": "externality",
+      "ph": "/ˌekstɜːrˈnæləti/",
+      "def": "n. 外部性",
+      "ex": "negative externality",
+      "exCn": "负外部性"
+    },
+    {
+      "w": "pollutant",
+      "ph": "/pəˈluːtənt/",
+      "def": "n. 污染物",
+      "ex": "emit pollutants",
+      "exCn": "排放污染物"
+    },
+    {
+      "w": "impose",
+      "ph": "/ɪmˈpoʊz/",
+      "def": "v. 强加；征收",
+      "ex": "impose health costs",
+      "exCn": "施加健康成本"
+    },
+    {
+      "w": "optimal",
+      "ph": "/ˈɑːptɪməl/",
+      "def": "adj. 最优的",
+      "ex": "socially optimal level",
+      "exCn": "社会最优水平"
+    },
+    {
+      "w": "degradation",
+      "ph": "/ˌdeɡrəˈdeɪʃən/",
+      "def": "n. 退化；恶化",
+      "ex": "environmental degradation",
+      "exCn": "环境退化"
+    },
+    {
+      "w": "internalize",
+      "ph": "/ɪnˈtɜːrnəlaɪz/",
+      "def": "v. 内化",
+      "ex": "internalize external costs",
+      "exCn": "内化外部成本"
+    },
+    {
+      "w": "incentivize",
+      "ph": "/ɪnˈsentɪvaɪz/",
+      "def": "v. 激励",
+      "ex": "incentivize cleaner technologies",
+      "exCn": "激励清洁技术"
+    },
+    {
+      "w": "subsidy",
+      "ph": "/ˈsʌbsɪdi/",
+      "def": "n. 补贴",
+      "ex": "offer subsidies",
+      "exCn": "提供补贴"
+    },
+    {
+      "w": "vaccination",
+      "ph": "/ˌvæksɪˈneɪʃən/",
+      "def": "n. 疫苗接种",
+      "ex": "positive externality of vaccination",
+      "exCn": "疫苗接种的正外部性"
+    },
+    {
+      "w": "lax",
+      "ph": "/læks/",
+      "def": "adj. 不严格的；松懈的",
+      "ex": "lax environmental laws",
+      "exCn": "松懈的环境法规"
+    },
+    {
+      "w": "misallocation",
+      "ph": "/ˌmɪsæləˈkeɪʃən/",
+      "def": "n. 错误分配",
+      "ex": "misallocation of revenues",
+      "exCn": "收入错误分配"
+    },
+    {
+      "w": "spill over",
+      "ph": "/spɪl ˈoʊvər/",
+      "def": "v. 外溢",
+      "ex": "spill over to third parties",
+      "exCn": "外溢给第三方"
+    }
+  ],
+  "questions": [
+    {
+      "q": "What is the main idea of the passage?",
+      "options": [
+        "Externalities always lead to overproduction and environmental harm.",
+        "Market failures caused by externalities require government intervention to align private and social costs.",
+        "Taxes and subsidies are the only effective tools for correcting externalities.",
+        "Governments should avoid intervening in markets even when externalities exist."
+      ],
+      "answer": 1,
+      "explain": "主旨题。文章核心论述外部性导致市场失灵，需要政府干预（如税收、补贴）来纠正，使私人成本与社会成本一致。第一段引入负外部性，第二段提出解决方法，第三段讨论挑战，第四段总结。选项「Market failures caused by externalities require government intervention to align private and social costs」准确概括。选项「Externalities always lead to overproduction and environmental harm」过于绝对，正外部性不会导致过度生产；选项「Taxes and subsidies are the only effective tools」错误，文中还提到法规；选项「Governments should avoid intervening」与主旨相反。"
+    },
+    {
+      "q": "According to the passage, how does a pollution tax help correct a negative externality?",
+      "options": [
+        "By forcing firms to pay for the external costs they generate, thus lowering output to the social optimum.",
+        "By reducing the demand for products that cause pollution.",
+        "By providing subsidies to firms that adopt cleaner technologies.",
+        "By imposing penalties on residents who suffer from pollution."
+      ],
+      "answer": 0,
+      "explain": "细节题。第二段明确说「A pollution tax... forces firms to internalize external costs... reduces output to the socially efficient level」。选项「By forcing firms to pay for the external costs they generate, thus lowering output to the social optimum」正确。选项「By reducing the demand」文中未提及，税影响供给而非需求；选项「By providing subsidies」是另一措施；选项「By imposing penalties on residents」与文意相反。"
+    },
+    {
+      "q": "What can be inferred from the third paragraph about the implementation of pollution taxes?",
+      "options": [
+        "It is supported by all economists.",
+        "It is always successful in reducing pollution.",
+        "It may face challenges such as difficulty in measuring social costs and potential relocation of firms.",
+        "It has no impact on global environmental standards."
+      ],
+      "answer": 2,
+      "explain": "推断题。第三段指出估算社会成本困难、企业可能迁往法规宽松国家（逐底竞争），以及税收收入使用不当会侵蚀信任。选项「It may face challenges such as difficulty in measuring social costs and potential relocation of firms」正确概括这些挑战。选项「always successful」太绝对；选项「supported by all」文中未提；选项「no impact」与「race to the bottom」相反。"
+    },
+    {
+      "q": "The word 'spill over' in the last paragraph is closest in meaning to:",
+      "options": [
+        "increase",
+        "disappear",
+        "remain within",
+        "overflow"
+      ],
+      "answer": 3,
+      "explain": "语义题。第四段「costs and benefits that spill over to third parties」中「spill over」意为「外溢」，即影响扩散到第三方。选项「overflow」有「溢出」之意，最接近。选项「disappear」相反；选项「increase」不准确；选项「remain within」与「外溢」相反。"
+    }
+  ]
+}

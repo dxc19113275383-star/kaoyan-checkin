@@ -11,16 +11,51 @@
       "en": "Not until the government relaxed its restrictions did foreign investors return to the market in large numbers.",
       "cn": "直到政府放松管制，外国投资者才大批重返市场。",
       "parts": [
-        {"text":"Not until the government relaxed its restrictions","role":"adv","note":"否定状语前置（Not until...）"},
-        {"text":" ","role":"plain"},
-        {"text":"did","role":"verb","note":"助动词提前（部分倒装）"},
-        {"text":" ","role":"plain"},
-        {"text":"foreign investors","role":"subj","note":"主语"},
-        {"text":" ","role":"plain"},
-        {"text":"return","role":"verb","note":"实义谓语（用原形）"},
-        {"text":" ","role":"plain"},
-        {"text":"to the market in large numbers","role":"adv","note":"状语"},
-        {"text":".","role":"plain"}
+        {
+          "text": "Not until the government relaxed its restrictions",
+          "role": "adv",
+          "note": "否定状语前置（Not until...）"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "did",
+          "role": "verb",
+          "note": "助动词提前（部分倒装）"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "foreign investors",
+          "role": "subj",
+          "note": "主语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "return",
+          "role": "verb",
+          "note": "实义谓语（用原形）"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "to the market in large numbers",
+          "role": "adv",
+          "note": "状语"
+        },
+        {
+          "text": ".",
+          "role": "plain"
+        }
       ],
       "tip": "Not until... 这类否定状语置于句首，主句要用部分倒装：助动词 did 提到主语 foreign investors 之前。还原正常语序为 Foreign investors did not return... until the government relaxed...。",
       "trap": "看到句首 Not until 就要预判主句倒装（did + 主语 + 动词原形）。倒装的是主句，until 引导的时间状语从句本身不倒装。"
@@ -32,18 +67,60 @@
       "en": "Only by working together can nations hope to solve problems that no single country is able to tackle alone.",
       "cn": "唯有携手合作，各国才有望解决任何单一国家都无法独自应对的问题。",
       "parts": [
-        {"text":"Only by working together","role":"adv","note":"Only + 方式状语前置"},
-        {"text":" ","role":"plain"},
-        {"text":"can","role":"verb","note":"情态动词提前（部分倒装）"},
-        {"text":" ","role":"plain"},
-        {"text":"nations","role":"subj","note":"主语"},
-        {"text":" ","role":"plain"},
-        {"text":"hope to solve","role":"verb","note":"谓语"},
-        {"text":" ","role":"plain"},
-        {"text":"problems","role":"obj","note":"宾语"},
-        {"text":" ","role":"plain"},
-        {"text":"that no single country is able to tackle alone","role":"attr","note":"定语从句，修饰 problems（tackle 后缺宾语）"},
-        {"text":".","role":"plain"}
+        {
+          "text": "Only by working together",
+          "role": "adv",
+          "note": "Only + 方式状语前置"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "can",
+          "role": "verb",
+          "note": "情态动词提前（部分倒装）"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "nations",
+          "role": "subj",
+          "note": "主语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "hope to solve",
+          "role": "verb",
+          "note": "谓语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "problems",
+          "role": "obj",
+          "note": "宾语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "that no single country is able to tackle alone",
+          "role": "attr",
+          "note": "定语从句，修饰 problems（tackle 后缺宾语）"
+        },
+        {
+          "text": ".",
+          "role": "plain"
+        }
       ],
       "tip": "Only + 状语（by working together）置于句首，主句部分倒装：情态动词 can 提到主语 nations 之前。problems 后 that... 是修饰它的定语从句。",
       "trap": "Only 修饰句首状语或状语从句时才倒装；若 Only 修饰主语（如 Only nations can...）则不倒装。这里 Only by... 是状语，故倒装。"
@@ -55,16 +132,51 @@
       "en": "So rapidly has online shopping expanded that traditional retailers have been forced to rethink how they reach their customers.",
       "cn": "网上购物扩张得如此之快，以至于传统零售商被迫重新思考如何触达自己的顾客。",
       "parts": [
-        {"text":"So rapidly","role":"adv","note":"So + 副词前置（强调）"},
-        {"text":" ","role":"plain"},
-        {"text":"has","role":"verb","note":"助动词提前（部分倒装）"},
-        {"text":" ","role":"plain"},
-        {"text":"online shopping","role":"subj","note":"主语"},
-        {"text":" ","role":"plain"},
-        {"text":"expanded","role":"verb","note":"实义谓语（过去分词）"},
-        {"text":" ","role":"plain"},
-        {"text":"that traditional retailers have been forced to rethink how they reach their customers","role":"adv","note":"so...that 结果状语从句"},
-        {"text":".","role":"plain"}
+        {
+          "text": "So rapidly",
+          "role": "adv",
+          "note": "So + 副词前置（强调）"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "has",
+          "role": "verb",
+          "note": "助动词提前（部分倒装）"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "online shopping",
+          "role": "subj",
+          "note": "主语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "expanded",
+          "role": "verb",
+          "note": "实义谓语（过去分词）"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "that traditional retailers have been forced to rethink how they reach their customers",
+          "role": "adv",
+          "note": "so...that 结果状语从句"
+        },
+        {
+          "text": ".",
+          "role": "plain"
+        }
       ],
       "tip": "So + 副词（rapidly）置于句首表强调，主句部分倒装：助动词 has 提到主语 online shopping 之前。so... that... 构成「如此……以至于」的结果关系。",
       "trap": "句首 So rapidly 触发倒装（has + 主语 + 过去分词）。别忘了后面必有 that 引导结果状语从句，二者呼应。"
@@ -76,19 +188,949 @@
       "en": "It is the ability to adapt quickly, rather than sheer size, that determines which firms survive in a volatile market.",
       "cn": "决定哪些公司能在动荡市场中存活下来的，是快速适应的能力，而非单纯的规模。",
       "parts": [
-        {"text":"It is","role":"verb","note":"强调句结构 It is ... that"},
-        {"text":" ","role":"plain"},
-        {"text":"the ability to adapt quickly","role":"obj","note":"被强调的部分（真正的主语）"},
-        {"text":", rather than sheer size, ","role":"plain"},
-        {"text":"that","role":"mark","note":"强调句的 that"},
-        {"text":" ","role":"plain"},
-        {"text":"determines","role":"verb","note":"真正的谓语"},
-        {"text":" ","role":"plain"},
-        {"text":"which firms survive in a volatile market","role":"obj","note":"宾语从句（which 引导）"},
-        {"text":".","role":"plain"}
+        {
+          "text": "It is",
+          "role": "verb",
+          "note": "强调句结构 It is ... that"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "the ability to adapt quickly",
+          "role": "obj",
+          "note": "被强调的部分（真正的主语）"
+        },
+        {
+          "text": ", rather than sheer size, ",
+          "role": "plain"
+        },
+        {
+          "text": "that",
+          "role": "mark",
+          "note": "强调句的 that"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "determines",
+          "role": "verb",
+          "note": "真正的谓语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "which firms survive in a volatile market",
+          "role": "obj",
+          "note": "宾语从句（which 引导）"
+        },
+        {
+          "text": ".",
+          "role": "plain"
+        }
       ],
       "tip": "It is ... that ... 是强调句：去掉 It is 和 that，剩下 The ability to adapt quickly determines... 仍是完整句子，说明这是强调结构。被强调的是主语 the ability to adapt quickly。",
       "trap": "判断强调句：拿掉 It is...that 后若剩下的仍是完整句子，就是强调句（而非定语从句/主语从句）。这里强调主语；rather than sheer size 是插入的对比成分。"
+    },
+    {
+      "id": "v5",
+      "cat": "Only+状语倒装",
+      "level": "偏难",
+      "en": "Only after the pandemic had subsided did the government unveil a stimulus package that saved thousands of small businesses.",
+      "cn": "只有在疫情消退后，政府才公布了一项拯救了数千家小企业的刺激计划。",
+      "parts": [
+        {
+          "text": "Only after the pandemic had subsided",
+          "role": "adv",
+          "note": "Only+时间状语从句，置于句首引起倒装"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "did",
+          "role": "mark",
+          "note": "助动词提前构成部分倒装"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "the government",
+          "role": "subj",
+          "note": "主语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "unveil",
+          "role": "verb",
+          "note": "谓语动词原形"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "a stimulus package",
+          "role": "obj",
+          "note": "宾语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "that saved thousands of small businesses",
+          "role": "attr",
+          "note": "定语从句修饰stimulus package"
+        },
+        {
+          "text": ".",
+          "role": "plain"
+        }
+      ],
+      "tip": "主干是 the government unveiled a stimulus package。难点在于句首Only+时间状语从句引起的部分倒装：助动词did提前，主语后置。定语从句that...修饰package。",
+      "trap": "注意倒装后主语the government在助动词did之后，谓语unveil用原形。不要将did视为谓语动词。"
+    },
+    {
+      "id": "v6",
+      "cat": "Not until倒装",
+      "level": "中等",
+      "en": "Not until the invention of the printing press did knowledge become widely accessible to the masses.",
+      "cn": "直到印刷术的发明，知识才变得广泛为大众所获取。",
+      "parts": [
+        {
+          "text": "Not until",
+          "role": "mark",
+          "note": "否定词引导前置状语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "the invention of the printing press",
+          "role": "adv",
+          "note": "时间状语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "did",
+          "role": "mark",
+          "note": "助动词提前构成倒装"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "knowledge",
+          "role": "subj",
+          "note": "主语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "become",
+          "role": "verb",
+          "note": "系动词"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "widely accessible",
+          "role": "obj",
+          "note": "表语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "to the masses",
+          "role": "adv",
+          "note": "状语"
+        },
+        {
+          "text": ".",
+          "role": "plain"
+        }
+      ],
+      "tip": "主干是...knowledge become widely accessible...，但Not until...放在句首引起倒装，助动词did提前，主语后置。识别时抓住否定词和倒装结构。",
+      "trap": "易忽略Not until的强调作用，将倒装句误认为疑问句；注意主谓一致，did后动词用原形become。"
+    },
+    {
+      "id": "v7",
+      "cat": "Hardly...when倒",
+      "level": "中等",
+      "en": "Hardly had the new policy been implemented when its unintended effects began to emerge in the market.",
+      "cn": "新政策刚实施，其意外影响就开始在市场上显现。",
+      "parts": [
+        {
+          "text": "Hardly",
+          "role": "mark",
+          "note": "否定副词，位于句首引起倒装"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "had",
+          "role": "verb",
+          "note": "助动词，倒装后置于主语前"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "the new policy",
+          "role": "subj",
+          "note": "主语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "been implemented",
+          "role": "verb",
+          "note": "过去分词，构成被动语态"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "when",
+          "role": "mark",
+          "note": "连词，引导时间状语从句"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "its unintended effects",
+          "role": "subj",
+          "note": "从句主语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "began",
+          "role": "verb",
+          "note": "从句谓语动词"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "to emerge",
+          "role": "obj",
+          "note": "不定式作宾语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "in the market",
+          "role": "adv",
+          "note": "地点状语"
+        },
+        {
+          "text": ".",
+          "role": "plain"
+        }
+      ],
+      "tip": "主干为**Hardly had the new policy been implemented when...**，Hardly置于句首引起部分倒装，将助动词had提到主语之前。when引导时间状语从句表示“刚……就……”。",
+      "trap": "注意倒装后助动词had提前，主语the new policy后置；不要将had误认为是过去完成时主动语态，实际是被动语态been implemented。"
+    },
+    {
+      "id": "v8",
+      "cat": "否定词倒装+同位语从句",
+      "level": "中等",
+      "en": "Never before have so many companies embraced the idea that customer experience is crucial for long-term growth.",
+      "cn": "从未有如此多的公司像现在这样认同客户体验对长期增长至关重要的观点。",
+      "parts": [
+        {
+          "text": "Never",
+          "role": "mark",
+          "note": "否定词置于句首引发倒装"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "before",
+          "role": "adv",
+          "note": "时间状语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "have",
+          "role": "verb",
+          "note": "助动词提前构成倒装"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "so many companies",
+          "role": "subj",
+          "note": "主语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "embraced",
+          "role": "verb",
+          "note": "过去分词构成现在完成时"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "the idea",
+          "role": "obj",
+          "note": "宾语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "that customer experience is crucial for long-term growth",
+          "role": "appos",
+          "note": "同位语从句解释idea的内容"
+        },
+        {
+          "text": ".",
+          "role": "plain"
+        }
+      ],
+      "tip": "主干为 **so many companies have embraced the idea**。否定词 Never 置于句首，句子部分倒装，助动词 have 提前。that 引导同位语从句，说明 idea 的具体内容。",
+      "trap": "易将 Never before 误作固定短语，忽略倒装结构；或混淆 that 从句为定语从句，此处为同位语从句，that 在从句中不作成分。"
+    },
+    {
+      "id": "v9",
+      "cat": "So倒装+结果状语从句",
+      "level": "中等",
+      "en": "So profound is the impact of digital technology on education that traditional teaching methods are being fundamentally reshaped.",
+      "cn": "数字技术对教育的影响如此深远，以至于传统的教学方法正在被根本性地重塑。",
+      "parts": [
+        {
+          "text": "So profound",
+          "role": "adv",
+          "note": "程度状语，置于句首引发倒装"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "is",
+          "role": "verb",
+          "note": "系动词倒装至主语前"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "the impact of digital technology on education",
+          "role": "subj",
+          "note": "主语，核心词impact，后接介词短语作定语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "that traditional teaching methods are being fundamentally reshaped",
+          "role": "adv",
+          "note": "结果状语从句，说明影响的程度结果"
+        },
+        {
+          "text": ".",
+          "role": "plain"
+        }
+      ],
+      "tip": "主干为 So profound is the impact... that...，属于 so...that... 结构的倒装形式。识别时先找到谓语动词 is，主语为 the impact，that 引导结果状语从句。",
+      "trap": "注意倒装后主语后置，不要误将 profound 当成主语；that 从句是结果状语而非定语。"
+    },
+    {
+      "id": "v10",
+      "cat": "地点状语倒装",
+      "level": "偏难",
+      "en": "Among the most significant changes in the global economy stands the rapid rise of digital platforms.",
+      "cn": "在全球经济最重要的变化中，数字平台的迅速崛起尤为突出。",
+      "parts": [
+        {
+          "text": "Among the most significant changes in the global economy",
+          "role": "adv",
+          "note": "地点状语提前"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "stands",
+          "role": "verb",
+          "note": "谓语动词，完全倒装中主语在后"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "the rapid rise of digital platforms",
+          "role": "subj",
+          "note": "倒装结构中的主语"
+        },
+        {
+          "text": ".",
+          "role": "plain"
+        }
+      ],
+      "tip": "主干为地点状语+谓语+主语。**stands** 是不及物动词，主语 **the rapid rise...** 后置。识别倒装的关键：句首为地点状语，谓语动词为不及物或系动词，主语较长时常用倒装。",
+      "trap": "容易误将 **stands** 视为及物动词，或把 **the rapid rise** 当作宾语。注意完全倒装中主语在谓语之后，且谓语与主语数一致（此处 stands 为单数）。"
+    },
+    {
+      "id": "v11",
+      "cat": "强调句强调状语",
+      "level": "中等",
+      "en": "It is through the relentless pursuit of innovation that companies maintain their competitive edge in the global market.",
+      "cn": "正是通过不懈追求创新，公司才得以在全球市场中保持竞争优势。",
+      "parts": [
+        {
+          "text": "It",
+          "role": "subj",
+          "note": "形式主语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "is",
+          "role": "verb",
+          "note": "系动词"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "through the relentless pursuit of innovation",
+          "role": "adv",
+          "note": "强调的状语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "that",
+          "role": "mark",
+          "note": "强调句引导词"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "companies",
+          "role": "subj",
+          "note": "主语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "maintain",
+          "role": "verb",
+          "note": "谓语动词"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "their competitive edge",
+          "role": "obj",
+          "note": "宾语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "in the global market",
+          "role": "adv",
+          "note": "地点状语"
+        },
+        {
+          "text": ".",
+          "role": "plain"
+        }
+      ],
+      "tip": "主干是 It is...that... 强调结构，去掉It is...that后为正常语序：companies maintain their competitive edge through the relentless pursuit of innovation in the global market. 识别时先去掉It is...that，剩余部分应为完整句子。",
+      "trap": "易将It is...that误认为主语从句，注意强调句去掉It is...that后句子仍完整；另需注意through...为介词短语作方式状语，不是主语。"
+    },
+    {
+      "id": "v13",
+      "cat": "虚拟条件倒装",
+      "level": "偏难",
+      "en": "Had the company not invested in renewable energy, it might have faced severe regulatory penalties last year.",
+      "cn": "如果这家公司没有投资可再生能源，它去年可能面临了严重的监管处罚。",
+      "parts": [
+        {
+          "text": "Had the company not invested in renewable energy",
+          "role": "adv",
+          "note": "虚拟条件句（省略if的倒装）"
+        },
+        {
+          "text": ",",
+          "role": "plain"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "it",
+          "role": "subj",
+          "note": "主语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "might have faced",
+          "role": "verb",
+          "note": "谓语（虚拟语气）"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "severe regulatory penalties",
+          "role": "obj",
+          "note": "宾语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "last year",
+          "role": "adv",
+          "note": "时间状语"
+        },
+        {
+          "text": ".",
+          "role": "plain"
+        }
+      ],
+      "tip": "主干是 it might have faced... penalties，前半部分为虚拟条件句，将 had 提前倒装，正常语序为 If the company had not invested...。",
+      "trap": "易将 Had 误解为过去完成时，需识别为虚拟条件句的倒装结构。"
+    },
+    {
+      "id": "v14",
+      "cat": "Neither/Nor倒装并",
+      "level": "偏难",
+      "en": "Neither can the decline of traditional crafts be attributed solely to globalization, nor should it be ignored by policymakers.",
+      "cn": "传统工艺的衰落既不能完全归咎于全球化，也不应被政策制定者忽视。",
+      "parts": [
+        {
+          "text": "Neither",
+          "role": "mark",
+          "note": "否定词提前引起倒装"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "can",
+          "role": "verb",
+          "note": "情态动词倒装至主语前"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "the decline of traditional crafts",
+          "role": "subj",
+          "note": "主语（核心词decline+后置定语）"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "be attributed",
+          "role": "verb",
+          "note": "被动语态谓语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "solely",
+          "role": "adv",
+          "note": "副词修饰谓语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "to globalization",
+          "role": "adv",
+          "note": "介词短语作状语"
+        },
+        {
+          "text": ",",
+          "role": "plain"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "nor",
+          "role": "mark",
+          "note": "否定词连接并列结构"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "should",
+          "role": "verb",
+          "note": "情态动词倒装"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "it",
+          "role": "subj",
+          "note": "指代the decline of traditional crafts"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "be ignored",
+          "role": "verb",
+          "note": "被动谓语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "by policymakers",
+          "role": "adv",
+          "note": "动作执行者"
+        },
+        {
+          "text": ".",
+          "role": "plain"
+        }
+      ],
+      "tip": "主干为并列结构：Neither can A be attributed to B, nor should it be ignored. 识别倒装：否定词Neither/Nor位于句首，情态动词can/should提前至主语前。",
+      "trap": "注意nor后的it指代前文主语，不要误以为nor引起独立倒装句；并列结构中第二个分句省略了主语the decline，用it代替。"
+    },
+    {
+      "id": "v16",
+      "cat": "Not only倒装",
+      "level": "中等",
+      "en": "Not only does the digital economy create new job opportunities, but also it transforms traditional industries.",
+      "cn": "数字经济不仅创造了新的就业机会，而且它还改变了传统产业。",
+      "parts": [
+        {
+          "text": "Not only",
+          "role": "mark",
+          "note": "否定词位于句首引发倒装"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "does",
+          "role": "mark",
+          "note": "助动词提前构成部分倒装"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "the digital economy",
+          "role": "subj",
+          "note": "主语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "create",
+          "role": "verb",
+          "note": "谓语动词原形"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "new job opportunities",
+          "role": "obj",
+          "note": "宾语"
+        },
+        {
+          "text": ",",
+          "role": "plain"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "but also",
+          "role": "mark",
+          "note": "并列连词，连接两个并列分句"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "it",
+          "role": "subj",
+          "note": "主语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "transforms",
+          "role": "verb",
+          "note": "谓语动词"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "traditional industries",
+          "role": "obj",
+          "note": "宾语"
+        },
+        {
+          "text": ".",
+          "role": "plain"
+        }
+      ],
+      "tip": "主干是 Not only does the digital economy create... but also it transforms...。识别关键：Not only位于句首引起部分倒装，助动词does提前，主语后置，谓语用原形。but also后接正常语序。",
+      "trap": "易忽略倒装结构，误将does当作强调；注意Not only...but also连接两个并列分句，前后主语一致时but also后主语可省略但此处保留。"
+    },
+    {
+      "id": "v12",
+      "cat": "强调句强调主语",
+      "level": "中等",
+      "en": "It is the rapid growth of digital payments that has transformed consumer behavior in emerging economies.",
+      "cn": "正是数字支付的快速增长改变了新兴经济体的消费者行为。",
+      "parts": [
+        {
+          "text": "It",
+          "role": "subj",
+          "note": "形式主语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "is",
+          "role": "verb",
+          "note": "系动词"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "the rapid growth of digital payments",
+          "role": "subj",
+          "note": "被强调的主语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "that",
+          "role": "mark",
+          "note": "强调句连接词"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "has transformed",
+          "role": "verb",
+          "note": "谓语动词"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "consumer behavior",
+          "role": "obj",
+          "note": "宾语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "in emerging economies",
+          "role": "attr",
+          "note": "后置定语修饰consumer behavior"
+        },
+        {
+          "text": ".",
+          "role": "plain"
+        }
+      ],
+      "tip": "主干是It is the rapid growth...that has transformed... 去掉It is...that后为The rapid growth of digital payments has transformed consumer behavior... 强调主语the rapid growth of digital payments。",
+      "trap": "注意It是形式主语，真正主语是被强调部分，that后接完整句子，不要误以为that引导定语从句。"
+    },
+    {
+      "id": "v15",
+      "cat": "as引导让步倒装",
+      "level": "偏难",
+      "en": "Significant as the economic benefits of globalization are, they come at a cost to local cultures.",
+      "cn": "尽管全球化的经济利益显著，但它们是以牺牲当地文化为代价的。",
+      "parts": [
+        {
+          "text": "Significant",
+          "role": "mark",
+          "note": "形容词提前构成倒装"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "as",
+          "role": "mark",
+          "note": "连接词，意为“尽管”"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "the economic benefits of globalization",
+          "role": "subj",
+          "note": "主语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "are",
+          "role": "verb",
+          "note": "系动词"
+        },
+        {
+          "text": ",",
+          "role": "plain"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "they",
+          "role": "subj",
+          "note": "主句主语"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "come",
+          "role": "verb",
+          "note": "谓语动词"
+        },
+        {
+          "text": " ",
+          "role": "plain"
+        },
+        {
+          "text": "at a cost to local cultures",
+          "role": "adv",
+          "note": "状语"
+        },
+        {
+          "text": ".",
+          "role": "plain"
+        }
+      ],
+      "tip": "主干是...they come at a cost...。前半句是as引导的让步倒装：Adj as S is，相当于Although S is Adj。Significant提前，as后接正常主谓。",
+      "trap": "不要将as理解为“因为”或“随着”；倒装结构中形容词必须前置，不能写成Although the benefits are significant。"
     }
   ]
 }

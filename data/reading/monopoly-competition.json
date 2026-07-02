@@ -1,0 +1,151 @@
+{
+  "id": "monopoly-competition",
+  "title": "The Price of Too Much Power",
+  "source": "AI生成·待校 · 经济与社会",
+  "level": "考研英语二",
+  "intro": "权力过大，代价几何？垄断如何影响创新与公平？",
+  "paragraphs": [
+    "When a single firm dominates an industry, it gains the power to set prices far above competitive levels. This monopoly pricing extracts excessive profits from consumers while stifling market vitality. For instance, a tech giant might charge users high fees for essential software, leaving them with no affordable alternatives.",
+    "The absence of competition weakens the incentive to innovate. Without rivals threatening to capture its market share, a monopolist may rest on its laurels, investing less in research and development. This dynamic not only slows technological progress but also reduces product diversity, ultimately harming consumers who desire better choices.",
+    "However, some argue that monopoly profits can fuel risky innovations that would otherwise be impossible. In industries like pharmaceuticals, high returns from patented drugs may justify huge R&D costs. Yet when patents expire, firms often employ tactics to extend their dominance, such as minor modifications or aggressive lobbying, which block new entrants.",
+    "Antitrust regulation seeks to balance these tensions. By breaking up monopolies or imposing fines, authorities aim to restore competition and protect consumer welfare. The digital era poses new challenges, as data-driven giants leverage network effects. Effective policy must evolve to ensure that power does not corrupt the market's creative engine."
+  ],
+  "cn": [
+    "当一家公司主导某个行业时，它就有能力将价格设定在远高于竞争水平的价位。这种垄断定价从消费者身上榨取超额利润，同时扼杀市场活力。例如，一家科技巨头可能对基本软件收取高额费用，让用户别无实惠选择。",
+    "缺乏竞争削弱了创新动力。没有竞争对手威胁抢占市场份额，垄断者可能固步自封，减少研发投入。这种动态不仅减缓技术进步，还降低产品多样性，最终损害渴望更好选择的消费者。",
+    "然而，也有人认为垄断利润可以资助有风险的创新，否则这些创新无法实现。在制药等行业，专利药的高回报可能证明巨额研发成本是合理的。但当专利到期时，企业常采用策略延长主导地位，如微小改良或激进游说，阻挡新进入者。",
+    "反垄断监管旨在平衡这些矛盾。通过拆分垄断企业或处以罚款，当局力图恢复竞争、保护消费者福利。数字时代带来新挑战，数据巨头利用网络效应。有效的政策必须与时俱进，确保权力不腐蚀市场的创新引擎。"
+  ],
+  "glossary": [
+    {
+      "w": "dominate",
+      "ph": "/ˈdɒmɪneɪt/",
+      "def": "v. 主导，支配",
+      "ex": "dominate an industry",
+      "exCn": "主导一个行业"
+    },
+    {
+      "w": "monopoly",
+      "ph": "/məˈnɒpəli/",
+      "def": "n. 垄断",
+      "ex": "monopoly pricing",
+      "exCn": "垄断定价"
+    },
+    {
+      "w": "extract",
+      "ph": "/ɪkˈstrækt/",
+      "def": "v. 榨取，提取",
+      "ex": "extract excessive profits",
+      "exCn": "榨取超额利润"
+    },
+    {
+      "w": "stifle",
+      "ph": "/ˈstaɪfl/",
+      "def": "v. 扼杀，抑制",
+      "ex": "stifle market vitality",
+      "exCn": "扼杀市场活力"
+    },
+    {
+      "w": "incentive",
+      "ph": "/ɪnˈsentɪv/",
+      "def": "n. 激励，动力",
+      "ex": "incentive to innovate",
+      "exCn": "创新动力"
+    },
+    {
+      "w": "rest on one's laurels",
+      "ph": "/rest ɒn wʌnz ˈlɒrəlz/",
+      "def": "idiom. 固步自封，满足于已有成就",
+      "ex": "rest on its laurels",
+      "exCn": "固步自封"
+    },
+    {
+      "w": "diversity",
+      "ph": "/daɪˈvɜːrsəti/",
+      "def": "n. 多样性",
+      "ex": "product diversity",
+      "exCn": "产品多样性"
+    },
+    {
+      "w": "justify",
+      "ph": "/ˈdʒʌstɪfaɪ/",
+      "def": "v. 证明…合理",
+      "ex": "justify huge R&D costs",
+      "exCn": "证明巨额研发成本合理"
+    },
+    {
+      "w": "tactic",
+      "ph": "/ˈtæktɪk/",
+      "def": "n. 策略，战术",
+      "ex": "employ tactics",
+      "exCn": "运用策略"
+    },
+    {
+      "w": "lobbying",
+      "ph": "/ˈlɒbiɪŋ/",
+      "def": "n. 游说活动",
+      "ex": "aggressive lobbying",
+      "exCn": "激进游说"
+    },
+    {
+      "w": "antitrust",
+      "ph": "/ˌæntiˈtrʌst/",
+      "def": "adj. 反垄断的",
+      "ex": "antitrust regulation",
+      "exCn": "反垄断监管"
+    },
+    {
+      "w": "network effect",
+      "ph": "/ˈnetwɜːrk ɪˈfekt/",
+      "def": "n. 网络效应",
+      "ex": "leverage network effects",
+      "exCn": "利用网络效应"
+    }
+  ],
+  "questions": [
+    {
+      "q": "What is the main idea of the passage?",
+      "options": [
+        "Innovation is impossible under monopolistic conditions.",
+        "Monopoly always harms consumers by raising prices.",
+        "Monopoly power has both costs and benefits, requiring careful regulation.",
+        "Antitrust laws should be abolished in the digital era."
+      ],
+      "answer": 2,
+      "explain": "主旨题。文章第一段讲垄断定价的弊端，第二段讲垄断抑制创新，第三段提出垄断可能资助创新的反方观点，第四段呼吁反垄断监管平衡矛盾。因此核心是垄断的双面性及监管必要性。「Monopoly always harms consumers」过于绝对且忽略了第三段的正面观点；「Innovation is impossible」与第三段矛盾；「Antitrust laws should be abolished」与第四段呼吁监管相反。"
+    },
+    {
+      "q": "According to the passage, how does monopoly affect innovation?",
+      "options": [
+        "It always encourages innovation by providing more funds.",
+        "It has no effect on innovation in any industry.",
+        "It only affects innovation in the tech industry.",
+        "It weakens innovation due to lack of competition, but may also fund risky projects."
+      ],
+      "answer": 3,
+      "explain": "细节题。第二段指出缺乏竞争削弱创新动力，第三段又指出垄断利润可资助高风险创新（如制药业），因此既有消极影响也有积极可能。「It always encourages」与第二段矛盾；「no effect」与全文不符；「only in tech」无依据。"
+    },
+    {
+      "q": "What can be inferred about companies in the pharmaceutical industry?",
+      "options": [
+        "They never use patents to extend their dominance.",
+        "They invest less in R&D than tech companies.",
+        "They are immune to antitrust regulation.",
+        "They may use minor product modifications to delay competition after patents expire."
+      ],
+      "answer": 3,
+      "explain": "推断题。第三段提到制药业在专利到期后常采用微小改良等策略延长主导地位，因此可推断它们会使用此类手段延后竞争。「never use patents」与原文矛盾；「immune」无依据；「invest less」未比较。"
+    },
+    {
+      "q": "The phrase “rest on its laurels” in paragraph 2 most likely means:",
+      "options": [
+        "to invest heavily in new technology",
+        "to face fierce competition from rivals",
+        "to stop making efforts and rely on past achievements",
+        "to work harder to maintain market share"
+      ],
+      "answer": 2,
+      "explain": "语义题。第二段语境：没有竞争威胁，垄断者可能‘rest on its laurels’，减少研发投入。因此该短语意为满足于已有成就、不再努力。「work harder」相反；「invest heavily」与减少研发矛盾；「face fierce competition」与无竞争状态矛盾。"
+    }
+  ]
+}

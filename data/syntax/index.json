@@ -1,7 +1,28 @@
 {
   "sets": [
-    { "id": "kaoyan-eng2-core", "name": "考研英语二·核心难句", "desc": "高频考点 8 句 · 真题风格", "cat": "真题难句", "file": "kaoyan-eng2-core.json", "count": 8 },
-    { "id": "kaoyan-eng2-clauses", "name": "从句嵌套·核心难句", "desc": "定语/状语/同位语/主语从句多层套嵌 · 4 句", "cat": "从句", "file": "kaoyan-eng2-clauses.json", "count": 4 },
-    { "id": "kaoyan-eng2-inversion", "name": "倒装·强调·核心难句", "desc": "否定前置/Only/so...that 倒装 + 强调句 · 4 句", "cat": "倒装强调", "file": "kaoyan-eng2-inversion.json", "count": 4 }
+    {
+      "id": "kaoyan-eng2-core",
+      "name": "考研英语二·核心难句",
+      "desc": "高频考点 24 句 · 真题风格（16 句 AI 扩充·待校）",
+      "cat": "真题难句",
+      "file": "kaoyan-eng2-core.json",
+      "count": 24
+    },
+    {
+      "id": "kaoyan-eng2-clauses",
+      "name": "从句嵌套·核心难句",
+      "desc": "定语/状语/同位语/主语从句多层套嵌 · 20 句（16 句 AI 扩充·待校）",
+      "cat": "从句",
+      "file": "kaoyan-eng2-clauses.json",
+      "count": 20
+    },
+    {
+      "id": "kaoyan-eng2-inversion",
+      "name": "倒装·强调·核心难句",
+      "desc": "否定前置/Only/so...that 倒装 + 强调句 · 16 句（12 句 AI 扩充·待校）",
+      "cat": "倒装强调",
+      "file": "kaoyan-eng2-inversion.json",
+      "count": 16
+    }
   ]
 }

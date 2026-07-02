@@ -1,0 +1,151 @@
+{
+  "id": "green-economy",
+  "title": "The Business Case for Going Green",
+  "source": "AI生成·待校 · 经济与社会",
+  "level": "考研英语二",
+  "intro": "环保与增长，如何双赢？",
+  "paragraphs": [
+    "The notion that environmental protection and economic growth are mutually exclusive has been increasingly challenged by the rise of green industries. Carbon pricing, for instance, incentivizes companies to reduce emissions while generating revenue that can be reinvested in clean technologies. This mechanism suggests that profitability and sustainability need not be a zero-sum game.",
+    "By putting a price on carbon, governments create a financial motive for firms to innovate. Revenue from carbon taxes can fund research into renewable energy, lowering costs and accelerating adoption. Moreover, companies that invest early in green technologies often gain a competitive edge, as consumers and investors increasingly favor sustainable practices.",
+    "Critics argue that carbon pricing imposes heavy burdens on businesses, especially small ones, and may lead to job losses. They contend that the costs of compliance outweigh the benefits, and that such policies can stifle economic growth. Yet empirical studies show that these fears are often overstated, with many firms adapting through efficiency gains and new market opportunities.",
+    "In conclusion, the business case for going green is compelling. Carbon pricing and related policies can spur innovation, create jobs in emerging sectors, and improve long-term resilience. The key is to design mechanisms that are gradual and equitable, ensuring that the transition is just for all stakeholders. Green growth is not only possible but necessary."
+  ],
+  "cn": [
+    "环境保护与经济增长相互排斥的观念正日益受到绿色产业崛起的挑战。例如，碳定价激励企业减少排放，同时产生可再投资于清洁技术的收入。这一机制表明，盈利能力和可持续性并非一场零和博弈。",
+    "通过为碳排放定价，政府为企业创新创造了财务动机。碳税收入可用于资助可再生能源研究，降低成本并加速应用。此外，早期投资绿色技术的公司往往获得竞争优势，因为消费者和投资者越来越青睐可持续实践。",
+    "批评者认为，碳定价给企业（尤其是小企业）带来了沉重负担，并可能导致失业。他们声称合规成本超过收益，此类政策会抑制经济增长。然而实证研究表明，这些担忧往往被夸大，许多企业通过提高效率和把握新市场机遇适应了变化。",
+    "总之，绿色经济的商业理由令人信服。碳定价及相关政策可以刺激创新，在新兴行业创造就业，并提高长期韧性。关键在于设计渐进且公平的机制，确保转型对所有利益相关者公正。绿色增长不仅可能，而且必要。"
+  ],
+  "glossary": [
+    {
+      "w": "notion",
+      "ph": "/ˈnoʊʃən/",
+      "def": "n. 观念，看法",
+      "ex": "the notion that...",
+      "exCn": "……的观念"
+    },
+    {
+      "w": "mutually exclusive",
+      "ph": "/ˈmjuːtʃuəli ɪkˈskluːsɪv/",
+      "def": "adj. 相互排斥的",
+      "ex": "mutually exclusive goals",
+      "exCn": "相互排斥的目标"
+    },
+    {
+      "w": "incentivize",
+      "ph": "/ɪnˈsentɪvaɪz/",
+      "def": "v. 激励，刺激",
+      "ex": "incentivize companies",
+      "exCn": "激励公司"
+    },
+    {
+      "w": "revenue",
+      "ph": "/ˈrevənuː/",
+      "def": "n. 收入，税收",
+      "ex": "generate revenue",
+      "exCn": "产生收入"
+    },
+    {
+      "w": "mechanism",
+      "ph": "/ˈmekənɪzəm/",
+      "def": "n. 机制，原理",
+      "ex": "market mechanism",
+      "exCn": "市场机制"
+    },
+    {
+      "w": "zero-sum",
+      "ph": "/ˌzɪroʊ ˈsʌm/",
+      "def": "adj. 零和的",
+      "ex": "zero-sum game",
+      "exCn": "零和博弈"
+    },
+    {
+      "w": "innovation",
+      "ph": "/ˌɪnəˈveɪʃən/",
+      "def": "n. 创新",
+      "ex": "technological innovation",
+      "exCn": "技术创新"
+    },
+    {
+      "w": "competitive edge",
+      "ph": "/kəmˈpetətɪv edʒ/",
+      "def": "n. 竞争优势",
+      "ex": "gain a competitive edge",
+      "exCn": "获得竞争优势"
+    },
+    {
+      "w": "compliance",
+      "ph": "/kəmˈplaɪəns/",
+      "def": "n. 合规，服从",
+      "ex": "costs of compliance",
+      "exCn": "合规成本"
+    },
+    {
+      "w": "empirical",
+      "ph": "/ɪmˈpɪrɪkəl/",
+      "def": "adj. 经验主义的，实证的",
+      "ex": "empirical studies",
+      "exCn": "实证研究"
+    },
+    {
+      "w": "resilience",
+      "ph": "/rɪˈzɪliəns/",
+      "def": "n. 韧性，恢复力",
+      "ex": "long-term resilience",
+      "exCn": "长期韧性"
+    },
+    {
+      "w": "equitable",
+      "ph": "/ˈekwɪtəbəl/",
+      "def": "adj. 公平的，公正的",
+      "ex": "equitable transition",
+      "exCn": "公平转型"
+    }
+  ],
+  "questions": [
+    {
+      "q": "What is the main idea of the passage?",
+      "options": [
+        "Green policies like carbon pricing can benefit both the environment and the economy.",
+        "Environmental protection and economic growth are incompatible.",
+        "Carbon pricing is the only effective way to reduce emissions.",
+        "Small businesses suffer the most from environmental regulations."
+      ],
+      "answer": 0,
+      "explain": "主旨题。文章首段提出环保与增长非零和，后续论述碳定价等绿色政策可促进创新和就业，故主旨是绿色政策能双赢。「Environmental protection and economic growth are incompatible」与首句相反；「Carbon pricing is the only effective way」过于绝对；「Small businesses suffer the most」仅是批评者的观点，并非主旨。"
+    },
+    {
+      "q": "According to the passage, how does carbon pricing encourage companies to reduce emissions?",
+      "options": [
+        "By mandating emission reduction targets.",
+        "By providing subsidies for green technologies.",
+        "By creating a financial incentive to innovate.",
+        "By imposing fines on high-emission firms."
+      ],
+      "answer": 2,
+      "explain": "细节题。第二段首句明确说明碳定价创造了财务动机以鼓励创新，从而减排。文中未提及补贴或罚款，也未强制设定目标。"
+    },
+    {
+      "q": "What can be inferred about the critics' concerns regarding carbon pricing?",
+      "options": [
+        "They apply only to large corporations.",
+        "They may be exaggerated based on evidence.",
+        "They are entirely groundless.",
+        "They are supported by most empirical studies."
+      ],
+      "answer": 1,
+      "explain": "推断题。第三段提到批评者担忧成本高、失业，但实证研究表明这些担忧常被夸大，许多企业通过效率提升和市场机遇适应。因此可推断批评者的担忧可能被夸大。「entirely groundless」太绝对；「supported by most empirical studies」与原文相反；「apply only to large corporations」文中未提及。"
+    },
+    {
+      "q": "The phrase \"zero-sum game\" in paragraph 1 most probably means a situation where __________.",
+      "options": [
+        "the outcome is unpredictable",
+        "one party's gain is another's loss",
+        "both parties can benefit equally",
+        "there is no winner or loser"
+      ],
+      "answer": 1,
+      "explain": "语义题。第一段说环保与增长并非零和博弈，即并非一方获益另一方受损。选项「one party's gain is another's loss」准确描述了零和博弈的含义。其它选项不符合常见定义。"
+    }
+  ]
+}

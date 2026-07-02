@@ -116,6 +116,134 @@
       ],
       "sample": "It is a common sight nowadays that young people, whether on buses, in restaurants or even during family gatherings, keep their eyes glued to their smartphones. This phenomenon reflects how deeply mobile devices have penetrated our daily lives.\n\nSeveral factors account for it. Firstly, smartphones provide instant entertainment and social connection at the touch of a screen. In addition, the fear of missing out drives many to check their phones constantly. Unfortunately, such excessive use may weaken face-to-face communication and harm both health and concentration.\n\nTherefore, it is high time we struck a balance. I suggest that young people set aside phone-free hours and invest more time in real-world relationships. Only in this way can technology serve us rather than control us.",
       "sampleNotes": "现象类大作文骨架：首段描述现象(It is a common sight that...) + 中段分析原因(Firstly / In addition)与影响 + 尾段建议并升华(it is high time we... / Only in this way can...)。倒装 Only in this way can... 与虚拟语气 it is high time we struck 是加分句型。"
+    },
+    {
+      "id": "w8",
+      "type": "small",
+      "cat": "小作文·建议信",
+      "score": 10,
+      "words": "约 100 词",
+      "title": "建议信：给外国朋友写游玩建议",
+      "prompt": "Suppose your foreign friend Anna is going to visit your city for a week next month. Write her an email to give her 2-3 suggestions on places to visit or things to do, and explain your reasons. Sign as \"Li Ming\".",
+      "requirements": [
+        "1. 包含2-3条游玩建议",
+        "2. 每条建议说明理由",
+        "3. 语言正式、亲切，约100词"
+      ],
+      "sample": "Dear Anna,\n\nI'm thrilled to hear you're visiting next month! Here are my suggestions for your week-long stay.\n\nFirst, visit the City Museum. It showcases the city's rich history and offers interactive exhibits, which is perfect for understanding local culture. Second, take a walk along the Riverside Park. The scenery is breathtaking, and it's a great way to relax after sightseeing. Finally, try the local street food near the night market. The flavors are unique and unforgettable.\n\nI hope you enjoy your trip! Feel free to ask for more tips.\n\nBest regards,\nLi Ming",
+      "sampleNotes": "骨架句型：I'm thrilled to hear...; Here are my suggestions...; It showcases...which is perfect for...; I hope you enjoy... 可复用表达：feel free to ask for more tips; it's a great way to relax; the flavors are unique and unforgettable"
+    },
+    {
+      "id": "w9",
+      "type": "small",
+      "cat": "小作文·投诉信",
+      "score": 10,
+      "words": "约 100 词",
+      "title": "投诉信：网购耳机质量问题",
+      "prompt": "Suppose you bought a pair of earphones online last week. However, they have malfunctioned after only one week of use. Write a letter to the customer service department to complain about the problem and state your request (a refund or a replacement).\n\nYou should write about 100 words.\nDo not sign your own name at the end of the letter. Use \"Li Ming\" instead.\nDo not write your address.",
+      "requirements": [
+        "说明购买时间、产品及问题",
+        "表达不满并具体描述故障情况",
+        "提出明确要求：退款或换货，并期待尽快解决"
+      ],
+      "sample": "Dear Customer Service,\n\nI am writing to express my dissatisfaction with a pair of earphones I purchased from your online store last week. Unfortunately, after only one week of use, the left earphone has stopped producing sound, which greatly affects my listening experience.\n\nI suggest that the product may have a quality defect. Therefore, I would like to request a full refund or a replacement of the same model. I hope you can resolve this issue promptly.\n\nI look forward to your reply.\n\nSincerely yours,\nLi Ming",
+      "sampleNotes": "骨架句型：I am writing to express my dissatisfaction with... / I would like to request... 可复用表达。亮点：投诉原因具体，语气礼貌但坚决，结构清晰（问题-要求-期待）。"
+    },
+    {
+      "id": "w10",
+      "type": "small",
+      "cat": "小作文·咨询信",
+      "score": 10,
+      "words": "约 100 词",
+      "title": "咨询信：线上英语写作课程",
+      "prompt": "Suppose you want to sign up for an online English writing course. Write a letter to the institution to inquire about the course arrangement, teaching staff, and fees. You should write about 100 words on the ANSWER SHEET. Do not sign your own name at the end of the letter; use \"Li Ming\" instead. Do not write the address. (10 points)",
+      "requirements": [
+        "1. 询问课程安排，如上课时间、课程时长等。",
+        "2. 询问师资情况，如教师的资质和经验。",
+        "3. 询问费用，包括学费和可能的其他费用。"
+      ],
+      "sample": "Dear Sir or Madam,\n\nI am writing to inquire about the online English writing course advertised on your website. I am a college student eager to improve my writing skills and would appreciate some detailed information.\n\nFirst, could you tell me about the course arrangement? Specifically, I would like to know the class schedule and the duration of the course. Second, I am interested in the teaching staff. What are their qualifications and teaching experience? Lastly, please inform me of the total fees, including any additional costs for materials or exams.\n\nThank you for your time. I look forward to your reply.\n\nYours faithfully,\nLi Ming",
+      "sampleNotes": "骨架句型：I am writing to inquire about... / could you tell me about... / I would like to know... / Thank you for your time. 可复用表达：be eager to improve, would appreciate some detailed information, including any additional costs."
+    },
+    {
+      "id": "w11",
+      "type": "small",
+      "cat": "小作文·祝贺信",
+      "score": 10,
+      "words": "约 100 词",
+      "title": "祝贺信：获奖请教",
+      "prompt": "Suppose your classmate Wang Lei won the first prize in the National College Students' Entrepreneurship Competition. Write him a letter to express your congratulations and ask for advice on how to succeed in such competitions.\n\nYou should write about 100 words on the ANSWER SHEET.\n\nDo not use your own name. Use \"Li Ming\" instead.\n\nDo not write the address.",
+      "requirements": [
+        "表达祝贺和高兴之情",
+        "肯定他的努力和成就",
+        "请教参赛经验和建议"
+      ],
+      "sample": "Dear Wang Lei,\n\nI am writing to offer my sincere congratulations on your winning the first prize in the National College Students' Entrepreneurship Competition. Your remarkable achievement is a testament to your hard work and innovative spirit.\n\nI am truly inspired by your success. Could you share some valuable insights or tips on how to excel in such competitions? Your guidance would be of great help to me.\n\nOnce again, congratulations! I wish you continued success in your future endeavors.\n\nYours sincerely,\nLi Ming",
+      "sampleNotes": "骨架句型：I am writing to offer.../Your remarkable achievement is a testament to.../Could you share...? 可复用表达：offer sincere congratulations, a testament to hard work, share valuable insights, excel in competitions."
+    },
+    {
+      "id": "w12",
+      "type": "small",
+      "cat": "小作文·申请信",
+      "score": 10,
+      "words": "约 100 词",
+      "title": "申请信：图书馆学生助理职位",
+      "prompt": "Suppose you are a student at the university. The school library is recruiting student assistants. Write a letter to the librarian to apply for the position. Your letter should include: 1) your intention to apply, 2) your strengths and qualifications, and 3) your available working hours. Sign as \"Li Ming\".",
+      "requirements": [
+        "表明申请意图及信息来源",
+        "详述个人优势（如技能、经验）",
+        "说明可工作时间及表达期待"
+      ],
+      "sample": "Dear Sir or Madam,\n\nI am writing to apply for the position of student assistant in the library, as advertised on the school website. I believe I am a suitable candidate for this role. First, I have excellent organizational skills and am proficient in using library database systems. Additionally, I worked as a volunteer in the school library last semester, which gave me hands-on experience in shelving and helping patrons. I am available to work on weekday afternoons and weekends. I would be grateful if you could consider my application. Looking forward to your reply.\n\nYours sincerely,\nLi Ming",
+      "sampleNotes": "骨架句型：I am writing to apply for...; I believe I am a suitable candidate...; I would be grateful if... 可复用表达：as advertised on...; hands-on experience; available to work on..."
+    },
+    {
+      "id": "w13",
+      "type": "big",
+      "cat": "大作文·图表(线图)",
+      "score": 15,
+      "words": "约 150 词",
+      "title": "折线图：实体书店与线上图书销售变化",
+      "prompt": "Write an essay based on the chart below. In your writing, you should:\n1) describe and interpret the chart, and\n2) give your comments.\nYou should write about 150 words on the ANSWER SHEET.\n\nThe chart shows the number of physical bookstores and online book sales in a city from 2015 to 2024. The number of physical bookstores decreased from 480 in 2015 to 260 in 2020, then increased to 310 in 2024. Online book sales rose steadily from 1.2 billion yuan in 2015 to 4.8 billion yuan in 2024.",
+      "requirements": [
+        "描述折线图：实体书店数量先降后升，线上销售额持续增长",
+        "分析变化原因：线上购物便利、价格优势；实体书店转型、体验升级",
+        "给出评论：线上线下融合发展是趋势"
+      ],
+      "sample": "The line chart illustrates the changes in the number of physical bookstores and online book sales in a city from 2015 to 2024. As can be seen, the number of physical bookstores declined sharply from 480 in 2015 to 260 in 2020, but then rebounded to 310 in 2024. Meanwhile, online book sales experienced a steady increase, rising from 1.2 billion yuan to 4.8 billion yuan over the same period.\n\nSeveral factors account for these trends. Firstly, the convenience and lower prices of online shopping have attracted a large number of readers, leading to the boom in online sales. Secondly, the initial decline of physical bookstores can be attributed to the impact of e-commerce. However, many bookstores have transformed by creating cozy reading spaces and hosting cultural events, which helped them regain customers.\n\nIn my view, the future of bookselling lies in the integration of online and offline channels. Physical bookstores should leverage their experiential advantage, while online platforms can enhance personalized services. Only by complementing each other can the book industry thrive.",
+      "sampleNotes": "骨架句型：'The line chart illustrates...', 'Several factors account for...', 'In my view...' 可复用表达：'declined sharply, rebounded, steady increase', 'convenience and lower prices', 'integration of online and offline channels'"
+    },
+    {
+      "id": "w14",
+      "type": "big",
+      "cat": "大作文·图表(饼图)",
+      "score": 15,
+      "words": "约 150 词",
+      "title": "周末时间分配：大学生多样化生活",
+      "prompt": "Suppose you are preparing a report on college students' weekend time allocation. Write an essay based on the following pie chart. In your essay, you should:\n1) describe and interpret the chart,\n2) analyze possible reasons for the distribution,\n3) give your comments.\n\nYou should write about 150 words.\n\nPie chart: Weekend time allocation of college students in a university: Study 35%, Part-time jobs 20%, Socializing 18%, Exercise 12%, Others 15%.",
+      "requirements": [
+        "描述饼图展示的大学生周末时间分配情况",
+        "分析时间分配比例背后的可能原因",
+        "给出你的看法或评论"
+      ],
+      "sample": "The pie chart depicts the weekend time allocation of college students at a certain university. As can be seen, studying accounts for the largest proportion at 35%, followed by part-time jobs (20%), socializing (18%), others (15%), and exercise (12%).\n\nSeveral factors may contribute to this distribution. Firstly, academic pressure remains high, so students prioritize study to maintain good grades. Secondly, many students take part-time jobs to gain work experience or earn extra money, reflecting their growing awareness of career development. Thirdly, socializing plays a vital role in building relationships, while the relatively low percentage for exercise may be due to busy schedules or lack of motivation.\n\nIn my view, this allocation is generally reasonable as it balances academic, professional, and social needs. However, the low exercise rate is concerning. Students should be encouraged to engage in more physical activities to stay healthy and relieve stress. Overall, a well-rounded weekend plan can enhance both personal growth and well-being.",
+      "sampleNotes": "骨架句型：The pie chart depicts... As can be seen...; Several factors may contribute to...; In my view... 可复用表达：account for the largest proportion, reflect growing awareness, due to busy schedules, engage in physical activities, enhance well-being."
+    },
+    {
+      "id": "w15",
+      "type": "big",
+      "cat": "大作文·图表(柱图)",
+      "score": 15,
+      "words": "约 150 词",
+      "title": "居民通勤方式变化",
+      "prompt": "Write an essay based on the following chart. In your essay, you should\n1) interpret the chart, and\n2) give your comments.\nYou should write about 150 words on the ANSWER SHEET.\n\nThe chart shows the percentage of residents using three commuting modes in a city in 2019 and 2024: private cars dropped from 45% to 32%, public transport increased from 38% to 41%, and cycling+walking rose from 17% to 27%.",
+      "requirements": [
+        "描述2019与2024年三种通勤方式占比变化",
+        "分析变化背后的原因（如环保意识、政策引导等）",
+        "指出这一变化的意义（如绿色出行、城市可持续发展）"
+      ],
+      "sample": "The bar chart compares the commuting modes of residents in a city between 2019 and 2024. The proportion of private cars decreased significantly from 45% to 32%, while public transport rose slightly from 38% to 41%. The most notable increase was in cycling and walking, which jumped from 17% to 27%.\n\nSeveral factors contribute to this shift. Firstly, growing environmental awareness has encouraged people to choose greener travel options. Secondly, the government has improved public transport infrastructure and promoted cycling lanes, making these modes more convenient and safer. Moreover, rising fuel costs and traffic congestion have discouraged car use.\n\nThis change is positive for both individuals and society. It reduces carbon emissions, alleviates traffic jams, and promotes a healthier lifestyle. The trend reflects a move towards sustainable urban development and is likely to continue.",
+      "sampleNotes": "骨架：首段描述数据变化（decreased significantly, rose slightly, jumped）；次段分析原因（environmental awareness, government promotion, costs）；尾段评论意义（reduces emissions, alleviates congestion）。可套用表达：The most notable increase was in...; Several factors contribute to...; This change is positive for..."
     }
   ]
 }

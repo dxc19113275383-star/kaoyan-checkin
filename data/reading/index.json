@@ -1,10 +1,144 @@
 {
   "passages": [
-    { "id": "comparative-advantage", "title": "The Logic of Comparative Advantage", "source": "原创 · 国际贸易", "level": "考研英语二", "file": "comparative-advantage.json" },
-    { "id": "digital-marketplace", "title": "The Rise of the Digital Marketplace", "source": "原创 · 跨境电商", "level": "考研英语二", "file": "digital-marketplace.json" },
-    { "id": "platform-economy", "title": "Who Really Owns the Platform Economy?", "source": "原创 · 平台经济", "level": "考研英语二", "file": "platform-economy.json" },
-    { "id": "behavioral-nudge", "title": "The Quiet Power of the Nudge", "source": "原创 · 行为经济学", "level": "考研英语二", "file": "behavioral-nudge.json" },
-    { "id": "central-bank-inflation", "title": "Why Central Banks Fear Inflation", "source": "原创 · 货币政策", "level": "考研英语二", "file": "central-bank-inflation.json" },
-    { "id": "gig-economy", "title": "The Promise and Peril of the Gig Economy", "source": "原创 · 零工经济", "level": "考研英语二", "file": "gig-economy.json" }
+    {
+      "id": "comparative-advantage",
+      "title": "The Logic of Comparative Advantage",
+      "source": "原创 · 国际贸易",
+      "level": "考研英语二",
+      "file": "comparative-advantage.json"
+    },
+    {
+      "id": "digital-marketplace",
+      "title": "The Rise of the Digital Marketplace",
+      "source": "原创 · 跨境电商",
+      "level": "考研英语二",
+      "file": "digital-marketplace.json"
+    },
+    {
+      "id": "platform-economy",
+      "title": "Who Really Owns the Platform Economy?",
+      "source": "原创 · 平台经济",
+      "level": "考研英语二",
+      "file": "platform-economy.json"
+    },
+    {
+      "id": "behavioral-nudge",
+      "title": "The Quiet Power of the Nudge",
+      "source": "原创 · 行为经济学",
+      "level": "考研英语二",
+      "file": "behavioral-nudge.json"
+    },
+    {
+      "id": "central-bank-inflation",
+      "title": "Why Central Banks Fear Inflation",
+      "source": "原创 · 货币政策",
+      "level": "考研英语二",
+      "file": "central-bank-inflation.json"
+    },
+    {
+      "id": "gig-economy",
+      "title": "The Promise and Peril of the Gig Economy",
+      "source": "原创 · 零工经济",
+      "level": "考研英语二",
+      "file": "gig-economy.json"
+    },
+    {
+      "id": "supply-demand",
+      "title": "The Invisible Hand of Supply and Demand",
+      "source": "AI生成·待校 · 经济与社会",
+      "level": "考研英语二",
+      "file": "supply-demand.json"
+    },
+    {
+      "id": "opportunity-cost",
+      "title": "What Everything Really Costs",
+      "source": "AI生成·待校 · 经济与社会",
+      "level": "考研英语二",
+      "file": "opportunity-cost.json"
+    },
+    {
+      "id": "externalities",
+      "title": "When Markets Fail: The Problem of Externalities",
+      "source": "AI生成·待校 · 经济与社会",
+      "level": "考研英语二",
+      "file": "externalities.json"
+    },
+    {
+      "id": "exchange-rates",
+      "title": "Why Currencies Rise and Fall",
+      "source": "AI生成·待校 · 经济与社会",
+      "level": "考研英语二",
+      "file": "exchange-rates.json"
+    },
+    {
+      "id": "monopoly-competition",
+      "title": "The Price of Too Much Power",
+      "source": "AI生成·待校 · 经济与社会",
+      "level": "考研英语二",
+      "file": "monopoly-competition.json"
+    },
+    {
+      "id": "public-goods",
+      "title": "Who Pays for the Lighthouse?",
+      "source": "AI生成·待校 · 经济与社会",
+      "level": "考研英语二",
+      "file": "public-goods.json"
+    },
+    {
+      "id": "remote-work",
+      "title": "The Office Is Not Dead Yet",
+      "source": "AI生成·待校 · 经济与社会",
+      "level": "考研英语二",
+      "file": "remote-work.json"
+    },
+    {
+      "id": "aging-population",
+      "title": "The Economics of Growing Old",
+      "source": "AI生成·待校 · 经济与社会",
+      "level": "考研英语二",
+      "file": "aging-population.json"
+    },
+    {
+      "id": "ai-employment",
+      "title": "Will Machines Take Your Job?",
+      "source": "AI生成·待校 · 经济与社会",
+      "level": "考研英语二",
+      "file": "ai-employment.json"
+    },
+    {
+      "id": "green-economy",
+      "title": "The Business Case for Going Green",
+      "source": "AI生成·待校 · 经济与社会",
+      "level": "考研英语二",
+      "file": "green-economy.json"
+    },
+    {
+      "id": "consumerism",
+      "title": "Why We Buy What We Do Not Need",
+      "source": "AI生成·待校 · 经济与社会",
+      "level": "考研英语二",
+      "file": "consumerism.json"
+    },
+    {
+      "id": "credit-debt",
+      "title": "Living on Borrowed Money",
+      "source": "AI生成·待校 · 经济与社会",
+      "level": "考研英语二",
+      "file": "credit-debt.json"
+    },
+    {
+      "id": "brand-loyalty",
+      "title": "The Hidden Value of a Name",
+      "source": "AI生成·待校 · 经济与社会",
+      "level": "考研英语二",
+      "file": "brand-loyalty.json"
+    },
+    {
+      "id": "sharing-economy",
+      "title": "Owning Less, Using More",
+      "source": "AI生成·待校 · 经济与社会",
+      "level": "考研英语二",
+      "file": "sharing-economy.json"
+    }
   ]
 }

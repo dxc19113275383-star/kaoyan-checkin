@@ -1,0 +1,151 @@
+{
+  "id": "credit-debt",
+  "title": "Living on Borrowed Money",
+  "source": "AI生成·待校 · 经济与社会",
+  "level": "考研英语二",
+  "intro": "借钱消费，是福是祸？",
+  "paragraphs": [
+    "Credit cards and personal loans have made it easier than ever for young people to spend money they do not have. Advertisements constantly promote a lifestyle of instant gratification, encouraging consumers to buy now and pay later. As a result, many young adults accumulate significant debt before they even start their careers. The convenience of borrowing often blinds them to the long-term consequences.",
+    "Borrowing money allows individuals to make large purchases, such as a house or a car, which they could not afford with their savings alone. This mechanism, known as leveraging, can stimulate economic growth by increasing consumption. However, when used irresponsibly, debt can become a heavy burden. High interest rates and late fees can quickly turn a small loan into a much larger obligation.",
+    "Critics argue that the culture of excessive borrowing has led to a rise in personal bankruptcies and financial stress. Many young people fall into the trap of \"living on borrowed money,\" spending beyond their means to maintain a certain image. This behavior often stems from peer pressure and unrealistic social media portrayals of success. Without proper financial education, they may never learn to manage their finances wisely.",
+    "In conclusion, while credit can be a useful tool for achieving goals, it requires discipline and foresight. Young consumers should be taught to distinguish between needs and wants, and to understand the true cost of borrowing. Only by cultivating responsible spending habits can they avoid the pitfalls of debt and build a stable financial future."
+  ],
+  "cn": [
+    "信用卡和个人贷款使年轻人比以往任何时候都更容易花他们没有的钱。广告不断宣扬即时满足的生活方式，鼓励消费者先买后付。结果，许多年轻人在开始职业生涯之前就积累了巨额债务。借贷的便利常常使他们看不到长期的后果。",
+    "借钱使个人能够进行大额购买，比如房子或汽车，这是他们仅靠储蓄无法负担的。这种机制被称为杠杆，可以通过增加消费来刺激经济增长。然而，如果使用不当，债务可能成为沉重的负担。高利率和滞纳金能迅速将一笔小额贷款变成更大的债务。",
+    "批评者认为，过度借贷的文化导致个人破产和财务压力的增加。许多年轻人陷入“靠借钱生活”的陷阱，为了维持某种形象而超支。这种行为往往源于同龄人的压力和不切实际的社交媒体成功形象。没有适当的财务教育，他们可能永远学不会明智地管理自己的财务。",
+    "总之，虽然信贷可以成为实现目标的有用工具，但它需要纪律和远见。年轻消费者应该学会区分需要和想要，并理解借贷的真实成本。只有培养负责任的消费习惯，他们才能避免债务陷阱，建立稳定的财务未来。"
+  ],
+  "glossary": [
+    {
+      "w": "credit card",
+      "ph": "/ˈkredɪt kɑːrd/",
+      "def": "n. 信用卡",
+      "ex": "credit card debt",
+      "exCn": "信用卡债务"
+    },
+    {
+      "w": "personal loan",
+      "ph": "/ˈpɜːrsənl loʊn/",
+      "def": "n. 个人贷款",
+      "ex": "apply for a personal loan",
+      "exCn": "申请个人贷款"
+    },
+    {
+      "w": "accumulate",
+      "ph": "/əˈkjuːmjəleɪt/",
+      "def": "v. 积累",
+      "ex": "accumulate debt",
+      "exCn": "积累债务"
+    },
+    {
+      "w": "consequence",
+      "ph": "/ˈkɑːnsɪkwens/",
+      "def": "n. 后果",
+      "ex": "long-term consequences",
+      "exCn": "长期后果"
+    },
+    {
+      "w": "leverage",
+      "ph": "/ˈlevərɪdʒ/",
+      "def": "n. 杠杆作用",
+      "ex": "financial leverage",
+      "exCn": "财务杠杆"
+    },
+    {
+      "w": "stimulate",
+      "ph": "/ˈstɪmjuleɪt/",
+      "def": "v. 刺激",
+      "ex": "stimulate economic growth",
+      "exCn": "刺激经济增长"
+    },
+    {
+      "w": "burden",
+      "ph": "/ˈbɜːrdn/",
+      "def": "n. 负担",
+      "ex": "a heavy burden",
+      "exCn": "沉重的负担"
+    },
+    {
+      "w": "bankruptcy",
+      "ph": "/ˈbæŋkrʌptsi/",
+      "def": "n. 破产",
+      "ex": "personal bankruptcy",
+      "exCn": "个人破产"
+    },
+    {
+      "w": "peer pressure",
+      "ph": "/pɪr ˈpreʃər/",
+      "def": "n. 同辈压力",
+      "ex": "succumb to peer pressure",
+      "exCn": "屈服于同辈压力"
+    },
+    {
+      "w": "discipline",
+      "ph": "/ˈdɪsəplɪn/",
+      "def": "n. 纪律",
+      "ex": "financial discipline",
+      "exCn": "财务纪律"
+    },
+    {
+      "w": "foresight",
+      "ph": "/ˈfɔːrsaɪt/",
+      "def": "n. 远见",
+      "ex": "lack of foresight",
+      "exCn": "缺乏远见"
+    },
+    {
+      "w": "pitfall",
+      "ph": "/ˈpɪtfɔːl/",
+      "def": "n. 陷阱，隐患",
+      "ex": "avoid the pitfalls of debt",
+      "exCn": "避免债务陷阱"
+    }
+  ],
+  "questions": [
+    {
+      "q": "What is the main idea of the passage?",
+      "options": [
+        "Debt always leads to bankruptcy.",
+        "Credit cards are harmful to young people.",
+        "Borrowing money can be both useful and dangerous.",
+        "Young people should never use credit."
+      ],
+      "answer": 2,
+      "explain": "文章主旨是信贷既有积极作用（如刺激消费、实现大额购买）也有风险（如过度负债导致破产），因此「借贷既有用也有危险」正确。文章并未全盘否定信用卡（排除「信用卡对年轻人有害」），也未建议永不使用信贷（排除「年轻人绝不该用信贷」），更未说债务必然导致破产（排除「债务总导致破产」）。"
+    },
+    {
+      "q": "According to the passage, what is one reason young people accumulate debt before starting their careers?",
+      "options": [
+        "They prefer to save money.",
+        "They have high salaries.",
+        "They are influenced by advertisements.",
+        "They receive financial education."
+      ],
+      "answer": 2,
+      "explain": "根据第一段，广告不断宣扬即时满足的生活方式，鼓励先买后付，导致年轻人在工作前就积累债务。因此「他们受广告影响」正确。文中未提及高薪（排除「他们薪水高」）、财务教育（排除「他们接受财务教育」）或喜欢储蓄（排除「他们喜欢存钱」）。"
+    },
+    {
+      "q": "What can be inferred about the author's attitude towards young people's spending habits?",
+      "options": [
+        "He is indifferent.",
+        "He is completely negative.",
+        "He strongly supports them.",
+        "He is critical but hopeful."
+      ],
+      "answer": 3,
+      "explain": "作者在第四段指出信贷需要纪律和远见，年轻人应学会区分需要和想要，并培养负责任的消费习惯，这表明作者对当前习惯持批评态度，但认为通过教育可以改善，因此「批评但抱有希望」正确。文中未表达强烈支持（排除「强烈支持」）、漠不关心（排除「漠不关心」）或完全否定（排除「完全否定」）。"
+    },
+    {
+      "q": "The phrase \"living on borrowed money\" in paragraph 3 most likely means ______.",
+      "options": [
+        "borrowing money to buy a house",
+        "lending money to others",
+        "saving money for the future",
+        "spending more than one earns"
+      ],
+      "answer": 3,
+      "explain": "第三段提到许多年轻人陷入「靠借钱生活」的陷阱，为了维持某种形象而超支，因此该短语意为「入不敷出」。「借钱买房」只是具体例子，不是短语的概括含义；「借钱给别人」与原文相反；「为未来存钱」也与透支消费相反。"
+    }
+  ]
+}

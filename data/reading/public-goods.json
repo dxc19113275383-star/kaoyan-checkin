@@ -1,0 +1,151 @@
+{
+  "id": "public-goods",
+  "title": "Who Pays for the Lighthouse?",
+  "source": "AI生成·待校 · 经济与社会",
+  "level": "考研英语二",
+  "intro": "灯塔该谁出钱？市场为何失灵？",
+  "paragraphs": [
+    "Lighthouses, classical examples of public goods, are non-excludable and non-rivalrous. Once built, a lighthouse benefits all passing ships without diminishing its utility. However, private entrepreneurs find it hard to charge fees because ships can enjoy the light without paying. This leads to under-provision by the market, raising a key question: who should finance such facilities?",
+    "The core problem is the free-rider phenomenon. Individuals, expecting others to pay, avoid contributing themselves, resulting in insufficient supply. Economists argue that for public goods like national defense, the market fails to allocate resources efficiently. Without collective action, essential services would be unavailable, justifying government intervention to ensure provision through taxation.",
+    "Some libertarians contend that voluntary contributions or lighthouse tolls could work, citing historical examples where port authorities collected fees from ships docking. But such schemes often exclude smaller vessels or require costly enforcement. Moreover, modern public goods like street lighting or clean air cannot be easily priced, challenging the feasibility of private solutions.",
+    "Hence, government provision remains the dominant approach for core public goods. By coercing payment through taxes, the state solves the free-rider problem and ensures universal access. This does not ignore market efficiency but recognizes that certain goods require collective funding. Understanding these limits helps design better policies for shared resources."
+  ],
+  "cn": [
+    "灯塔作为公共物品的经典例子，具有非排他性和非竞争性。一旦建成，所有过往船只都能受益且不减少其效用。但私人企业家很难收费，因为船只不付款也能享用灯光。这导致市场供给不足，引发关键问题：谁应为这类设施出资？",
+    "核心问题是搭便车现象。个人指望他人付费，自己避免贡献，导致供给不足。经济学家认为，对于国防等公共物品，市场无法有效配置资源。若无集体行动，基本服务将无法获得，这证明了政府通过征税干预以确保供给的合理性。",
+    "一些自由意志主义者认为自愿捐款或灯塔通行费可行，并引用历史上港口当局向停靠船只收费的例子。但这类方案常排除小船或需要高昂执法成本。此外，现代公共物品如路灯或清洁空气难以定价，挑战了私人解决方案的可行性。",
+    "因此，政府供给仍是核心公共物品的主导方式。通过征税强制付款，国家解决了搭便车问题并确保普遍接入。这并非忽视市场效率，而是承认某些物品需要集体出资。理解这些局限有助于为共享资源设计更好的政策。"
+  ],
+  "glossary": [
+    {
+      "w": "lighthouse",
+      "ph": "/ˈlaɪthaʊs/",
+      "def": "n. 灯塔",
+      "ex": "a lighthouse guiding ships",
+      "exCn": "指引船只的灯塔"
+    },
+    {
+      "w": "public goods",
+      "ph": "/ˈpʌblɪk ɡʊdz/",
+      "def": "n. 公共物品",
+      "ex": "classical examples of public goods",
+      "exCn": "公共物品的经典例子"
+    },
+    {
+      "w": "non-excludable",
+      "ph": "/nɒn ɪkˈskluːdəbl/",
+      "def": "adj. 非排他性的",
+      "ex": "non-excludable goods",
+      "exCn": "非排他性物品"
+    },
+    {
+      "w": "non-rivalrous",
+      "ph": "/nɒn ˈraɪvəlrəs/",
+      "def": "adj. 非竞争性的",
+      "ex": "non-rivalrous consumption",
+      "exCn": "非竞争性消费"
+    },
+    {
+      "w": "entrepreneur",
+      "ph": "/ˌɒntrəprəˈnɜːr/",
+      "def": "n. 企业家",
+      "ex": "private entrepreneurs",
+      "exCn": "私人企业家"
+    },
+    {
+      "w": "free-rider",
+      "ph": "/friː ˈraɪdər/",
+      "def": "n. 搭便车者",
+      "ex": "free-rider phenomenon",
+      "exCn": "搭便车现象"
+    },
+    {
+      "w": "intervention",
+      "ph": "/ˌɪntərˈvenʃn/",
+      "def": "n. 干预",
+      "ex": "government intervention",
+      "exCn": "政府干预"
+    },
+    {
+      "w": "taxation",
+      "ph": "/tækˈseɪʃn/",
+      "def": "n. 征税",
+      "ex": "through taxation",
+      "exCn": "通过征税"
+    },
+    {
+      "w": "libertarian",
+      "ph": "/ˌlɪbərˈteəriən/",
+      "def": "n. 自由意志主义者",
+      "ex": "Some libertarians contend",
+      "exCn": "一些自由意志主义者认为"
+    },
+    {
+      "w": "voluntary",
+      "ph": "/ˈvɒləntri/",
+      "def": "adj. 自愿的",
+      "ex": "voluntary contributions",
+      "exCn": "自愿捐款"
+    },
+    {
+      "w": "enforcement",
+      "ph": "/ɪnˈfɔːsmənt/",
+      "def": "n. 执行，强制",
+      "ex": "costly enforcement",
+      "exCn": "高昂的执行成本"
+    },
+    {
+      "w": "collective",
+      "ph": "/kəˈlektɪv/",
+      "def": "adj. 集体的",
+      "ex": "collective action",
+      "exCn": "集体行动"
+    }
+  ],
+  "questions": [
+    {
+      "q": "What is the main topic of the passage?",
+      "options": [
+        "Why public goods are underprovided by the market and the role of government.",
+        "How private entrepreneurs can charge for public goods.",
+        "The advantages of voluntary contributions over taxation.",
+        "The history of lighthouse construction."
+      ],
+      "answer": 0,
+      "explain": "主旨题。全文围绕公共物品（以灯塔为例）因搭便车导致市场供给不足，进而讨论政府干预的必要性。第一段引出问题，第二段解释自由市场失灵，第三段反驳私人方案，第四段总结政府主导。"
+    },
+    {
+      "q": "According to the passage, why do private entrepreneurs find it hard to charge for lighthouses?",
+      "options": [
+        "Lighthouses are non-rivalrous only.",
+        "Lighthouses are too expensive to build.",
+        "Ships can benefit from the light without paying.",
+        "Government prohibits private ownership of lighthouses."
+      ],
+      "answer": 2,
+      "explain": "细节题。定位第一段：'private entrepreneurs find it hard to charge fees because ships can enjoy the light without paying'，即非排他性导致搭便车。"
+    },
+    {
+      "q": "What can be inferred about the libertarian view on public goods?",
+      "options": [
+        "It fully supports government intervention.",
+        "It believes voluntary contributions can work but faces practical challenges.",
+        "It proposes to eliminate all taxes.",
+        "It rejects the existence of public goods."
+      ],
+      "answer": 1,
+      "explain": "推断题。第三段指出自由意志主义者认为自愿捐款或收费可行，但随后指出其排除小船、执法成本高等问题，暗示该观点虽有道理但实施困难。"
+    },
+    {
+      "q": "The word 'coercing' in the last paragraph is closest in meaning to:",
+      "options": [
+        "forcing",
+        "suggesting",
+        "allowing",
+        "persuading"
+      ],
+      "answer": 0,
+      "explain": "语义题。coercing 意为“强制”，与 forcing 同义。文中 'By coercing payment through taxes' 指通过征税强制付款，排除其他选项。"
+    }
+  ]
+}
