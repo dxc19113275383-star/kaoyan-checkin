@@ -515,6 +515,8 @@
   .fill-card .fc-foot { margin-top: auto; padding-top: 14px; }
   /* 背单词满屏：单词区吃掉剩余高度并垂直居中，选项/反馈贴近拇指区 */
   .fill-card > .vocab-card { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+  /* 反馈区滚动终点避开固定底栏（scrollIntoView 感知不到浮层） */
+  #vocabFb, #mathFb { scroll-margin-bottom: calc(var(--bottom-nav-height) + var(--safe-bottom) + 12px); }
   /* 语境例句卡（百词斩式：深色卡 + 目标词高亮 + 中译 + 朗读） */
   .vctx-card { margin-top: 12px; padding: 15px 16px 13px; border-radius: var(--radius-sm); background: var(--brand-gradient); color: #fff; text-align: left; box-shadow: var(--shadow-soft); }
   .vctx-card .vc-src { display: flex; justify-content: space-between; align-items: center; font-size: 10.5px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; opacity: .8; margin-bottom: 7px; }
@@ -4347,6 +4349,7 @@
     fb += '<button class="btn-sm" style="width:100%;margin-top:10px;" onclick="vocabWordCard(\''+escAttr(_vsession.lib)+'\',\''+escAttr(wd.w).replace(/\x27/g,"\\\x27")+'\')">'+I.bookOpen+'词义详解</button>';
     fb += '<button class="btn-cta" style="margin-top:8px;" onclick="vocabNext()"><span>下一个 →</span></button>';
     $('vocabFb').innerHTML=fb;
+    _fbIntoView('vocabFb');
     if(!correct) vocabWordCard(_vsession.lib, wd.w); // 答错直接弹词义详解
   }
 
@@ -4404,6 +4407,11 @@
       + '</div>';
   }
 
+  /** 反馈区渲染后平滑滚进视野——fill-card 满屏后反馈会把卡片撑出屏幕，不滚会被底栏挡住 */
+  function _fbIntoView(id){
+    setTimeout(function(){ const el=$(id); if(el && el.innerHTML) el.scrollIntoView({behavior:'smooth', block:'end'}); }, 80);
+  }
+
   function showVocabFeedback(correct){
     const wd=_vsession.queue[_vsession.idx].wd;
     let fb='';
@@ -4411,6 +4419,7 @@
     fb+='<button class="btn-sm" style="width:100%;margin-top:10px;" onclick="vocabWordCard(\''+escAttr(_vsession.lib)+'\',\''+escAttr(wd.w).replace(/\x27/g,"\\\x27")+'\')">'+I.bookOpen+'词义详解</button>';
     fb+='<button class="btn-sm" style="width:100%;margin-top:8px;background:var(--color-text-info);color:#fff;border-color:var(--color-text-info);padding:10px;" onclick="vocabNext()">下一个 →</button>';
     $('vocabFb').innerHTML=fb;
+    _fbIntoView('vocabFb');
     if(!correct) vocabWordCard(_vsession.lib, wd.w); // 答错直接弹词义详解
   }
 
@@ -5176,6 +5185,7 @@
     fb+='<button class="btn-sm" style="flex:2;background:var(--color-text-info);color:#fff;border-color:var(--color-text-info);padding:10px;" onclick="mathNext()">下一题 →</button>';
     fb+='</div>';
     $('mathFb').innerHTML=fb;
+    _fbIntoView('mathFb');
   }
 
   window.mathNext=function(){ const s=_msession; if(!s)return; s.idx++; renderMathCard(); };
