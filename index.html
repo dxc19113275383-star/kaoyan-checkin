@@ -1318,6 +1318,13 @@
       <div class="stat" style="flex:1;"><div class="n" id="sStreak">0</div><div class="l">连续打卡天</div></div>
       <div class="stat" style="flex:1;"><div class="n" id="sTotal">0</div><div class="l">累计完成</div></div>
     </div>
+    <!-- P3 周报：近7天真实学习行为（有数据才显示） -->
+    <div class="row" style="gap: 8px; margin-top: 8px; display:none;" id="learnStatsRow">
+      <div class="stat" style="flex:1;"><div class="n" id="lsVocab">0</div><div class="l">周背词</div></div>
+      <div class="stat" style="flex:1;"><div class="n" id="lsQuiz">0</div><div class="l">周做题</div></div>
+      <div class="stat" style="flex:1;"><div class="n" id="lsRate">—</div><div class="l">正确率</div></div>
+      <div class="stat" style="flex:1;"><div class="n" id="lsDays">0</div><div class="l">活跃天</div></div>
+    </div>
     <!-- 热力图 -->
     <div id="heatmap" style="margin-top:12px;"></div>
     <!-- 笔记回看 -->
@@ -3133,6 +3140,31 @@
     return '';
   }
 
+  // P3 周报：从学习脊柱 log 汇总近 7 天真实行为（背词/做题/正确率/活跃天），有数据才显示该行
+  function renderLearnWeekStats() {
+    const row = $('learnStatsRow'); if (!row) return;
+    const log = (state.learn && state.learn.log) || [];
+    const cutoff = Date.now() - 7 * 86400000;
+    let vocab = 0, quiz = 0, ans = 0, ok = 0; const days = {};
+    for (let i = log.length - 1; i >= 0; i--) {   // log 按时间追加，从尾部扫到窗口外即止
+      const e = log[i];
+      const ts = Date.parse(e.ts || '');
+      if (!(ts >= cutoff)) break;
+      days[(e.ts || '').slice(0, 10)] = 1;
+      if (e.action === 'answer') {
+        ans++; if (e.correct === true) ok++;
+        if (e.mod === 'vocab') vocab++; else quiz++;
+      }
+    }
+    const active = Object.keys(days).length;
+    if (!ans && !active) { row.style.display = 'none'; return; }
+    row.style.display = '';
+    $('lsVocab').textContent = vocab;
+    $('lsQuiz').textContent = quiz;
+    $('lsRate').textContent = ans ? Math.round(ok / ans * 100) + '%' : '—';
+    $('lsDays').textContent = active;
+  }
+
   // ===== COUNTDOWN =====
   function daysUntil(dateStr) {
     if (!dateStr || typeof dateStr !== 'string') return null;
@@ -3560,6 +3592,7 @@
     sWeek.textContent = weekPct + '%';
     sStreak.textContent = streak;
     sTotal.textContent = totalDone;
+    renderLearnWeekStats();
 
     // Hero 驾驶舱 + 快捷入口（仅首页可见，但渲染开销极小）
     renderHero();
@@ -4036,8 +4069,29 @@
 
   // ===== AI 内容生成（例句 / 句子翻译）：localStorage 缓存，失败/离线自动降级 =====
   const GEN_ENDPOINT = backendBase()+'/chat';
+  // P3：gen_* 缓存加 LRU 上限——例句/翻译缓存无限增长会吃满 localStorage 5MB 配额
+  const GEN_CACHE_MAX = 400;
+  function _genOrder(){ try{ return JSON.parse(localStorage.getItem('gen__order')||'[]'); }catch(e){ return []; } }
+  function _genOrderSave(o){ try{ localStorage.setItem('gen__order', JSON.stringify(o)); }catch(e){} }
   function genCacheGet(key){ try{ return JSON.parse(localStorage.getItem('gen_'+key)||'null'); }catch(e){ return null; } }
-  function genCacheSet(key,val){ try{ localStorage.setItem('gen_'+key, JSON.stringify(val)); }catch(e){} }
+  function genCacheSet(key,val){
+    try{
+      localStorage.setItem('gen_'+key, JSON.stringify(val));
+      const ord=_genOrder();
+      const i=ord.indexOf(key); if(i>=0) ord.splice(i,1);
+      ord.push(key);
+      while(ord.length>GEN_CACHE_MAX){ const old=ord.shift(); try{ localStorage.removeItem('gen_'+old); }catch(e){} }
+      _genOrderSave(ord);
+    }catch(e){
+      // 配额满：清掉最旧一半再试一次
+      try{
+        const ord=_genOrder();
+        ord.splice(0, Math.max(1, Math.floor(ord.length/2))).forEach(function(k){ try{ localStorage.removeItem('gen_'+k); }catch(_){} });
+        _genOrderSave(ord);
+        localStorage.setItem('gen_'+key, JSON.stringify(val));
+      }catch(e2){}
+    }
+  }
   async function aiGen(prompt, system){
     const resp = await fetch(GEN_ENDPOINT, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ mode:'gen', question:prompt, system:system||'' }) });
     if(!resp.ok) throw new Error('HTTP '+resp.status);
@@ -4210,10 +4264,19 @@
 
   window.startVocab=function(mode){
     const v=ensureVocab();
+    // P3：大词库（5500 词约 700KB）首次加载有可感延迟——先给骨架屏，不让用户对着不动的页面发懵
+    if(!_vocabCache[v.active]){
+      $('vocabHome').style.display='none'; $('vocabSession').style.display='';
+      $('vocabSession').innerHTML='<div class="card fill-card">'
+        +'<div class="row" style="justify-content:space-between;"><button class="btn-sm learn-back" onclick="quitVocab()">← 退出</button></div>'
+        +'<div class="vocab-card"><div class="skeleton" style="height:38px;width:56%;margin:0 auto 10px;"></div><div class="skeleton" style="height:15px;width:34%;margin:0 auto;"></div></div>'
+        +'<div class="skeleton" style="height:48px;margin-bottom:8px;"></div><div class="skeleton" style="height:48px;margin-bottom:8px;"></div><div class="skeleton" style="height:48px;"></div>'
+        +'<div class="tiny muted" style="text-align:center;margin-top:14px;">正在加载词库…（首次约 1 秒，之后秒开）</div></div>';
+    }
     loadVocabWords(v.active).then(function(words){
-      if(!words){ alert('该词库暂无内容'); return; }
+      if(!words){ $('vocabSession').style.display='none'; $('vocabHome').style.display=''; alert('该词库暂无内容'); return; }
       const queue=buildVocabQueue(words, mode);
-      if(!queue.length){ alert(mode==='wrong'?'错词本是空的':(mode==='review'?'暂时没有要复习的词':'今天没有要学的了')); return; }
+      if(!queue.length){ $('vocabSession').style.display='none'; $('vocabHome').style.display=''; alert(mode==='wrong'?'错词本是空的':(mode==='review'?'暂时没有要复习的词':'今天没有要学的了')); return; }
       _vsession={ words:words, lib:v.active, queue:queue, idx:0, mode:mode, correct:0, total:queue.length };
       $('vocabHome').style.display='none'; $('vocabSession').style.display='';
       renderVocabCard();
@@ -4223,6 +4286,11 @@
   function vDistractors(wd, words, n){
     const pool=words.filter(function(x){return x.w!==wd.w && x.def;}); _vshuffle(pool);
     return pool.slice(0,n).map(function(x){return x.def;});
+  }
+  /* P3：自建内容导入前的体积提醒——localStorage 只有约 5MB，一份超大导入可能挤爆全部数据 */
+  function _importSizeGuard(str, what){
+    if(str.length <= 900000) return true;
+    return confirm('这份'+what+'约 '+Math.round(str.length/1024)+' KB，比较大，可能占满本地存储（建议拆小分批导入）。仍要继续吗？');
   }
   /* 干扰项带来源词版本：选项点击即读该选项对应的单词 */
   function vDistractorsW(wd, words, n){
@@ -4551,7 +4619,9 @@
     words=words.filter(function(x){return x&&x.w;}).map(function(x){return {w:String(x.w).trim(), ph:x.ph||'', def:x.def||x.meaning||'', ex:x.ex||x.sentence||'', exCn:x.exCn||x.trans||''};});
     if(!words.length){ alert('词条需至少包含 w（单词）字段'); return; }
     const v=ensureVocab(), id='user_'+Date.now().toString(36);
-    try{ localStorage.setItem('vocab_lib_'+id, JSON.stringify(words)); }catch(e){ alert('保存失败（可能超出本地存储上限）：'+e.message); return; }
+    const wjson=JSON.stringify(words);
+    if(!_importSizeGuard(wjson,'词库')) return;
+    try{ localStorage.setItem('vocab_lib_'+id, wjson); }catch(e){ alert('保存失败（本地存储已满）。可先删除不用的自建词库/题库再试。'); return; }
     v.userLibs.push({id:id, name:name, count:words.length});
     v.active=id; _vocabCache[id]=words; save();
     $('vocabImport').style.display='none';
@@ -5245,7 +5315,9 @@
     qs=qs.filter(function(x){return x&&x.stem&&Array.isArray(x.options)&&typeof x.answer==='number';}).map(function(x,i){return {id:x.id||('q'+i), cat:x.cat||'', level:x.level||'', stem:String(x.stem), options:x.options.map(String), answer:x.answer, explain:x.explain||''};});
     if(!qs.length){ alert('题目需含 stem(题干)、options(选项数组)、answer(正确项下标) 字段'); return; }
     const m=ensureMath(), id='user_'+Date.now().toString(36);
-    try{ localStorage.setItem('math_set_'+id, JSON.stringify(qs)); }catch(e){ alert('保存失败（可能超出本地存储上限）：'+e.message); return; }
+    const qjson=JSON.stringify(qs);
+    if(!_importSizeGuard(qjson,'题集')) return;
+    try{ localStorage.setItem('math_set_'+id, qjson); }catch(e){ alert('保存失败（本地存储已满）。可先删除不用的自建词库/题库再试。'); return; }
     m.userSets.push({id:id, name:name, count:qs.length});
     m.active=id; _mathCache[id]=qs; save();
     $('mathImport').style.display='none';
@@ -5609,7 +5681,9 @@
     const r=ensureReading();
     const id='u_'+Date.now().toString(36);
     const obj={ id:id, title:(parsed.title||'我的文章'), intro:parsed.intro||'', paragraphs:parsed.paragraphs.map(String), glossary:Array.isArray(parsed.glossary)?parsed.glossary:[] };
-    try{ localStorage.setItem('reading_'+id, JSON.stringify(obj)); }catch(e){ alert('保存失败：'+e.message); return; }
+    const ojson=JSON.stringify(obj);
+    if(!_importSizeGuard(ojson,'文章')) return;
+    try{ localStorage.setItem('reading_'+id, ojson); }catch(e){ alert('保存失败（本地存储已满）。可先删除不用的自建内容再试。'); return; }
     r.userPassages.push({id:id, title:obj.title}); _readingCache[id]=obj; save();
     $('readingImport').style.display='none'; openReading();
   };
@@ -6757,6 +6831,19 @@
     var btn = $('modalNotifyBtn');
     var testBtn = $('modalTestBtn');
 
+    // P3：iOS 网页/PWA 收不到 Web Push（系统限制）——不再引导开启避免误导；应用内提醒不受影响
+    var isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    if (isiOS) {
+      statusEl.textContent = 'iPhone 网页版收不到系统推送（系统限制），应用内提醒照常有效';
+      btn.style.display = 'none';
+      testBtn.style.display = 'none';
+      $('advEnv').textContent = isStandalone ? 'standalone' : '浏览器';
+      $('advPush').textContent = '不支持（iOS）';
+      $('advPerm').textContent = perm === 'granted' ? '已授权' : perm === 'denied' ? '已拒绝' : '未请求';
+      $('advSub').textContent = ns.subscriptionSaved ? '已订阅' : '未订阅';
+      return;
+    }
+
     if (ns.enabled && ns.subscriptionSaved) {
       statusEl.textContent = '已开启';
       btn.textContent = '重新授权';
@@ -6795,44 +6882,8 @@
     return 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
   }
 
-  function updateNotificationUI() {
-    var ns = state.notificationSettings;
-    var isStandalone = isStandalonePWA();
-    var pushOk = isPushSupported();
-    var btn = $('notifyPermBtn');
-    var statusEl = document.getElementById('notifyStatus');
-    if (!statusEl) return;
-
-    var perm = ns.permission;
-    if (pushOk && Notification.permission) perm = Notification.permission;
-
-    var lines = [];
-    lines.push('当前环境：' + (isStandalone ? 'standalone' : '浏览器'));
-    lines.push('推送支持：' + (pushOk ? '支持' : '不支持'));
-    lines.push('通知权限：' + (perm === 'granted' ? '已授权' : perm === 'denied' ? '已拒绝' : '未请求'));
-
-    if (ns.enabled && ns.subscriptionSaved) {
-      lines.push('订阅状态：已订阅');
-      btn.textContent = '发送测试通知';
-      btn.className = 'btn-sm';
-    } else if (ns.enabled && perm === 'granted') {
-      lines.push('订阅状态：待保存');
-      btn.textContent = '保存订阅';
-      btn.className = 'btn-sm';
-    } else {
-      lines.push('订阅状态：未订阅');
-      btn.textContent = '开启系统通知';
-      btn.className = 'btn-sm';
-    }
-
-    if (perm === 'denied') {
-      lines.push('提示：请到 iPhone 设置里找到该 Web App，手动打开通知权限。');
-      btn.textContent = '权限已拒绝';
-      btn.disabled = true;
-    }
-
-    statusEl.innerHTML = lines.map(function(l){ return '<div>'+l+'</div>'; }).join('');
-  }
+  // （原第二个 updateNotificationUI 已删：它操作的 #notifyStatus/#notifyPermBtn 元素早已不存在，
+  //   函数体永远提前 return，却因同名遮蔽了上面真正更新弹窗的版本，导致弹窗状态从不刷新。）
 
   async function fullPushSubscribeFlow() {
     if (!isStandalonePWA()) {

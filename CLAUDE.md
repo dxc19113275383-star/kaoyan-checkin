@@ -72,6 +72,7 @@ DEEPSEEK_API_KEY=sk-... node scripts/clean-questions.mjs
 - **功能规划看 `PLAN.md`（2026-07-02 立项）**：全面审计后的 P0-P3 分阶段计划，完成一项勾一项，**接手做新功能前先看它**。
 - **P1.1 今日学习聚合页已上线（2026-07-02）**：学习中心置顶通栏卡 → `openToday()`（约 3630 行）一屏聚合三项 quest / 到期复习词 / 错题数 / 长难句待复习数 + 「一键开始」直达第一个未达标项。原"敬请期待"占位页已删，`showLearnView` 未知视图回落 hub。
 - **P1.2 阅读配套题已上线（2026-07-02）**：6 篇 ×4 题手写入各 passage JSON `questions` 字段；`renderPassage` 尾部渲染练习区、`readingAnswer()` 判分（答错入错题中心/重做答对解除/成绩存 `progress[id].quiz`，列表显「题 x/4」）。阅读闭环补全。
+- **P3 全部完成（2026-07-02）**：gen_* LRU（400条+配额清理）、导入体积确认、词库加载骨架屏、iOS 隐藏 Web Push 开关（并删除遮蔽真函数的重复死 `updateNotificationUI`，修好弹窗状态从不刷新的旧病）、周报第二行（周背词/做题/正确率/活跃天，`renderLearnWeekStats`）。**PLAN.md 的 P0-P3 除等题源的 P1.5/1.6 外全部收工**。
 - **背单词四项优化（2026-07-02，用户提出）**：① 学习子页全面 `fill-card` 满屏（vocab/math/syntax/today）；② 选项即读（`data-w` 来源词，答错先读错词再读对词）；③ `speak()` 单词优先有道真人发音（dictvoice，超时/失败回退神经→系统）；④ 答题反馈新增语境例句卡（`vCtxHtml`，深色卡+目标词高亮+中译+朗读，数据=5489 词义详解）。真影视原声无版权素材，未做。
 - **沉浸阅读 v2（2026-07-02，用户点名要"爱阅读"式）**：阅读文章页重排——衬线 20px 大字、考研词自动标注（生词表 rd-key 蓝虚线 + 5500 命中 rd-hit 灰虚线 + 顶部计数横幅，`rdMarkVocab()`）、每句「译」独立开合、底部固定播放条（上一句/播放暂停/下一句/倍速 0.8-1.5，当前句变品牌蓝跟读高亮；`rdToggle/rdStep/rdCycleRate`，`speak()` 增 `sysRate`）。**P3 其余项（gen_* LRU/导入大小检查/词库加载提示/iOS推送开关/周报升级）被本需求打断，尚未做**。
 - **P2 英语扩量完成（2026-07-02）**：`scripts/gen-english-content.mjs` 批量生成——阅读 6→20 篇（带配套题）、长难句 16→60 句（parts 硬校验，c15 手写）、作文 7→15 题（含范文）。产出标"待校"，后续抽样校对。用法 `node scripts/gen-english-content.mjs reading|syntax|writing [--limit N]`，幂等只补缺。
