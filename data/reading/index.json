@@ -2,6 +2,9 @@
   "passages": [
     { "id": "comparative-advantage", "title": "The Logic of Comparative Advantage", "source": "原创 · 国际贸易", "level": "考研英语二", "file": "comparative-advantage.json" },
     { "id": "digital-marketplace", "title": "The Rise of the Digital Marketplace", "source": "原创 · 跨境电商", "level": "考研英语二", "file": "digital-marketplace.json" },
-    { "id": "platform-economy", "title": "Who Really Owns the Platform Economy?", "source": "原创 · 平台经济", "level": "考研英语二", "file": "platform-economy.json" }
+    { "id": "platform-economy", "title": "Who Really Owns the Platform Economy?", "source": "原创 · 平台经济", "level": "考研英语二", "file": "platform-economy.json" },
+    { "id": "behavioral-nudge", "title": "The Quiet Power of the Nudge", "source": "原创 · 行为经济学", "level": "考研英语二", "file": "behavioral-nudge.json" },
+    { "id": "central-bank-inflation", "title": "Why Central Banks Fear Inflation", "source": "原创 · 货币政策", "level": "考研英语二", "file": "central-bank-inflation.json" },
+    { "id": "gig-economy", "title": "The Promise and Peril of the Gig Economy", "source": "原创 · 零工经济", "level": "考研英语二", "file": "gig-economy.json" }
   ]
 }

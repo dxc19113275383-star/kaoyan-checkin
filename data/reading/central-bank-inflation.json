@@ -1,0 +1,32 @@
+{
+  "id": "central-bank-inflation",
+  "title": "Why Central Banks Fear Inflation",
+  "source": "原创 · 货币政策",
+  "level": "考研英语二",
+  "intro": "温和的通胀是经济的润滑剂，失控的通胀却能吞噬储蓄。央行如何拿捏这条线？",
+  "paragraphs": [
+    "Inflation refers to a sustained rise in the general level of prices, which means that each unit of money buys fewer goods than before. A little inflation is widely regarded as healthy, because it encourages spending and investment rather than the hoarding of cash.",
+    "When prices climb too quickly, however, the value of savings is quietly eroded, and households on fixed incomes suffer most. Uncertainty about future costs also makes firms reluctant to invest, which can slow the whole economy down.",
+    "To keep inflation in check, central banks adjust interest rates. Raising rates makes borrowing more expensive, cools consumer demand, and thereby restrains price growth; cutting rates does the opposite, stimulating an economy that has grown sluggish.",
+    "The difficulty is that these tools work with a long and unpredictable delay. Act too late and inflation may spiral; act too aggressively and the economy may tip into recession. Central banking, in this sense, is less a science than a delicate balancing act."
+  ],
+  "cn": [
+    "通货膨胀指的是物价总水平的持续上涨，也就是说，每一单位货币能买到的商品比以前更少。人们普遍认为，温和的通胀是健康的，因为它鼓励消费和投资，而非囤积现金。",
+    "然而，当物价上涨过快时，储蓄的价值会被悄然侵蚀，靠固定收入生活的家庭受害最深。对未来成本的不确定，也使企业不愿投资，进而可能拖慢整个经济。",
+    "为了抑制通胀，央行会调整利率。加息会抬高借贷成本、给消费需求降温，从而遏制物价上涨；降息则相反，用以刺激已陷入迟滞的经济。",
+    "难点在于，这些工具的作用存在漫长而难以预料的滞后。行动太晚，通胀可能失控；出手过猛，经济又可能跌入衰退。从这个意义上说，央行操作与其说是一门科学，不如说是一场微妙的平衡术。"
+  ],
+  "glossary": [
+    { "w": "inflation", "ph": "/ɪnˈfleɪʃn/", "def": "n. 通货膨胀", "ex": "to keep inflation in check", "exCn": "抑制通货膨胀" },
+    { "w": "sustained", "ph": "/səˈsteɪnd/", "def": "adj. 持续的，持久的", "ex": "a sustained rise in prices", "exCn": "物价的持续上涨" },
+    { "w": "hoarding", "ph": "/ˈhɔːdɪŋ/", "def": "n./v. 囤积（hoard 的现在分词）", "ex": "the hoarding of cash", "exCn": "囤积现金" },
+    { "w": "erode", "ph": "/ɪˈrəʊd/", "def": "vt. 侵蚀，逐渐削弱", "ex": "to erode the value of savings", "exCn": "侵蚀储蓄的价值" },
+    { "w": "reluctant", "ph": "/rɪˈlʌktənt/", "def": "adj. 不情愿的，勉强的", "ex": "reluctant to invest", "exCn": "不愿投资" },
+    { "w": "restrain", "ph": "/rɪˈstreɪn/", "def": "vt. 抑制，遏制", "ex": "to restrain price growth", "exCn": "遏制物价上涨" },
+    { "w": "stimulate", "ph": "/ˈstɪmjuleɪt/", "def": "vt. 刺激，激励", "ex": "to stimulate the economy", "exCn": "刺激经济" },
+    { "w": "sluggish", "ph": "/ˈslʌɡɪʃ/", "def": "adj. 迟缓的，萧条的", "ex": "an economy that has grown sluggish", "exCn": "变得迟滞的经济" },
+    { "w": "spiral", "ph": "/ˈspaɪrəl/", "def": "vi. 急剧上升，失控盘旋", "ex": "inflation may spiral", "exCn": "通胀可能失控攀升" },
+    { "w": "recession", "ph": "/rɪˈseʃn/", "def": "n. 经济衰退", "ex": "to tip into recession", "exCn": "跌入衰退" },
+    { "w": "delicate", "ph": "/ˈdelɪkət/", "def": "adj. 微妙的，需谨慎处理的", "ex": "a delicate balancing act", "exCn": "微妙的平衡术" }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "id": "gig-economy",
+  "title": "The Promise and Peril of the Gig Economy",
+  "source": "原创 · 零工经济",
+  "level": "考研英语二",
+  "intro": "开着 App 就能接单赚钱——零工经济给了人自由，也带走了保障。",
+  "paragraphs": [
+    "The gig economy refers to a labor market dominated by short-term contracts and freelance work rather than permanent jobs. Powered by smartphone apps, it allows drivers, couriers and designers to take on tasks whenever they choose, turning spare hours into income.",
+    "For many workers, this flexibility is genuinely appealing. Students, parents and retirees can earn money around their other commitments, and skilled freelancers can serve clients across the globe without ever leaving home.",
+    "Yet flexibility often comes at the price of security. Gig workers are usually classified as independent contractors, which means they receive no paid leave, no pension contributions and little protection when demand suddenly dries up.",
+    "Regulators around the world are now struggling to decide how such workers should be treated. The central question is whether the convenience enjoyed by consumers should be allowed to rest on a workforce that bears most of the risk."
+  ],
+  "cn": [
+    "零工经济指的是以短期合同和自由职业、而非固定工作为主导的劳动力市场。在智能手机应用的驱动下，它让司机、快递员和设计师可以随时接单，把空闲时间变成收入。",
+    "对许多劳动者而言，这种灵活性确实很有吸引力。学生、父母和退休者可以在兼顾其他事务之余赚钱，技术娴熟的自由职业者足不出户就能服务全球客户。",
+    "然而，灵活往往以牺牲保障为代价。零工劳动者通常被归类为独立承包人，这意味着他们没有带薪休假、没有养老金缴纳，一旦需求骤然枯竭也几乎得不到保护。",
+    "如今，世界各地的监管者都在艰难地思考该如何对待这类劳动者。核心问题是：消费者所享受的便利，是否应当被允许建立在一支承担了大部分风险的劳动力之上。"
+  ],
+  "glossary": [
+    { "w": "gig", "ph": "/ɡɪɡ/", "def": "n. 零工，短期活儿", "ex": "the gig economy", "exCn": "零工经济" },
+    { "w": "freelance", "ph": "/ˈfriːlɑːns/", "def": "adj. 自由职业的；n. 自由职业者", "ex": "freelance work", "exCn": "自由职业工作" },
+    { "w": "courier", "ph": "/ˈkʊriə/", "def": "n. 快递员，信使", "ex": "drivers and couriers", "exCn": "司机和快递员" },
+    { "w": "flexibility", "ph": "/ˌfleksəˈbɪləti/", "def": "n. 灵活性", "ex": "this flexibility is appealing", "exCn": "这种灵活性很有吸引力" },
+    { "w": "commitment", "ph": "/kəˈmɪtmənt/", "def": "n. 承诺，责任，投入", "ex": "around their other commitments", "exCn": "在兼顾其他事务之余" },
+    { "w": "security", "ph": "/sɪˈkjʊərəti/", "def": "n. 保障，安全感", "ex": "at the price of security", "exCn": "以牺牲保障为代价" },
+    { "w": "classify", "ph": "/ˈklæsɪfaɪ/", "def": "vt. 归类，分类", "ex": "classified as independent contractors", "exCn": "被归类为独立承包人" },
+    { "w": "contractor", "ph": "/kənˈtræktə/", "def": "n. 承包人，立约人", "ex": "an independent contractor", "exCn": "独立承包人" },
+    { "w": "pension", "ph": "/ˈpenʃn/", "def": "n. 养老金，退休金", "ex": "pension contributions", "exCn": "养老金缴纳" },
+    { "w": "regulator", "ph": "/ˈreɡjuleɪtə/", "def": "n. 监管者，监管机构", "ex": "regulators around the world", "exCn": "世界各地的监管者" },
+    { "w": "convenience", "ph": "/kənˈviːniəns/", "def": "n. 便利，方便", "ex": "the convenience enjoyed by consumers", "exCn": "消费者享受的便利" },
+    { "w": "workforce", "ph": "/ˈwɜːkfɔːs/", "def": "n. 劳动力，全体员工", "ex": "a workforce that bears most of the risk", "exCn": "承担大部分风险的劳动力" }
+  ]
+}

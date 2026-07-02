@@ -1,0 +1,33 @@
+{
+  "id": "behavioral-nudge",
+  "title": "The Quiet Power of the Nudge",
+  "source": "原创 · 行为经济学",
+  "level": "考研英语二",
+  "intro": "人并不总是理性的。一个小小的「助推」，就能悄悄改变我们的选择。",
+  "paragraphs": [
+    "Traditional economics assumes that people are rational actors who carefully weigh costs and benefits before making any decision. Behavioral economics challenges this assumption, showing that our choices are frequently shaped by habit, emotion, and the way options are presented to us.",
+    "A nudge is a small change in the environment that gently steers people toward a better choice without forbidding any option or altering their economic incentives. Placing fruit at eye level in a cafeteria, for instance, encourages healthier eating while still leaving the chocolate cake within easy reach.",
+    "Governments and companies have embraced nudges because they are cheap and surprisingly effective. Automatically enrolling employees in a pension plan, while allowing them to opt out at any time, has dramatically raised savings rates in many countries.",
+    "Critics warn, however, that a nudge can slide into manipulation when the people being nudged are unaware of it. The line between guiding a choice and quietly removing it is thinner than it first appears."
+  ],
+  "cn": [
+    "传统经济学假设人是理性的行为者，会在做任何决定之前仔细权衡成本与收益。行为经济学挑战了这一假设，指出我们的选择常常受习惯、情绪，以及选项呈现方式的影响。",
+    "「助推」是对环境所做的微小改变，它在不禁止任何选项、也不改变经济激励的前提下，温和地引导人们做出更好的选择。比如把水果摆在食堂与视线齐平的位置，就能鼓励更健康的饮食，同时那块巧克力蛋糕依然触手可及。",
+    "政府和企业之所以青睐助推，是因为它成本低廉、效果却出奇地好。把员工自动纳入养老金计划、同时允许其随时退出，已在许多国家显著提高了储蓄率。",
+    "然而批评者警告说，当被助推的人毫不知情时，助推就可能滑向操纵。「引导一个选择」与「悄悄拿走这个选择」之间的界线，比乍看之下要细得多。"
+  ],
+  "glossary": [
+    { "w": "rational", "ph": "/ˈræʃnəl/", "def": "adj. 理性的，理智的", "ex": "a rational actor", "exCn": "理性的行为者" },
+    { "w": "behavioral", "ph": "/bɪˈheɪvjərəl/", "def": "adj. 行为的", "ex": "behavioral economics", "exCn": "行为经济学" },
+    { "w": "assumption", "ph": "/əˈsʌmpʃn/", "def": "n. 假设，假定", "ex": "to challenge an assumption", "exCn": "挑战一个假设" },
+    { "w": "weigh", "ph": "/weɪ/", "def": "vt. 权衡，斟酌", "ex": "to weigh costs and benefits", "exCn": "权衡成本与收益" },
+    { "w": "nudge", "ph": "/nʌdʒ/", "def": "n. 助推，轻推；vt. 轻推", "ex": "a gentle nudge toward saving", "exCn": "促成储蓄的温和助推" },
+    { "w": "steer", "ph": "/stɪə/", "def": "vt. 引导，掌舵", "ex": "to steer people toward a choice", "exCn": "引导人们做出选择" },
+    { "w": "incentive", "ph": "/ɪnˈsentɪv/", "def": "n. 激励，动机", "ex": "economic incentives", "exCn": "经济激励" },
+    { "w": "cafeteria", "ph": "/ˌkæfəˈtɪəriə/", "def": "n. 自助食堂", "ex": "at eye level in a cafeteria", "exCn": "食堂里与视线齐平处" },
+    { "w": "embrace", "ph": "/ɪmˈbreɪs/", "def": "vt. 欣然接受，采纳", "ex": "to embrace nudges", "exCn": "采纳助推手段" },
+    { "w": "enroll", "ph": "/ɪnˈrəʊl/", "def": "vt. 使加入，登记", "ex": "to enroll employees in a plan", "exCn": "把员工纳入某计划" },
+    { "w": "opt out", "ph": "/ɒpt aʊt/", "def": "选择退出，不参与", "ex": "to opt out at any time", "exCn": "随时选择退出" },
+    { "w": "manipulation", "ph": "/məˌnɪpjuˈleɪʃn/", "def": "n. 操纵，摆布", "ex": "to slide into manipulation", "exCn": "滑向操纵" }
+  ]
+}

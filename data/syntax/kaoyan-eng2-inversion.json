@@ -1,0 +1,94 @@
+{
+  "id": "kaoyan-eng2-inversion",
+  "name": "倒装·强调·核心难句",
+  "cat": "倒装强调",
+  "desc": "否定前置倒装、Only 倒装、so...that 倒装、It is...that 强调句，训练「还原正常语序」。",
+  "sentences": [
+    {
+      "id": "v1",
+      "cat": "否定副词前置·部分倒装",
+      "level": "较难",
+      "en": "Not until the government relaxed its restrictions did foreign investors return to the market in large numbers.",
+      "cn": "直到政府放松管制，外国投资者才大批重返市场。",
+      "parts": [
+        {"text":"Not until the government relaxed its restrictions","role":"adv","note":"否定状语前置（Not until...）"},
+        {"text":" ","role":"plain"},
+        {"text":"did","role":"verb","note":"助动词提前（部分倒装）"},
+        {"text":" ","role":"plain"},
+        {"text":"foreign investors","role":"subj","note":"主语"},
+        {"text":" ","role":"plain"},
+        {"text":"return","role":"verb","note":"实义谓语（用原形）"},
+        {"text":" ","role":"plain"},
+        {"text":"to the market in large numbers","role":"adv","note":"状语"},
+        {"text":".","role":"plain"}
+      ],
+      "tip": "Not until... 这类否定状语置于句首，主句要用部分倒装：助动词 did 提到主语 foreign investors 之前。还原正常语序为 Foreign investors did not return... until the government relaxed...。",
+      "trap": "看到句首 Not until 就要预判主句倒装（did + 主语 + 动词原形）。倒装的是主句，until 引导的时间状语从句本身不倒装。"
+    },
+    {
+      "id": "v2",
+      "cat": "Only+状语前置·部分倒装",
+      "level": "较难",
+      "en": "Only by working together can nations hope to solve problems that no single country is able to tackle alone.",
+      "cn": "唯有携手合作，各国才有望解决任何单一国家都无法独自应对的问题。",
+      "parts": [
+        {"text":"Only by working together","role":"adv","note":"Only + 方式状语前置"},
+        {"text":" ","role":"plain"},
+        {"text":"can","role":"verb","note":"情态动词提前（部分倒装）"},
+        {"text":" ","role":"plain"},
+        {"text":"nations","role":"subj","note":"主语"},
+        {"text":" ","role":"plain"},
+        {"text":"hope to solve","role":"verb","note":"谓语"},
+        {"text":" ","role":"plain"},
+        {"text":"problems","role":"obj","note":"宾语"},
+        {"text":" ","role":"plain"},
+        {"text":"that no single country is able to tackle alone","role":"attr","note":"定语从句，修饰 problems（tackle 后缺宾语）"},
+        {"text":".","role":"plain"}
+      ],
+      "tip": "Only + 状语（by working together）置于句首，主句部分倒装：情态动词 can 提到主语 nations 之前。problems 后 that... 是修饰它的定语从句。",
+      "trap": "Only 修饰句首状语或状语从句时才倒装；若 Only 修饰主语（如 Only nations can...）则不倒装。这里 Only by... 是状语，故倒装。"
+    },
+    {
+      "id": "v3",
+      "cat": "So+副词前置·so...that 结果",
+      "level": "较难",
+      "en": "So rapidly has online shopping expanded that traditional retailers have been forced to rethink how they reach their customers.",
+      "cn": "网上购物扩张得如此之快，以至于传统零售商被迫重新思考如何触达自己的顾客。",
+      "parts": [
+        {"text":"So rapidly","role":"adv","note":"So + 副词前置（强调）"},
+        {"text":" ","role":"plain"},
+        {"text":"has","role":"verb","note":"助动词提前（部分倒装）"},
+        {"text":" ","role":"plain"},
+        {"text":"online shopping","role":"subj","note":"主语"},
+        {"text":" ","role":"plain"},
+        {"text":"expanded","role":"verb","note":"实义谓语（过去分词）"},
+        {"text":" ","role":"plain"},
+        {"text":"that traditional retailers have been forced to rethink how they reach their customers","role":"adv","note":"so...that 结果状语从句"},
+        {"text":".","role":"plain"}
+      ],
+      "tip": "So + 副词（rapidly）置于句首表强调，主句部分倒装：助动词 has 提到主语 online shopping 之前。so... that... 构成「如此……以至于」的结果关系。",
+      "trap": "句首 So rapidly 触发倒装（has + 主语 + 过去分词）。别忘了后面必有 that 引导结果状语从句，二者呼应。"
+    },
+    {
+      "id": "v4",
+      "cat": "It is...that 强调句",
+      "level": "较难",
+      "en": "It is the ability to adapt quickly, rather than sheer size, that determines which firms survive in a volatile market.",
+      "cn": "决定哪些公司能在动荡市场中存活下来的，是快速适应的能力，而非单纯的规模。",
+      "parts": [
+        {"text":"It is","role":"verb","note":"强调句结构 It is ... that"},
+        {"text":" ","role":"plain"},
+        {"text":"the ability to adapt quickly","role":"obj","note":"被强调的部分（真正的主语）"},
+        {"text":", rather than sheer size, ","role":"plain"},
+        {"text":"that","role":"mark","note":"强调句的 that"},
+        {"text":" ","role":"plain"},
+        {"text":"determines","role":"verb","note":"真正的谓语"},
+        {"text":" ","role":"plain"},
+        {"text":"which firms survive in a volatile market","role":"obj","note":"宾语从句（which 引导）"},
+        {"text":".","role":"plain"}
+      ],
+      "tip": "It is ... that ... 是强调句：去掉 It is 和 that，剩下 The ability to adapt quickly determines... 仍是完整句子，说明这是强调结构。被强调的是主语 the ability to adapt quickly。",
+      "trap": "判断强调句：拿掉 It is...that 后若剩下的仍是完整句子，就是强调句（而非定语从句/主语从句）。这里强调主语；rather than sheer size 是插入的对比成分。"
+    }
+  ]
+}
