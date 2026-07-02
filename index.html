@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>燕燕考研助手</title>
+<title>燕燕学习助手</title>
 
 <!-- PWA -->
 <link rel="manifest" href="./manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="燕燕考研">
+<meta name="apple-mobile-web-app-title" content="燕燕学习">
 <link rel="apple-touch-icon" href="./icon.svg">
 <meta name="theme-color" content="#F5F5F7" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
@@ -1262,16 +1262,16 @@
 <div class="offline-banner" id="offlineBanner">当前处于离线状态，数据保存在本地</div>
 
 <div class="wrap">
-  <h2 class="sr-only">考研备考每日打卡工具，含在职与全职两个阶段</h2>
+  <h2 class="sr-only">学习计划每日打卡工具，阶段与任务模板可自定义</h2>
 
   <!-- ====== 顶栏 AppBar（仅首页） ====== -->
   <header class="appbar home-only" id="appBar">
     <div class="ab-brand">
-      <span class="ab-mark">研</span>
-      <span class="ab-name">燕燕考研<i class="ab-sub">备考系统</i></span>
+      <span class="ab-mark">学</span>
+      <span class="ab-name">燕燕学习<i class="ab-sub">助手</i></span>
     </div>
     <div class="ab-actions">
-      <button class="ab-chip" id="changeExamDate" aria-label="距初试天数，点击修改考试日期">
+      <button class="ab-chip" id="changeExamDate" aria-label="距目标日天数，点击修改目标日期">
         <svg class="ab-chip-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="9"/></svg>
         <b id="countdownDays">—</b><span class="ab-chip-u">天</span>
       </button>
@@ -1285,10 +1285,7 @@
   <section class="card hero home-only" id="heroCard"></section>
 
   <!-- 阶段切换 -->
-  <div class="phaseToggle home-only" id="phaseToggle">
-    <button data-p="0" class="on">在职打基础（约8个月）</button>
-    <button data-p="1">全职冲刺（约11个月）</button>
-  </div>
+  <div class="phaseToggle home-only" id="phaseToggle"></div>
 
   <!-- 周/月导航 -->
   <div class="card">
@@ -1813,10 +1810,41 @@
     { label: "彻底休息半天", tag:"t-rev", tagText:"休息", focus:"全职最忌无休，保护后期状态" }
   ];
 
-  const PHASES = [
+  // v9 计划引擎：阶段不再写死。BUILTIN_PLANS 是内置的考研默认模板；
+  // 用户在设置里编辑后存入 state.plans，PHASES 始终指向"当前生效计划"。
+  const BUILTIN_PLANS = [
     { weeks: 32, months: P0_MONTHS, weekday: P0_WEEKDAY, sat: P0_SAT, sun: P0_SUN, label: "在职打基础" },
     { weeks: 44, months: P1_MONTHS, weekday: P1_WEEKDAY, sat: P1_WEEKDAY, sun: P1_SUN, label: "全职冲刺" }
   ];
+  let PHASES = BUILTIN_PLANS;
+  function _normalizePlan(p, i){
+    p = p || {};
+    const arr = function(a){ return Array.isArray(a) ? a : []; };
+    return {
+      label: String(p.label || ('阶段 ' + (i + 1))).slice(0, 20),
+      weeks: Math.max(1, Math.min(160, parseInt(p.weeks, 10) || 8)),
+      months: arr(p.months),
+      weekday: arr(p.weekday).length ? arr(p.weekday) : [{ label: '完成今天的学习任务', tag: 't-rev', tagText: '任务' }],
+      sat: arr(p.sat).length ? arr(p.sat) : arr(p.weekday),
+      sun: arr(p.sun).length ? arr(p.sun) : arr(p.weekday)
+    };
+  }
+  function rebuildPhases(){
+    PHASES = (Array.isArray(state.plans) && state.plans.length)
+      ? state.plans.map(_normalizePlan)
+      : BUILTIN_PLANS;
+    // 阶段被删/减后当前位置越界的守卫
+    if (state.p >= PHASES.length) state.p = PHASES.length - 1;
+    if (state.p < 0) state.p = 0;
+    if (state.wk > PHASES[state.p].weeks) state.wk = PHASES[state.p].weeks;
+  }
+  /** 编辑前把内置模板落到 state.plans（深拷贝），之后一切编辑只动 state.plans */
+  function ensurePlans(){
+    if (!Array.isArray(state.plans) || !state.plans.length) {
+      state.plans = JSON.parse(JSON.stringify(BUILTIN_PLANS));
+    }
+    return state.plans;
+  }
 
   // ===== DOM REFS =====
   const $ = (id) => document.getElementById(id);
@@ -3059,6 +3087,12 @@
       if (!loaded.learn.profile || typeof loaded.learn.profile !== 'object') loaded.learn.profile = { level:1, totalXp:0, examTarget:'kaoyan_eng2', strict:true };
       loaded.version = 8;
     }
+    if (loaded.version === 8) {
+      // v9 计划引擎：plans=null 表示沿用内置模板；goalLabel 让倒计时目标可命名（去考研专属）
+      loaded.plans = loaded.plans || null;
+      loaded.goalLabel = loaded.goalLabel || '考研初试';
+      loaded.version = 9;
+    }
     // 防御：任何情况下 learn 都要存在，子字段缺失补齐
     if (!loaded.learn) loaded.learn = defaultLearn();
     const dl = defaultLearn();
@@ -3081,6 +3115,8 @@
     if (!state.reminderSettings) state.reminderSettings = { enabled: true, tone: "normal", quietHours: { start: "23:30", end: "08:00" }, systemNotificationEnabled: false };
     if (!state.reminderLog) state.reminderLog = {};
     if (!state.notificationSettings) state.notificationSettings = { enabled: false, permission: "default", subscriptionSaved: false, reminderTime: "20:30", tone: "normal" };
+    if (!state.goalLabel) state.goalLabel = '考研初试';
+    rebuildPhases();
   }
 
   function save() {
@@ -3095,11 +3131,8 @@
     if (!state.startDate) return null;
     const start = new Date(state.startDate + 'T00:00:00');
     let offset = 0;
-    if (p === 0) {
-      offset = (wk - 1) * 7 + day;
-    } else {
-      offset = PHASES[0].weeks * 7 + (wk - 1) * 7 + day;
-    }
+    for (let i = 0; i < p && i < PHASES.length; i++) offset += PHASES[i].weeks * 7; // 前序阶段累计
+    offset += (wk - 1) * 7 + day;
     const d = new Date(start.getTime() + offset * 86400000);
     return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
   }
@@ -3111,7 +3144,8 @@
   }
 
   function monthIdxFor(p, wk) {
-    return p === 0 ? Math.min(7, Math.floor((wk-1)/4)) : Math.min(10, Math.floor((wk-1)/4));
+    const n = ((PHASES[p] && PHASES[p].months) || []).length;
+    return n ? Math.min(n - 1, Math.floor((wk - 1) / 4)) : 0;
   }
 
   function tasksFor(p, dayIdx) {
@@ -3219,15 +3253,18 @@
     const now = new Date();
     now.setHours(0,0,0,0);
     const elapsed = Math.floor((now - start) / 86400000);
-    if (elapsed < 0) return { p: 0, wk: 1, day: now.getDay() === 0 ? 6 : now.getDay() - 1 };
-    // Phase 0: 32 weeks = 224 days
-    const P0_DAYS = PHASES[0].weeks * 7;
-    if (elapsed < P0_DAYS) {
-      return { p: 0, wk: Math.min(Math.floor(elapsed/7)+1, PHASES[0].weeks), day: now.getDay()===0?6:now.getDay()-1 };
+    const dow = now.getDay() === 0 ? 6 : now.getDay() - 1;
+    if (elapsed < 0) return { p: 0, wk: 1, day: dow };
+    // 依次穿过各阶段（最后一个阶段封顶在末周）
+    let rem = elapsed;
+    for (let i = 0; i < PHASES.length; i++) {
+      const days = PHASES[i].weeks * 7;
+      if (rem < days || i === PHASES.length - 1) {
+        return { p: i, wk: Math.min(Math.floor(rem / 7) + 1, PHASES[i].weeks), day: dow };
+      }
+      rem -= days;
     }
-    const remaining = elapsed - P0_DAYS;
-    const wk1 = Math.min(Math.floor(remaining/7)+1, PHASES[1].weeks);
-    return { p: 1, wk: wk1, day: now.getDay()===0?6:now.getDay()-1 };
+    return { p: 0, wk: 1, day: dow };
   }
 
   // ===== HEATMAP =====
@@ -3247,10 +3284,7 @@
     for (let wOffset = weeks - 1; wOffset >= 0; wOffset--) {
       let wk = state.wk - wOffset;
       let p = state.p;
-      while (wk < 1) {
-        if (p === 1) { p = 0; wk += PHASES[0].weeks; }
-        else break;
-      }
+      while (wk < 1 && p > 0) { p--; wk += PHASES[p].weeks; }
       if (wk < 1) continue;
       const label = (p===0?'在':'全') + wk + 'W';
       const todayP = state.p, todayWk = state.wk, todayDay = state.day;
@@ -3339,7 +3373,7 @@
 
     // Check two consecutive weeks (only if not in week 1)
     const consecutiveWarnings = [];
-    if (state.wk > 1 || state.p === 1) {
+    if (state.wk > 1 || state.p > 0) {
       // Get stats for previous 14 days for broader context
       const twoWeekStats = getTagStats(14);
       warnings.forEach(w => {
@@ -3449,14 +3483,19 @@
     const mi = monthIdxFor(state.p, state.wk);
     const m = ph.months[mi];
 
-    // Phase toggle
-    phaseToggle.querySelectorAll('button').forEach(b => {
-      b.className = (parseInt(b.dataset.p)===state.p)?'on':'';
+    // Phase toggle（v9：按当前计划动态生成；单阶段时整条隐藏）
+    let ptHtml = '';
+    PHASES.forEach(function(ph, i){
+      ptHtml += '<button data-p="'+i+'"'+(i===state.p?' class="on"':'')+'>'+escAttr(ph.label)+'（约'+Math.max(1, Math.round(ph.weeks/4))+'个月）</button>';
     });
+    phaseToggle.innerHTML = ptHtml;
+    phaseToggle.style.display = PHASES.length > 1 ? '' : 'none';
 
     // Countdown
     const remaining = daysUntil(state.examDate);
     const cd = $('countdownDays');
+    const cdBtn = $('changeExamDate');
+    if (cdBtn) { const gl = state.goalLabel || '目标日'; cdBtn.title = '距' + gl + ' ' + (remaining==null?'未设置':remaining+' 天'); cdBtn.setAttribute('aria-label', '距' + gl + '天数，点击修改目标日期'); }
     if (remaining === null || remaining === undefined) {
       cd.textContent = '未设置';
       cd.style.color = 'var(--color-text-secondary)';
@@ -3482,11 +3521,16 @@
       jumpBtn.style.display = 'none';
     }
 
-    // Week
+    // Week（v9：月标签/月目标对自定义计划宽容——没有 months 就不显示月块）
     weekTitle.textContent = '第 ' + state.wk + ' 周';
-    const mLabel = state.p===0 ? ('第 '+(mi+1)+' 月') : (m.name);
-    phaseLabel.textContent = ph.label + ' · ' + mLabel;
-    monthGoal.innerHTML = I.target + '<b style="font-weight:500">本月目标</b><br>' + m.goal;
+    const mLabel = m ? (m.name || ('第 ' + (mi + 1) + ' 月')) : '';
+    phaseLabel.textContent = ph.label + (mLabel ? ' · ' + mLabel : '');
+    if (m && m.goal) {
+      monthGoal.style.display = '';
+      monthGoal.innerHTML = I.target + '<b style="font-weight:500">本月目标</b><br>' + escAttr(m.goal);
+    } else {
+      monthGoal.style.display = 'none';
+    }
 
     // Day tabs
     daySeg.innerHTML = '';
@@ -3498,10 +3542,8 @@
       daySeg.appendChild(b);
     });
 
-    // Day label
-    const isWeekend = state.day >= 5;
-    const hrs = state.p===0 ? (isWeekend?'（可增至4-5h）':'（工作日 2-3h）') : (state.day===6?'（含休息）':'（全职 8-10h）');
-    dayLabel.textContent = DAYS[state.day] + hrs;
+    // Day label（去阶段专属时长文案）
+    dayLabel.textContent = DAYS[state.day];
 
     // Tasks
     const tasks = effectiveTasks(state.p, state.wk, state.day);
@@ -3582,9 +3624,9 @@
       window._lastDoneKey = dayK;
       const ritualLines = [
         '今天也没断档，稳住了。',
-        '又往上岸近了一步。',
+        '又离目标近了一步。',
         '别小看这一天，复利就是这么来的。',
-        '今日任务全清 —— 这就是上岸的样子。',
+        '今日任务全清 —— 稳扎稳打就是这样。',
         '节奏稳住了，明天接着来。'
       ];
       const line = ritualLines[(computeStreak() + cnt) % ritualLines.length];
@@ -3594,17 +3636,12 @@
     } else if (cnt > 0) {
       if (window._lastDoneKey === keyFor(state.p, state.wk, state.day)) window._lastDoneKey = null;
       let msg = '<div class="replan"><b style="font-weight:500">'+I.alertTriangle+' 未完成 '+(tasks.length-cnt)+' 项，重规划建议：</b><br>';
-      if (state.p === 0) {
-        if (!done[0]) msg += '• <b style="font-weight:500">单词是保底项，今天再累也要补完</b>——哪怕睡前10分钟。<br>';
-        if (state.day < 5) {
-          msg += '• 未完成的数学/英语顺延到周六集中补（周末已留弹性）。<br>• 连续3天没完成数学课，说明单日量偏大，下周把1节拆成2天。';
-        } else {
-          msg += '• 周末挑最重要1项补完即可，别全补，避免下周开局疲惫。';
-        }
+      if (state.day < 5) {
+        msg += '• 挑最重要的 1 项今天补完，其余顺延到周末集中处理，别硬扛。<br>';
+        msg += '• 同一项连续 3 天完不成，说明单日量偏大——下周把它拆小。';
       } else {
-        msg += '• 全职阶段优先级：数学 > 434 > 英语 > 逻辑/写作 > 政治。时间不够时砍后面，保前面。<br>';
-        msg += '• 未完成项当天晚间或次日晨补；连续掉同一科，说明该科需单独加时，下周调整时段分配。<br>';
-        msg += '• 但别牺牲睡眠——全职是马拉松，状态崩了得不偿失。';
+        msg += '• 周末只补最重要的 1 项即可，别全补，避免下周开局疲惫。<br>';
+        msg += '• 完成率持续偏低就减量：能每天动起来，比计划漂亮更重要。';
       }
       msg += '</div>';
       feedback.innerHTML = msg;
@@ -3809,6 +3846,7 @@
           }
           if (!confirm('导入将覆盖当前所有打卡数据，确定继续？\n\n建议先导出备份。')) return;
           state = migrate(parsed);
+          rebuildPhases();
           save();
           render();
           alert('数据导入成功！');
@@ -3827,7 +3865,8 @@
     } else {
       exportData();
     }
-    state = { p:0, wk:1, day:0, data:{}, startDate:null, examDate:'2027-12-25', customTasks:{}, deletedDefaults:{}, notes:{}, resources:[], studySessions:[], aiChats:[], reminderSettings:{enabled:true,tone:"normal",quietHours:{start:"23:30",end:"08:00"},systemNotificationEnabled:false}, reminderLog:{}, notificationSettings:{enabled:false,permission:"default",subscriptionSaved:false,reminderTime:"20:30",tone:"normal"}, learn:defaultLearn(), version:7 };
+    state = { p:0, wk:1, day:0, data:{}, startDate:null, examDate:'2027-12-25', goalLabel:'考研初试', plans:null, customTasks:{}, deletedDefaults:{}, notes:{}, resources:[], studySessions:[], aiChats:[], reminderSettings:{enabled:true,tone:"normal",quietHours:{start:"23:30",end:"08:00"},systemNotificationEnabled:false}, reminderLog:{}, notificationSettings:{enabled:false,permission:"default",subscriptionSaved:false,reminderTime:"20:30",tone:"normal"}, learn:defaultLearn(), version:9 };
+    rebuildPhases();
     save();
     render();
   }
@@ -5814,7 +5853,7 @@
     const totalGoal = t.items.reduce(function(s,it){ return s + it.goal; }, 0);
     const totalCur = t.items.reduce(function(s,it){ return s + Math.min(it.cur, it.goal); }, 0);
     if (totalCur === 0) return '今天还没开始训练 —— 任意一项达标就算续上 streak。';
-    if (t.allDone)      return '今日训练全部达标，状态在线 —— 这就是上岸的样子。';
+    if (t.allDone)      return '今日训练全部达标，状态在线 —— 保持这个节奏。';
     // 找差距最小的那项给出"再做 N 个就到"提示
     const closest = t.items.slice().filter(function(x){return x.cur < x.goal;}).sort(function(a,b){return (a.goal-a.cur)-(b.goal-b.cur);})[0];
     if (closest) return '已完成 '+totalCur+' / '+totalGoal+' —— 再做 '+(closest.goal-closest.cur)+' '+(closest.mod==='vocab'?'个词':closest.mod==='reading'?'篇精读':'道题')+' 就达标。';
@@ -5837,7 +5876,7 @@
       const names={'t-eng':'英语','t-math':'数学','t-major':'专业课','t-logic':'逻辑/写作','t-write':'写作','t-pol':'政治'};
       if(worst && wp<0.5 && names[worst]) return names[worst]+'最近完成率偏低，问问 AI 教练怎么追回来';
     } catch(e){}
-    return state.p===0 ? '在职期只抓英语+数学，让 AI 帮你排今天' : '全职冲刺：数学＞434＞英语，让 AI 帮你排今天';
+    return '让 AI 教练按你的进度和薄弱点，安排今天学什么';
   }
   function renderHero(){
     const host = $('heroCard'); if(!host) return;
@@ -5855,7 +5894,7 @@
       const pct = tasks.length ? Math.round(cnt/tasks.length*100) : 0;
       const streak = computeStreak();
       let html='';
-      html+='<div class="h-greet'+greetCls+'">'+greetingByHour(h)+' · '+(state.p===0?'在职打基础':'全职冲刺')+'</div>';
+      html+='<div class="h-greet'+greetCls+'">'+greetingByHour(h)+' · '+escAttr(PHASES[state.p].label)+'</div>';
       html+='<div class="h-status">今日打卡 '+cnt+' / '+tasks.length+'</div>';
       html+='<div class="h-row"><div class="h-streak"><span class="h-flame" style="color:'+(streak>0?'var(--ember)':'rgba(255,255,255,.35)')+'">'+I.flame+'</span><span><div class="hs-n">'+streak+'</div><div class="hs-l">连续打卡</div></span></div><div class="h-spacer"></div>'+ringSVG(pct,64)+'</div>';
       host.innerHTML = html;
@@ -5868,7 +5907,7 @@
     const xpPct = Math.round(xpInLevel/200*100);
     const labels = { vocab:'背单词', reading:'精读', math:'数学' };
     let html='';
-    html+='<div class="h-greet'+greetCls+'">'+greetingByHour(h)+' · '+(state.p===0?'在职打基础':'全职冲刺')+(t.allDone?' · ✓ 今日已达标':'')+'</div>';
+    html+='<div class="h-greet'+greetCls+'">'+greetingByHour(h)+' · '+escAttr(PHASES[state.p].label)+(t.allDone?' · ✓ 今日已达标':'')+'</div>';
     html+='<div class="h-status">'+trainingStatus(t)+'</div>';
     // 三连 quest 进度环
     html+='<div class="h-quests">';
@@ -5905,6 +5944,94 @@
   }
   window.goToday = function(){ showPage(1); showLearnView('today'); };
 
+  // ===== v9 学习计划编辑器（设置抽屉内） =====
+  // 任务行格式："标签|任务文案"，标签可选；识别的标签映射到科目色，未识别/无标签归"任务"。
+  const PLAN_TAG_MAP = { '英语':['t-eng','英语'], '单词':['t-eng','英语'], '数学':['t-math','数学'], '专业':['t-major','专业课'], '专业课':['t-major','专业课'], '逻辑':['t-logic','逻辑/写作'], '写作':['t-write','写作'], '政治':['t-pol','政治'], '复习':['t-rev','回顾'], '回顾':['t-rev','回顾'] };
+  const PLAN_TAG_REV = { 't-eng':'英语', 't-math':'数学', 't-major':'专业课', 't-logic':'逻辑', 't-write':'写作', 't-pol':'政治', 't-rev':'复习' };
+  function _lineToTask(line){
+    line = String(line || '').trim(); if (!line) return null;
+    const i = line.indexOf('|');
+    if (i > 0) {
+      const m = PLAN_TAG_MAP[line.slice(0, i).trim()];
+      if (m) return { label: line.slice(i + 1).trim(), tag: m[0], tagText: m[1] };
+    }
+    return { label: line, tag: 't-rev', tagText: '任务' };
+  }
+  function _taskToLine(t){ const p = PLAN_TAG_REV[t.tag]; return (p ? p + '|' : '') + (t.label || ''); }
+  function _tasksToText(a){ return (a || []).map(_taskToLine).join('\n'); }
+  function _textToTasks(txt){ return String(txt || '').split('\n').map(_lineToTask).filter(Boolean); }
+
+  function renderPlanEditor(){
+    const host = $('planEditorCard'); if (!host) return;
+    let h = '<div style="font-weight:600;margin-bottom:6px;">学习计划</div>'
+      + '<div class="tiny muted" style="line-height:1.6;margin-bottom:10px;">阶段名称、周数、每日任务模板都可改；任务一行一个，可加科目前缀如「英语|背单词 30 分钟」。改完点「保存计划」生效（已打的卡不会丢）。</div>'
+      + '<div id="peRows">';
+    PHASES.forEach(function(ph, i){
+      h += '<div class="pe-row" data-i="'+i+'" style="border:1px solid var(--hair);border-radius:12px;padding:10px;margin-bottom:8px;">'
+        +  '<div class="row" style="gap:6px;">'
+        +    '<input class="pe-name" value="'+escAttr(ph.label)+'" maxlength="20" style="flex:1;min-width:0;height:36px;padding:0 10px;border-radius:9px;border:1px solid var(--hair-strong);background:var(--glass-field);color:var(--color-text-primary);font-size:13px;">'
+        +    '<input class="pe-weeks" type="number" min="1" max="160" value="'+ph.weeks+'" style="width:58px;height:36px;padding:0 6px;border-radius:9px;border:1px solid var(--hair-strong);background:var(--glass-field);color:var(--color-text-primary);font-size:13px;text-align:center;">'
+        +    '<span class="tiny muted">周</span>'
+        +    '<button class="btn-sm pe-tpl" style="height:36px;padding:0 10px;font-size:12px;">模板</button>'
+        +    (PHASES.length > 1 ? '<button class="btn-icon pe-del" style="width:32px;height:32px;min-width:32px;min-height:32px;color:var(--color-danger);" aria-label="删除阶段">'+I.x+'</button>' : '')
+        +  '</div>'
+        +  '<div class="pe-editor" style="display:none;margin-top:8px;">'
+        +    '<div class="tiny muted" style="margin:4px 0 3px;">工作日任务（每行一个）</div><textarea class="pe-wd" rows="4" style="width:100%;box-sizing:border-box;padding:8px 10px;border-radius:9px;border:1px solid var(--hair-strong);background:var(--glass-field);color:var(--color-text-primary);font-size:12.5px;line-height:1.6;">'+escAttr(_tasksToText(ph.weekday))+'</textarea>'
+        +    '<div class="tiny muted" style="margin:6px 0 3px;">周六任务</div><textarea class="pe-sat" rows="3" style="width:100%;box-sizing:border-box;padding:8px 10px;border-radius:9px;border:1px solid var(--hair-strong);background:var(--glass-field);color:var(--color-text-primary);font-size:12.5px;line-height:1.6;">'+escAttr(_tasksToText(ph.sat))+'</textarea>'
+        +    '<div class="tiny muted" style="margin:6px 0 3px;">周日任务</div><textarea class="pe-sun" rows="3" style="width:100%;box-sizing:border-box;padding:8px 10px;border-radius:9px;border:1px solid var(--hair-strong);background:var(--glass-field);color:var(--color-text-primary);font-size:12.5px;line-height:1.6;">'+escAttr(_tasksToText(ph.sun))+'</textarea>'
+        +    '<div class="tiny muted" style="margin:6px 0 3px;">阶段内每月目标（每行一月，可留空）</div><textarea class="pe-months" rows="3" style="width:100%;box-sizing:border-box;padding:8px 10px;border-radius:9px;border:1px solid var(--hair-strong);background:var(--glass-field);color:var(--color-text-primary);font-size:12.5px;line-height:1.6;">'+escAttr((ph.months||[]).map(function(m){ return m.goal || m.name || ''; }).filter(Boolean).join('\n'))+'</textarea>'
+        +  '</div>'
+        + '</div>';
+    });
+    h += '</div>'
+      + '<div class="row" style="gap:8px;margin-top:4px;"><button class="btn-sm" id="peAdd" style="flex:1;">'+I.plus+'添加阶段</button><button class="btn-sm btn-primary" id="peSave" style="flex:1;">保存计划</button></div>'
+      + '<button class="btn-ghost btn-sm" id="peReset" style="width:100%;margin-top:6px;font-size:12px;">恢复默认考研双阶段模板</button>';
+    host.innerHTML = h;
+
+    host.querySelectorAll('.pe-tpl').forEach(function(b){
+      b.onclick = function(){ const ed = b.closest('.pe-row').querySelector('.pe-editor'); ed.style.display = ed.style.display === 'none' ? '' : 'none'; };
+    });
+    host.querySelectorAll('.pe-del').forEach(function(b){
+      b.onclick = function(){
+        if (!confirm('删除这个阶段？该阶段已打的卡会保留在数据里，但不再显示。')) return;
+        b.closest('.pe-row').remove();
+      };
+    });
+    $('peAdd').onclick = function(){
+      ensurePlans();
+      state.plans = _readPlanRows().concat([{ label: '新阶段', weeks: 8, months: [], weekday: [{ label: '完成今天的学习任务', tag: 't-rev', tagText: '任务' }], sat: [], sun: [] }]);
+      rebuildPhases(); save(); render(); renderPlanEditor();
+    };
+    $('peSave').onclick = function(){
+      const rows = _readPlanRows();
+      if (!rows.length) { alert('至少保留一个阶段'); return; }
+      state.plans = rows;
+      rebuildPhases(); save(); render(); renderPlanEditor();
+      alert('计划已保存');
+    };
+    $('peReset').onclick = function(){
+      if (!confirm('恢复内置的考研双阶段模板？你的自定义计划会被覆盖（打卡记录保留）。')) return;
+      state.plans = null;
+      rebuildPhases(); save(); render(); renderPlanEditor();
+    };
+  }
+  /** 从编辑器 DOM 读回计划数组（模板区没展开过也能读，值就是初始序列化文本） */
+  function _readPlanRows(){
+    const out = [];
+    document.querySelectorAll('#peRows .pe-row').forEach(function(row){
+      const wd = _textToTasks(row.querySelector('.pe-wd').value);
+      out.push({
+        label: row.querySelector('.pe-name').value.trim() || ('阶段 ' + (out.length + 1)),
+        weeks: Math.max(1, Math.min(160, parseInt(row.querySelector('.pe-weeks').value, 10) || 8)),
+        months: String(row.querySelector('.pe-months').value || '').split('\n').map(function(s){ return s.trim(); }).filter(Boolean).map(function(g){ return { goal: g }; }),
+        weekday: wd.length ? wd : [{ label: '完成今天的学习任务', tag: 't-rev', tagText: '任务' }],
+        sat: _textToTasks(row.querySelector('.pe-sat').value),
+        sun: _textToTasks(row.querySelector('.pe-sun').value)
+      });
+    });
+    return out;
+  }
+
   // ===== 设置抽屉（收纳阶段以外的配置：提醒 / 数据备份） =====
   function initSettingsDrawer(){
     const body = $('settingsBody'), rc = $('reminderCard'), tb = $('toolbarRow');
@@ -5926,6 +6053,10 @@
         +'<div class="row" style="gap:8px;margin-top:10px;"><button class="btn-sm" id="backendSaveBtn" style="flex:1;">保存并刷新</button><button class="btn-sm" id="backendTestBtn" style="flex:1;">测试</button></div>'
         +'<div class="tiny muted" id="backendTip" style="margin-top:6px;line-height:1.6;"></div>';
       body.appendChild(be);
+      // v9 学习计划编辑器：阶段/周数/每日任务模板/月目标全部可改
+      const pe=document.createElement('div'); pe.className='card'; pe.style.marginBottom='1rem'; pe.id='planEditorCard';
+      body.appendChild(pe);
+      renderPlanEditor();
       if(rc) body.appendChild(rc); if(tb) body.appendChild(tb);
       renderBackupHint();
       const bInp=$('backendUrlInp'); if(bInp){ try{ bInp.value=(localStorage.getItem('backend_url')||''); }catch(e){} }
@@ -6414,7 +6545,7 @@
 
   function buildAIContext(mode, question) {
     const ctx = {
-      phase: state.p === 0 ? '在职打基础' : '全职冲刺',
+      phase: (PHASES[state.p] && PHASES[state.p].label) || '',
       week: state.wk,
       day: DAYS[state.day],
       todayTasks: effectiveTasks(state.p, state.wk, state.day).map((t,i) => {
@@ -6728,13 +6859,19 @@
   })();
 
   // ===== EVENT BINDINGS =====
-  phaseToggle.querySelectorAll('button').forEach(b => {
-    b.onclick = () => { state.p = parseInt(b.dataset.p); state.wk = 1; render(); };
+  // v9：阶段按钮动态生成，用事件委托（阶段数量可变）
+  phaseToggle.addEventListener('click', function(e){
+    const b = e.target.closest('button'); if (!b || b.dataset.p === undefined) return;
+    state.p = parseInt(b.dataset.p, 10) || 0; state.wk = 1; render();
   });
 
-  $('prevWk').onclick = () => { if (state.wk > 1) { state.wk--; render(); } };
+  $('prevWk').onclick = () => {
+    if (state.wk > 1) { state.wk--; render(); }
+    else if (state.p > 0) { state.p--; state.wk = PHASES[state.p].weeks; render(); } // 跨到上一阶段末周
+  };
   $('nextWk').onclick = () => {
     if (state.wk < PHASES[state.p].weeks) { state.wk++; render(); }
+    else if (state.p < PHASES.length - 1) { state.p++; state.wk = 1; render(); }     // 跨到下一阶段首周
   };
 
   $('editToggle').onclick = () => {
@@ -6785,12 +6922,14 @@
     render();
   };
 
-  // Exam date change
+  // 目标日修改（v9：日期 + 名称都可改，去考研专属）
   $('changeExamDate').onclick = () => {
-    const d = prompt('修改初试日期（YYYY-MM-DD）：', state.examDate);
+    const d = prompt('修改目标日期（YYYY-MM-DD）：', state.examDate);
     if (d === null) return;
     if (/^\d{4}-\d{2}-\d{2}$/.test(d) && !isNaN(new Date(d).getTime())) {
       state.examDate = d;
+      const lbl = prompt('这个目标叫什么？（显示用，如：考研初试 / 雅思 / 期末考）', state.goalLabel || '考研初试');
+      if (lbl !== null && lbl.trim()) state.goalLabel = lbl.trim().slice(0, 12);
       save();
       render();
     } else {

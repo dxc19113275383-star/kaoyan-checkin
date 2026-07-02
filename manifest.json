@@ -1,7 +1,7 @@
 {
-  "name": "燕燕考研助手",
-  "short_name": "燕燕考研",
-  "description": "在职/全职双阶段考研备考 · 打卡 + 资料包 + AI助手",
+  "name": "燕燕学习助手",
+  "short_name": "燕燕学习",
+  "description": "可自定义阶段的学习计划打卡 + 背单词/阅读/做题 + AI 教练",
   "start_url": "./index.html",
   "display": "standalone",
   "orientation": "portrait",
