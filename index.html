@@ -1346,6 +1346,7 @@
     <a href="#" id="exportBtn">导出</a> ·
     <a href="#" id="importBtn">导入</a> ·
     <a href="#" id="resetBtn">重置全部进度</a>
+    <div id="backupHint"></div>
   </div>
 
   <!-- ====== 设置抽屉（slide-over，收纳阶段/提醒/数据等配置） ====== -->
@@ -2389,7 +2390,7 @@
   function loadSyntaxSets(){
     return new Promise(function(res){
       if(_synSets){ res(_synSets); return; }
-      fetch('data/syntax/index.json').then(function(r){return r.json();}).then(function(j){ _synSets=(j.sets||[]); res(_synSets); }).catch(function(){ _synSets=[]; res(_synSets); });
+      fetch('data/syntax/index.json').then(function(r){return r.json();}).then(function(j){ _synSets=(j.sets||[]).filter(function(x){return !x.placeholder;}); res(_synSets); }).catch(function(){ _synSets=[]; res(_synSets); });
     });
   }
   function loadSyntaxSentences(setId){
@@ -2410,6 +2411,7 @@
 
   function renderSyntaxHome(sets){
     const s=ensureSyntax(); sets=sets||[];
+    if (sets.length && !sets.find(function(x){return x.id===s.active;})) s.active = sets[0].id; // active 指向已移除的库时回退
     let opts='';
     sets.forEach(function(x){ opts+='<option value="'+x.id+'"'+(x.id===s.active?' selected':'')+'>'+escAttr(x.name)+(x.placeholder?' (待导入)':'')+'</option>'; });
     loadSyntaxSentences(s.active).then(function(sentences){
@@ -2894,14 +2896,16 @@
   function computeStreak() {
     // v8.1 统一 streak：从"今天"（起始日期自动定位，未设则取当前视图）回溯；
     // 今天还没打卡不算断，从昨天起算——不惩罚"今天还没开始"。
+    // P0.6 宽恕：漏 1 天不断链（漏的那天不计数），连漏 2 天才算断——照顾在职易断档。
     const pos = _todayPos();
-    let s = 0, p = pos.p, w = pos.wk, d = pos.day;
+    let s = 0, p = pos.p, w = pos.wk, d = pos.day, grace = 1;
     const todayArr = state.data[keyFor(p,w,d)];
     if (!(todayArr && todayArr.some(v => v))) { d--; if (d<0) { d=6; w--; } }
     while (w >= 1) {
       const a = state.data[keyFor(p,w,d)];
-      if (a && a.some(v => v)) { s++; d--; if (d<0) { d=6; w--; } }
-      else break;
+      if (a && a.some(v => v)) s++;
+      else if (grace-- <= 0) break;
+      d--; if (d<0) { d=6; w--; }
     }
     return s;
   }
@@ -3468,6 +3472,7 @@
   }
 
   // ===== EXPORT / IMPORT =====
+  const APP_VERSION = 'v8.1';
   function exportData() {
     const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
     const url = URL.createObjectURL(blob);
@@ -3478,6 +3483,22 @@
     a.download = 'kaoyan_backup_'+ds+'.json';
     a.click();
     URL.revokeObjectURL(url);
+    try { localStorage.setItem('kaoyan_last_backup', ds); } catch(e){}
+    renderBackupHint();
+  }
+  // 设置页备份状态行：版本号 + 距上次备份天数（唤起备份习惯，数据只在本机）
+  function renderBackupHint() {
+    const el = $('backupHint'); if (!el) return;
+    let txt = APP_VERSION;
+    try {
+      const last = localStorage.getItem('kaoyan_last_backup');
+      if (!last) { txt += ' · 还没导出过备份，建议每周导出一次'; }
+      else {
+        const days = Math.max(0, Math.floor((new Date(todayStr()+'T00:00:00') - new Date(last+'T00:00:00')) / 86400000));
+        txt += days === 0 ? ' · 今天已备份' : ' · 上次备份 ' + days + ' 天前' + (days >= 14 ? '，建议尽快导出' : '');
+      }
+    } catch(e){}
+    el.textContent = txt;
   }
 
   function importData() {
@@ -3525,8 +3546,9 @@
 
   // ===== PAGE SWITCHING =====
   // ===== 学习中心 =====
+  // P0.2 占位清理：今日学习/真题题库/AI模拟考三张"敬请期待"卡已撤下（规划见 PLAN.md，
+  // 今日学习将在 P1.1 以真功能回归），学习中心只展示可用模块。
   const LEARN_MODULES = [
-    { key:'today',     icon:I.grid,     title:'今日学习', sub:'今天该背/读/做的清单',     group:'综合', ready:false, todo:'引擎齐了后，这里会聚合今日的背单词、阅读、数学任务，一键直达。' },
     { key:'vocab',     icon:I.book,     title:'背单词',   sub:'多词库 · 斩词 · 艾宾浩斯',   group:'英语', ready:true,  todo:'' },
     { key:'reading',   icon:I.bookOpen, title:'阅读',     sub:'精读 · 点词查义 · 加入背单词', group:'英语', ready:true,  todo:'' },
     { key:'syntax',    icon:I.layers,   title:'长难句',   sub:'真题难句 · 成分拆解 · AI讲解', group:'英语', ready:true,  todo:'' },
@@ -3534,8 +3556,6 @@
     { key:'math',      icon:I.sigma,    title:'数学',     sub:'分类练习 · 错题本 · AI讲解', group:'数学', ready:true,  todo:'' },
     { key:'mathcourse',icon:I.play,     title:'数学课程', sub:'视频课 · 章节 · 续播',     group:'数学', ready:true,  todo:'' },
     { key:'mistakes',  icon:I.bookmark, title:'错题中心', sub:'跨模块错题 · 一键再练',     group:'综合', ready:true,  todo:'' },
-    { key:'exams',     icon:I.edit,     title:'真题题库', sub:'按年份/科目/题型',         group:'综合', ready:false, todo:'结构化真题库，作为模拟考与数学练习的内容底座。' },
-    { key:'mock',      icon:I.robot,    title:'AI模拟考', sub:'作文/翻译批改 · 模拟卷',    group:'综合', ready:false, todo:'AI 作文与专业英语翻译批改 + 模拟卷自测。' },
     { key:'resources', icon:I.folder,   title:'资料/网课', sub:'视频/PDF/文档在线观看',    group:'综合', ready:true,  todo:'' }
   ];
 
@@ -3809,7 +3829,7 @@
       const userLibs=(v.userLibs||[]).map(function(l){return {id:l.id,name:l.name,desc:'我的词库 · '+l.count+'词',tag:'自建',user:true};});
       if(_vocabLibs){ res(_vocabLibs.concat(userLibs)); return; }
       fetch('data/words/index.json').then(function(r){return r.json();}).then(function(j){
-        _vocabLibs=(j.libraries||[]); res(_vocabLibs.concat(userLibs));
+        _vocabLibs=(j.libraries||[]).filter(function(x){return !x.placeholder;}); res(_vocabLibs.concat(userLibs));
       }).catch(function(){ _vocabLibs=[]; res(userLibs); });
     });
   }
@@ -3836,6 +3856,7 @@
 
   function renderVocabHome(libs){
     const v=ensureVocab(); libs=libs||[];
+    if (libs.length && !libs.find(function(x){return x.id===v.active;})) v.active = libs[0].id; // active 指向已移除的库时回退
     let opts='';
     libs.forEach(function(l){ opts+='<option value="'+l.id+'"'+(l.id===v.active?' selected':'')+'>'+escAttr(l.name)+(l.placeholder?' (待导入)':'')+'</option>'; });
     loadVocabWords(v.active).then(function(words){
@@ -4574,7 +4595,7 @@
       const userSets=(m.userSets||[]).map(function(s){return {id:s.id,name:s.name,desc:'我的题集 · '+s.count+'题',cat:'自建',user:true};});
       if(_mathSets){ res(_mathSets.concat(userSets)); return; }
       fetch('data/math/index.json').then(function(r){return r.json();}).then(function(j){
-        _mathSets=(j.sets||[]); res(_mathSets.concat(userSets));
+        _mathSets=(j.sets||[]).filter(function(x){return !x.placeholder;}); res(_mathSets.concat(userSets));
       }).catch(function(){ _mathSets=[]; res(userSets); });
     });
   }
@@ -4601,6 +4622,7 @@
 
   function renderMathHome(sets){
     const m=ensureMath(); sets=sets||[];
+    if (sets.length && !sets.find(function(x){return x.id===m.active;})) m.active = sets[0].id; // active 指向已移除的库时回退
     let opts='';
     sets.forEach(function(s){ opts+='<option value="'+s.id+'"'+(s.id===m.active?' selected':'')+'>'+escAttr(s.name)+(s.placeholder?' (待导入)':'')+'</option>'; });
     loadMathQuestions(m.active).then(function(qs){
@@ -4834,10 +4856,21 @@
     const user=m.lessons.map(function(l){ return {id:l.id, chapter:l.chapter||'未分章', title:l.title, url:l.url, cover:'', dur:0, seed:false}; });
     return seed.concat(user);
   }
+  // P0.5 视频覆盖率：scripts/check-r2-coverage.mjs 生成 coverage.json（HEAD 探测 R2），
+  // 前端据此把"登记了但还没上传"的节灰显标注，用户不用点开才发现播不了。
+  let _mcCoverage = null;
+  function loadMcCoverage(){
+    if(_mcCoverage!==null) return Promise.resolve(_mcCoverage);
+    return fetch('data/courses/coverage.json').then(function(r){return r.ok?r.json():null;})
+      .then(function(j){ _mcCoverage=(j&&j.map)||{}; return _mcCoverage; })
+      .catch(function(){ _mcCoverage={}; return _mcCoverage; });
+  }
+  // 未收录进 coverage 的（新课/用户自加）一律当可播处理，宁可误放不误拦
+  function mcUploaded(l){ if(!l.seed||!_mcCoverage) return true; const v=_mcCoverage[l.id]; return v===undefined?true:!!v; }
   window.openMathCourse = function(){
     ensureMathCourse(); mcStopVideo(); _mcChapter=null;
     $('mcPlayer').style.display='none'; $('mcHome').style.display='';
-    loadMcSeed().then(renderMcHome);
+    Promise.all([loadMcSeed(), loadMcCoverage()]).then(renderMcHome);
   };
   window.mcOpenChapter = function(c){
     _mcChapter = c || null; mcStopVideo();
@@ -4853,15 +4886,17 @@
   }
   function mcRowHtml(l, m){
     const p=m.progress[l.id]||{};
-    const badge = p.done ? '<span class="mc-badge done">已学</span>' : (p.percent>0?'<span class="mc-badge ing">'+p.percent+'%</span>':'');
+    const notUp = !mcUploaded(l);
+    const badge = notUp ? '<span class="mc-badge ing">未上传</span>' : (p.done ? '<span class="mc-badge done">已学</span>' : (p.percent>0?'<span class="mc-badge ing">'+p.percent+'%</span>':''));
     const bad = !l.url || PAN_RE.test(l.url);
     const lead = l.cover ? '<span class="mc-thumb"><img loading="lazy" src="'+escAttr(l.cover)+'" alt="">'+I.play+'</span>' : '<span class="mc-ico">'+I.play+'</span>';
     const durTxt = l.dur ? '<span class="mc-dur">'+fmtTime(l.dur)+'</span>' : '';
     let subline='';
-    if(bad) subline='<div class="tiny" style="color:var(--color-accent);">链接非直链，可能无法内嵌</div>';
+    if(notUp) subline='<div class="tiny muted">上次核对时还没传到云端，可能已补传，可点开试试</div>';
+    else if(bad) subline='<div class="tiny" style="color:var(--color-accent);">链接非直链，可能无法内嵌</div>';
     else if(p.time>3&&!p.done) subline='<div class="tiny muted">上次看到 '+fmtTime(p.time)+'</div>';
     else if(durTxt) subline='<div class="tiny muted">'+durTxt+'</div>';
-    let h='<div class="mc-row" onclick="mcPlay(\''+l.id+'\')">'+lead;
+    let h='<div class="mc-row"'+(notUp?' style="opacity:.55;"':'')+' onclick="mcPlay(\''+l.id+'\')">'+lead;
     h+='<div class="mc-meta"><div class="mc-title">'+escAttr(l.title)+'</div>'+subline+'</div>'+(badge||'');
     if(!l.seed) h+='<button class="btn-icon mc-del" onclick="event.stopPropagation();mcDelete(\''+l.id+'\')" aria-label="删除">'+I.trash+'</button>';
     return h+'</div>';
@@ -4881,15 +4916,16 @@
     // —— 一级：章节菜单 ——
     if(!_mcChapter || !idx.hasOwnProperty(_mcChapter)){
       const pct=Math.round(doneAll/lessons.length*100);
+      let missAll=0; lessons.forEach(function(l){ if(!mcUploaded(l)) missAll++; });
       html+='<div class="vocab-progbar" style="margin-top:12px;"><i style="width:'+pct+'%"></i></div>';
-      html+='<div class="tiny muted" style="margin-bottom:4px;">共 '+groups.length+' 章 · '+lessons.length+' 节 · 已学 '+doneAll+'（'+pct+'%）</div>';
+      html+='<div class="tiny muted" style="margin-bottom:4px;">共 '+groups.length+' 章 · '+lessons.length+' 节 · 已学 '+doneAll+'（'+pct+'%）'+(missAll?' · '+missAll+' 节待上传':'')+'</div>';
       groups.forEach(function(g){
-        let gd=0; g.items.forEach(function(l){ if((m.progress[l.id]||{}).done) gd++; });
+        let gd=0, gm=0; g.items.forEach(function(l){ if((m.progress[l.id]||{}).done) gd++; if(!mcUploaded(l)) gm++; });
         const gp=Math.round(gd/g.items.length*100);
         const cEsc=escAttr(g.chapter).replace(/\x27/g,"\\\x27");
         html+='<div class="mc-chap-card" onclick="mcOpenChapter(\''+cEsc+'\')">';
         html+=  '<div class="mc-chap-ic">'+I.folder+'</div>';
-        html+=  '<div class="mc-chap-meta"><div class="mc-chap-name">'+escAttr(g.chapter)+'</div><div class="tiny muted">'+g.items.length+' 节 · 已学 '+gd+'/'+g.items.length+'</div><div class="vocab-progbar" style="margin-top:6px;"><i style="width:'+gp+'%"></i></div></div>';
+        html+=  '<div class="mc-chap-meta"><div class="mc-chap-name">'+escAttr(g.chapter)+'</div><div class="tiny muted">'+g.items.length+' 节 · 已学 '+gd+'/'+g.items.length+(gm?' · '+gm+' 节待上传':'')+'</div><div class="vocab-progbar" style="margin-top:6px;"><i style="width:'+gp+'%"></i></div></div>';
         html+=  '<span class="mc-go">'+I.arrowRight+'</span>';
         html+='</div>';
       });
@@ -5263,6 +5299,7 @@
         +'<div class="tiny muted" id="backendTip" style="margin-top:6px;line-height:1.6;"></div>';
       body.appendChild(be);
       if(rc) body.appendChild(rc); if(tb) body.appendChild(tb);
+      renderBackupHint();
       const bInp=$('backendUrlInp'); if(bInp){ try{ bInp.value=(localStorage.getItem('backend_url')||''); }catch(e){} }
       const bSave=$('backendSaveBtn'); if(bSave){ bSave.onclick=function(){ const v=($('backendUrlInp').value||'').trim().replace(/\/+$/,''); try{ if(v) localStorage.setItem('backend_url', v); else localStorage.removeItem('backend_url'); }catch(e){} location.reload(); }; }
       const bTest=$('backendTestBtn'); if(bTest){ bTest.onclick=async function(){ const tip=$('backendTip'); const base=(($('backendUrlInp').value||'').trim().replace(/\/+$/,''))||DEFAULT_BACKEND; if(tip) tip.textContent='测试中…'; try{ const r=await fetch(base+'/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mode:'gen',system:'只输出',question:'输出 OK 两个字',maxTokens:10})}); const j=await r.json(); if(tip) tip.textContent = (j&&j.reply)?('后端正常 · 回包：'+String(j.reply).slice(0,20)):('返回异常：'+JSON.stringify(j).slice(0,40)); }catch(e){ if(tip) tip.textContent='连不上：'+e.message; } }; }

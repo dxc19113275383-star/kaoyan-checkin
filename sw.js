@@ -1,7 +1,7 @@
 // Service Worker for 考研备考打卡 PWA
 // Cache-first strategy: app shell pre-cached, HTML stale-while-revalidate
 
-const CACHE_NAME = 'kaoyan-pwa-v21';
+const CACHE_NAME = 'kaoyan-pwa-v22';
 const APP_SHELL = [
   './index.html',
   './manifest.json',
@@ -58,7 +58,26 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // For other assets (manifest, icon, etc.): cache-first
+  // JSON 数据（data/*.json、manifest 等）：stale-while-revalidate——
+  // 先回缓存保离线可用，同时后台拉新写缓存；新内容提交后刷新两次内可见，无需 bump 版本号
+  if (url.origin === self.location.origin && /\.json$/.test(url.pathname)) {
+    event.respondWith(
+      caches.open(CACHE_NAME).then((cache) => {
+        return cache.match(request).then((cached) => {
+          const fetchPromise = fetch(request).then((response) => {
+            if (response && response.status === 200) {
+              cache.put(request, response.clone());
+            }
+            return response;
+          }).catch(() => cached);
+          return cached || fetchPromise;
+        });
+      })
+    );
+    return;
+  }
+
+  // For other assets (icon, etc.): cache-first
   event.respondWith(
     caches.match(request).then((cached) => {
       if (cached) return cached;

@@ -5,6 +5,13 @@
 ## [Unreleased]
 
 ### Added
+- **P0 全部完成（0.2-0.6，详见 PLAN.md）**：
+  - **0.2 占位大扫除**：`words/index.json` 删 cet4/cet6/major-en 占位、`math/index.json` 删 logic 占位；学习中心撤下「今日学习/真题题库/AI模拟考」三张"敬请期待"卡（今日学习将在 P1.1 以真功能回归）；三个模块加载层过滤 `placeholder` 条目 + active 指向已移除库时自动回退首个可用库。写作模板经核实有真数据（2.4KB groups），审计误报，未处理。
+  - **0.3 SW 缓存修正（v22）**：同源 `*.json`（data/、manifest）从 cache-first 改为 stale-while-revalidate——先回缓存保离线，后台拉新写缓存，新内容提交后刷新两次内可见，无需再手动 bump SW 版本。
+  - **0.4 备份加固**：导出时记录 `kaoyan_last_backup`；设置抽屉数据行新增 `#backupHint` 显示「版本号 + 距上次备份 N 天」（≥14 天提醒尽快导出）。导出文件名带日期、导入 p/wk/day/data 字段校验经核实已存在。
+  - **0.5 视频覆盖率**：新增 `scripts/check-r2-coverage.mjs`（拉 R2 在线 course.json，HEAD 探测每节视频，生成 `data/courses/coverage.json`，id 哈希与前端 `_hash32` 一致）；前端 `mcUploaded()` 据此把未上传节灰显 +「未上传」badge + 章节卡/总览"N 节待上传"计数，未收录的当可播处理。**首跑结果：133/133 全部已上传**——此前"视频看不了"的覆盖率缺口已由用户补传完毕。
+  - **0.6 streak 宽恕**：`computeStreak()` 允许漏 1 天不断链（漏的那天不计数，连漏 2 天才断），照顾在职易断档场景。
+  - 端到端验证：学习中心 8 卡 0 占位；词库/题库选择器无"待导入"；数学课程 4 章 133 节无待上传标记；备份提示正常；构造数据验证宽恕 streak（d3✓ d2漏 d1✓ d0✓ → 3）；DOM 自检 15/15。
 - **P0.1 打卡×学习打通（消除双轨脱节）+ PLAN.md 立项**：
   - 审计发现打卡（`state.data` 手动勾选）与学习脊柱（`state.learn` 自动记录）互不通信：背完词 quest 环走满但打卡任务不动、热力图/周报不吃学习行为、两套 streak 数字互相矛盾。
   - 打通：`_bumpQuest()` 在 quest 达标瞬间调用新增的 `_autoCheckTask(mod)`——按科目关键词（单词/阅读·精读/数学·高数·线代·概率 + `t-math` tag）自动勾选"今天"（`_todayPos()`：起始日期 `calcPosition` 定位，未设则当前视图）的打卡任务；**回顾/保底类任务（t-rev）不自动勾**，留给手动。勾选走 `setDone`+`save`，热力图/周报/streak 全部自然吃到学习行为。

@@ -1,9 +1,6 @@
 {
   "libraries": [
     { "id": "kaoyan-5500", "name": "考研英语大纲词 5500（正序）", "desc": "考研大纲词 5490 词 · 正序版（含音标·释义）", "file": "kaoyan-5500.json", "tag": "考研5500", "required": true },
-    { "id": "kaoyan", "name": "考研英语大纲词（核心·带例句）", "desc": "高频核心 80 词 · 含例句，适合精学", "file": "kaoyan.json", "tag": "考研" },
-    { "id": "cet4", "name": "四级核心词", "desc": "待导入", "file": "cet4.json", "tag": "四级", "placeholder": true },
-    { "id": "cet6", "name": "六级核心词", "desc": "待导入", "file": "cet6.json", "tag": "六级", "placeholder": true },
-    { "id": "major-en", "name": "国际商务专业英语", "desc": "待导入 · 上经贸434含50分专英", "file": "major-en.json", "tag": "专业英语", "placeholder": true }
+    { "id": "kaoyan", "name": "考研英语大纲词（核心·带例句）", "desc": "高频核心 80 词 · 含例句，适合精学", "file": "kaoyan.json", "tag": "考研" }
   ]
 }

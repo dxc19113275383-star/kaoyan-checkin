@@ -25,14 +25,6 @@
       "count": 10
     },
     {
-      "id": "logic",
-      "name": "逻辑·396预留",
-      "desc": "待导入 · 全职阶段填充",
-      "cat": "逻辑",
-      "file": "logic.json",
-      "placeholder": true
-    },
-    {
       "id": "zyx-xiandai",
       "name": "周洋鑫800题·线代",
       "desc": "AI清洗待校 · 92题",
