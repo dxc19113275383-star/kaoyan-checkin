@@ -442,12 +442,44 @@
   .res-progress-bar { flex: 1; height: 4px; background: var(--color-background-secondary); border-radius: 2px; overflow: hidden; }
   .res-progress-fill { height: 100%; background: var(--color-text-info); border-radius: 2px; }
   .res-filter { padding: 5px 8px; border-radius: 6px; border: 0.5px solid var(--color-border-secondary); background: var(--color-background-secondary); color: var(--color-text-primary); font-size: 12px; font-family: var(--font-sans); }
-  /* 学习中心 hub */
-  .learn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .lc-section { grid-column: 1 / -1; font-size: 12px; font-weight: 700; letter-spacing: .06em; color: var(--color-text-tertiary); margin: 14px 2px 0; }
+  /* 学习中心 hub —— 不对称 bento：宽窄错落 + 活数据，打破均匀方块阵 */
+  .learn-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+  .lc-section { grid-column: 1 / -1; font-size: 11px; font-weight: 600; letter-spacing: .12em; color: var(--color-text-tertiary); margin: 12px 2px 0; text-transform: uppercase; }
   .lc-section:first-child { margin-top: 2px; }
   .learn-card.lc-soon { opacity: .6; }
   .learn-card.lc-wide { grid-column: 1 / -1; min-height: 0; }
+  .learn-card.lc-s2 { grid-column: span 2; min-height: 118px; padding: 15px 12px; }
+  .learn-card.lc-s3 { grid-column: span 3; min-height: 112px; }
+  .learn-card.lc-s4 { grid-column: span 4; min-height: 118px; }
+  /* 横排卡（作文）与通栏细条（错题中心） */
+  .learn-card.lc-h, .learn-card.lc-bar { flex-direction: row; align-items: center; gap: 12px; min-height: 0; }
+  .learn-card.lc-h .lc-icon, .learn-card.lc-bar .lc-icon { margin-bottom: 0; }
+  .lc-htx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+  .lc-go { display: inline-flex; color: var(--color-text-tertiary); flex-shrink: 0; }
+  .lc-go svg { width: 16px; height: 16px; }
+  .learn-card.lc-bar { grid-column: 1 / -1; padding: 14px 16px; border-radius: var(--radius-md); margin-top: 12px; }
+  /* 主横幅：今日学习（本页唯一深色焦点） */
+  .learn-card.lc-banner {
+    grid-column: 1 / -1; flex-direction: row; align-items: center; gap: 14px;
+    min-height: 0; padding: 19px 18px;
+    border-radius: var(--radius-xl);
+    background: var(--brand-gradient);
+    border-color: transparent;
+    color: var(--color-text-on-deep);
+    box-shadow: var(--shadow-deep-on-light);
+    -webkit-backdrop-filter: none; backdrop-filter: none;
+  }
+  .lc-banner .lc-banner-ic { width: 42px; height: 42px; flex-shrink: 0; border-radius: 13px; background: rgba(255,255,255,.14); display: inline-flex; align-items: center; justify-content: center; }
+  .lc-banner .lc-banner-ic svg { width: 21px; height: 21px; }
+  .lc-banner .lc-banner-tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+  .lc-banner .lc-title { font-size: 17px; color: inherit; }
+  .lc-banner .lc-sub { color: var(--color-text-on-deep-dim); }
+  .lc-banner .lc-banner-go { display: inline-flex; opacity: .85; flex-shrink: 0; }
+  .lc-banner .lc-banner-go svg { width: 18px; height: 18px; }
+  /* 卡内数据行 */
+  .lc-meta { font-size: 12px; color: var(--color-text-secondary); font-variant-numeric: tabular-nums; }
+  .lc-meta.lc-hot { color: var(--brand); font-weight: 600; }
+  .learn-card .vocab-progbar { width: 100%; }
   /* —— 学习中心 hub 卡：iOS 小组件式 —— */
   .learn-card {
     position: relative; text-align: left;
@@ -3802,35 +3834,51 @@
 
   // ===== PAGE SWITCHING =====
   // ===== 学习中心 =====
-  // P0.2 撤下占位卡后，学习中心只展示可用模块；P1.1 今日学习以真功能回归（聚合页，置顶通栏）。
-  const LEARN_MODULES = [
-    { key:'today',     icon:I.grid,     title:'今日学习', sub:'今日任务 · 到期复习 · 一键开学', group:'今日', ready:true, wide:true, todo:'' },
-    { key:'vocab',     icon:I.book,     title:'背单词',   sub:'多词库 · 斩词 · 艾宾浩斯',   group:'英语', ready:true,  todo:'' },
-    { key:'reading',   icon:I.bookOpen, title:'阅读',     sub:'精读 · 点词查义 · 加入背单词', group:'英语', ready:true,  todo:'' },
-    { key:'syntax',    icon:I.layers,   title:'长难句',   sub:'真题难句 · 成分拆解 · AI讲解', group:'英语', ready:true,  todo:'' },
-    { key:'writing',   icon:I.pen,      title:'作文',     sub:'AI 批改 · 范文 · 模板',     group:'英语', ready:true,  todo:'' },
-    { key:'math',      icon:I.sigma,    title:'数学',     sub:'分类练习 · 错题本 · AI讲解', group:'数学', ready:true,  todo:'' },
-    { key:'mathcourse',icon:I.play,     title:'数学课程', sub:'视频课 · 章节 · 续播',     group:'数学', ready:true,  todo:'' },
-    { key:'mistakes',  icon:I.bookmark, title:'错题中心', sub:'跨模块错题 · 一键再练',     group:'综合', ready:true,  todo:'' },
-    { key:'resources', icon:I.folder,   title:'资料/网课', sub:'视频/PDF/文档在线观看',    group:'综合', ready:true,  todo:'' }
-  ];
-
+  // 重设计：不对称 bento（宽窄错落 + 每张卡带真实数据），不再是均匀方块阵。
+  // 「资料/网课」入口已撤（内容统一走 R2），页面与路由保留但无入口。
   function renderLearnHub() {
+    // 各卡活数据（全部同步可得，加载失败不阻塞渲染）
+    let vq = null, mq = null, readN = 0, dueSyn = 0, mistN = 0, mcDone = 0;
+    try { const t = window.getDailyTraining(); vq = t.items.find(function(x){ return x.mod === 'vocab'; }); mq = t.items.find(function(x){ return x.mod === 'math'; }); } catch(e){}
+    try { const rp = (state.learn.reading || {}).progress || {}; readN = Object.keys(rp).filter(function(k){ return rp[k] && rp[k].read; }).length; } catch(e){}
+    try { dueSyn = window.syntaxDueCount ? window.syntaxDueCount() : 0; } catch(e){}
+    try { mistN = (window.listMistakes({}) || []).length; } catch(e){}
+    try { const mp = (state.learn.mathcourse || {}).progress || {}; mcDone = Object.keys(mp).filter(function(k){ return mp[k] && mp[k].done; }).length; } catch(e){}
+
+    function card(cls, view, inner){ return '<button class="learn-card '+cls+'" onclick="showLearnView(\''+view+'\')">'+inner+'</button>'; }
+    function meta(txt, hot){ return '<span class="lc-meta'+(hot?' lc-hot':'')+'">'+txt+'</span>'; }
+
     let html = '';
-    ['今日','英语','数学','综合'].forEach(function(g){
-      const items = LEARN_MODULES.filter(function(m){ return m.group===g; });
-      if(!items.length) return;
-      html += '<div class="lc-section">'+g+'</div>';
-      items.forEach(function(m){
-        const badge = m.ready ? '' : '<span class="lc-badge soon">敬请期待</span>';
-        html += '<button class="learn-card'+(m.ready?' lc-ready':' lc-soon')+(m.wide?' lc-wide':'')+'" onclick="showLearnView(\''+m.key+'\')">' +
-          badge +
-          '<span class="lc-icon">'+m.icon+'</span>' +
-          '<span class="lc-title">'+m.title+'</span>' +
-          '<span class="lc-sub">'+m.sub+'</span>' +
-        '</button>';
-      });
-    });
+    // —— 主横幅：今日学习（本页唯一深色焦点）——
+    const vocabPct = vq && vq.goal ? Math.min(100, Math.round(vq.cur / vq.goal * 100)) : 0;
+    html += card('lc-banner', 'today',
+        '<span class="lc-banner-ic">'+I.grid+'</span>'
+      + '<span class="lc-banner-tx"><span class="lc-title">今日学习</span><span class="lc-sub">任务 · 到期复习 · 一键开始</span></span>'
+      + '<span class="lc-banner-go">'+I.arrowRight+'</span>');
+    // —— 英语：4/2 与 2/4 交错 ——
+    html += '<div class="lc-section">英语</div>';
+    html += card('lc-s4', 'vocab',
+        '<span class="lc-icon">'+I.book+'</span><span class="lc-title">背单词</span>'
+      + meta(vq ? ('今日 '+vq.cur+' / '+vq.goal) : '斩词 · 艾宾浩斯')
+      + '<span class="vocab-progbar" style="margin-top:8px;"><i style="width:'+vocabPct+'%"></i></span>');
+    html += card('lc-s2', 'reading',
+        '<span class="lc-icon">'+I.bookOpen+'</span><span class="lc-title">阅读</span>' + meta('已读 '+readN+' 篇'));
+    html += card('lc-s2', 'syntax',
+        '<span class="lc-icon">'+I.layers+'</span><span class="lc-title">长难句</span>' + meta(dueSyn ? ('待复习 '+dueSyn) : '成分拆解', dueSyn > 0));
+    html += card('lc-s4 lc-h', 'writing',
+        '<span class="lc-icon">'+I.pen+'</span><span class="lc-htx"><span class="lc-title">作文</span><span class="lc-sub">AI 批改 · 范文 · 默写</span></span><span class="lc-go">'+I.arrowRight+'</span>');
+    // —— 数学：3/3 ——
+    html += '<div class="lc-section">数学</div>';
+    html += card('lc-s3', 'math',
+        '<span class="lc-icon">'+I.sigma+'</span><span class="lc-title">数学</span>' + meta(mq ? ('今日 '+mq.cur+' / '+mq.goal) : '分类练习'));
+    html += card('lc-s3', 'mathcourse',
+        '<span class="lc-icon">'+I.play+'</span><span class="lc-title">数学课程</span>' + meta(mcDone ? ('已学 '+mcDone+' 节') : '133 节视频课'));
+    // —— 错题中心：通栏细条 ——
+    html += card('lc-bar', 'mistakes',
+        '<span class="lc-icon">'+I.bookmark+'</span><span class="lc-htx"><span class="lc-title">错题中心</span></span>'
+      + (mistN ? '<span class="lc-badge ready">'+mistN+' 待清</span>' : '<span class="lc-meta">干净</span>')
+      + '<span class="lc-go">'+I.arrowRight+'</span>');
+
     const grid = $('learnGrid');
     grid.className = 'learn-grid ky-stagger';
     grid.innerHTML = html;
@@ -5804,16 +5852,16 @@
         '<span class="hq-text"><div class="hq-tt">学习中心</div><div class="hq-sub">背单词 · 阅读 · 数学 · 真题</div></span>'+
         '<span class="hq-go">'+I.arrowRight+'</span>'+
       '</button>'+
-      '<button class="hq-card" onclick="goResources()">'+
-        '<span class="hq-ico">'+I.folder+'</span>'+
-        '<div class="hq-tt">资料 / 网课</div><div class="hq-sub">视频 · PDF · 真题文档</div>'+
+      '<button class="hq-card" onclick="goToday()">'+
+        '<span class="hq-ico">'+I.grid+'</span>'+
+        '<div class="hq-tt">今日学习</div><div class="hq-sub">任务 · 复习 · 一键开始</div>'+
       '</button>'+
       '<button class="hq-card" onclick="showPage(2)">'+
         '<span class="hq-ico">'+I.coach+'</span>'+
         '<div class="hq-tt">AI 学习教练</div><div class="hq-sub">答疑 · 复盘 · 排计划</div>'+
       '</button>';
   }
-  window.goResources = function(){ showPage(1); showLearnView('resources'); };
+  window.goToday = function(){ showPage(1); showLearnView('today'); };
 
   // ===== 设置抽屉（收纳阶段以外的配置：提醒 / 数据备份） =====
   function initSettingsDrawer(){
