@@ -503,6 +503,10 @@
   .vocab-opt.correct { background: #16a34a22; border-color: #16a34a; color: #15803d; }
   .vocab-opt.wrong { background: #dc262622; border-color: #dc2626; color: #b91c1c; }
   .vocab-opt:disabled { cursor: default; }
+  /* 选错后揭示各选项对应的英文单词 */
+  .vocab-opt .vo-word { display: block; font-size: 12.5px; font-weight: 600; letter-spacing: .01em; color: var(--color-text-tertiary); margin-top: 3px; }
+  .vocab-opt.correct .vo-word { color: #15803d; }
+  .vocab-opt.wrong .vo-word { color: #b91c1c; }
   .vocab-feedback { margin-top: 14px; padding: 12px; border-radius: var(--border-radius-md); background: var(--color-background-secondary); text-align: left; font-size: 13px; line-height: 1.6; }
   .vocab-known { display: block; text-align: center; margin-top: 14px; font-size: 13px; color: var(--color-text-tertiary); cursor: pointer; }
   /* 极简发音按钮（替代 emoji 🔊） */
@@ -4359,10 +4363,18 @@
     const wd=s.queue[s.idx].wd;
     const correct=(btn.getAttribute('data-def')===wd.def);
     document.querySelectorAll('#vocabOpts .vocab-opt').forEach(function(b){ b.disabled=true; if(b.getAttribute('data-def')===wd.def) b.classList.add('correct'); else if(b===btn) b.classList.add('wrong'); });
+    // 选错时揭示所有选项对应的英文单词——看清自己把哪个词的意思记串了
+    if(!correct){
+      document.querySelectorAll('#vocabOpts .vocab-opt').forEach(function(b){
+        const w=b.getAttribute('data-w');
+        if(w && !b.querySelector('.vo-word')) b.insertAdjacentHTML('beforeend','<span class="vo-word">'+escAttr(w)+'</span>');
+      });
+    }
     // 点选即读：答对读本词；答错先读所选错误选项对应的词，再读正确的词（听觉对比强化）
     const pickedW=btn.getAttribute('data-w')||'';
+    const myIdx=s.idx; // 防连击竞态：翻到下一题后，旧的"接着读正确词"回调作废
     if(correct){ vSpeak(wd.w); }
-    else if(pickedW){ speak(pickedW, { lang:'en-US', onend:function(){ setTimeout(function(){ vSpeak(wd.w); }, 220); } }); }
+    else if(pickedW){ speak(pickedW, { lang:'en-US', onend:function(){ setTimeout(function(){ if(_vsession===s && s.idx===myIdx) vSpeak(wd.w); }, 220); } }); }
     else { vSpeak(wd.w); }
     gradeVocab(s.queue[s.idx], correct);
     if(correct) s.correct++;
