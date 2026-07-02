@@ -16,6 +16,52 @@
     "政府和企业之所以青睐助推，是因为它成本低廉、效果却出奇地好。把员工自动纳入养老金计划、同时允许其随时退出，已在许多国家显著提高了储蓄率。",
     "然而批评者警告说，当被助推的人毫不知情时，助推就可能滑向操纵。「引导一个选择」与「悄悄拿走这个选择」之间的界线，比乍看之下要细得多。"
   ],
+  "questions": [
+    {
+      "q": "Behavioral economics differs from traditional economics in that it ___",
+      "options": [
+        "assumes people always weigh costs and benefits carefully",
+        "holds that choices are often shaped by habit, emotion and how options are presented",
+        "denies that people ever make rational decisions",
+        "focuses only on government policy"
+      ],
+      "answer": 1,
+      "explain": "对比细节题。第 1 段：传统经济学假设人是理性行为者，行为经济学则指出选择常受习惯、情绪和选项呈现方式影响。C 的 ever（从不理性）过于绝对，原文是 frequently。"
+    },
+    {
+      "q": "Which of the following is an example of a nudge as defined in the passage?",
+      "options": [
+        "banning chocolate cake in the cafeteria",
+        "taxing unhealthy food heavily",
+        "placing fruit at eye level while keeping other options available",
+        "paying employees a bonus for eating fruit"
+      ],
+      "answer": 2,
+      "explain": "概念应用题。助推的定义有两个硬条件：不禁止任何选项、不改变经济激励。A 是禁止，B 和 D 都改变了经济激励，只有 C 符合（原文例子：水果放到与视线齐平处，蛋糕仍触手可及）。"
+    },
+    {
+      "q": "The pension example in Paragraph 3 is used to show that nudges ___",
+      "options": [
+        "are cheap and surprisingly effective",
+        "force employees to save against their will",
+        "only work in wealthy countries",
+        "have raised interest rates in many countries"
+      ],
+      "answer": 0,
+      "explain": "例证题。第 3 段先给观点\"政府和企业青睐助推，因为成本低、效果出奇地好\"，随后用\"自动参保+可随时退出\"作例证。B 错在\"强迫\"——可随时退出恰说明没有强制。"
+    },
+    {
+      "q": "According to the last paragraph, critics warn that a nudge may ___",
+      "options": [
+        "cost governments too much money",
+        "make people save too much for retirement",
+        "remove unhealthy options entirely",
+        "slide into manipulation when people are unaware of being nudged"
+      ],
+      "answer": 3,
+      "explain": "细节题。末段：当被助推者毫不知情时，助推可能滑向操纵（slide into manipulation），\"引导选择\"与\"悄悄拿走选择\"只有一线之隔。"
+    }
+  ],
   "glossary": [
     { "w": "rational", "ph": "/ˈræʃnəl/", "def": "adj. 理性的，理智的", "ex": "a rational actor", "exCn": "理性的行为者" },
     { "w": "behavioral", "ph": "/bɪˈheɪvjərəl/", "def": "adj. 行为的", "ex": "behavioral economics", "exCn": "行为经济学" },

@@ -4309,8 +4309,9 @@
       const pr=r.progress[p.id]||{};
       const badge=pr.read?'<span style="color:#16a34a;">已读 ✓</span>':'<span class="muted">未读</span>';
       const saved=pr.saved?('<span>生词 '+pr.saved+'</span>'):'';
+      const quiz=pr.quiz?('<span'+(pr.quiz.correct===pr.quiz.total?' style="color:#16a34a;"':'')+'>题 '+pr.quiz.correct+'/'+pr.quiz.total+'</span>'):'';
       html+='<div class="res-card" onclick="openPassage(\''+p.id+'\')"><div class="res-title">'+I.bookOpen+' '+escAttr(p.title)+'</div>';
-      html+='<div class="res-meta">'+(p.level?'<span>'+escAttr(p.level)+'</span>':'')+(p.source?'<span>'+escAttr(p.source)+'</span>':'')+badge+saved+'</div></div>';
+      html+='<div class="res-meta">'+(p.level?'<span>'+escAttr(p.level)+'</span>':'')+(p.source?'<span>'+escAttr(p.source)+'</span>':'')+badge+saved+quiz+'</div></div>';
     });
     $('readingHome').innerHTML=html;
   }
@@ -4445,11 +4446,63 @@
       html+='</div>';
     });
     html+='</div>';
+    // P1.2 配套练习：读完做题检验理解，答错入错题中心（阅读闭环末端）
+    if (Array.isArray(obj.questions) && obj.questions.length) {
+      window._rdQuiz = { id: obj.id, total: obj.questions.length, answered: 0, correct: 0 };
+      const last = pr.quiz ? '<span class="tiny muted" style="font-weight:400;">上次 '+pr.quiz.correct+'/'+pr.quiz.total+'</span>' : '';
+      html+='<div class="rw-sec-t" style="margin:18px 0 10px;display:flex;justify-content:space-between;align-items:baseline;">配套练习 · '+obj.questions.length+' 题 '+last+'</div>';
+      obj.questions.forEach(function(qq, qi){
+        html+='<div style="margin-bottom:16px;">';
+        html+='<div style="font-size:14.5px;font-weight:500;line-height:1.65;margin-bottom:8px;">'+(qi+1)+'. '+escAttr(qq.q)+'</div>';
+        html+='<div class="vocab-opts" style="margin-top:0;" id="rdqops_'+qi+'">';
+        (qq.options||[]).forEach(function(op, oi){
+          html+='<button class="vocab-opt" onclick="readingAnswer('+qi+','+oi+',this)">'+String.fromCharCode(65+oi)+'. '+escAttr(op)+'</button>';
+        });
+        html+='</div><div class="vocab-feedback" id="rdqfb_'+qi+'" style="display:none;"></div></div>';
+      });
+    }
     html+='<button class="btn-sm" style="width:100%;margin-top:8px;background:'+(pr.read?'var(--color-background-secondary)':'var(--color-text-info)')+';color:'+(pr.read?'var(--color-text-secondary)':'#fff')+';border-color:var(--color-text-info);padding:10px;" onclick="markPassageRead(\''+obj.id+'\')">'+(pr.read?'已读 ✓（点可取消）':'标记已读')+'</button></div>';
     _rdPlayer.units=units;
     $('readingHome').style.display='none'; $('readingView').style.display=''; $('readingView').innerHTML=html;
     setTimeout(markSavedWordsInDom, 0);
   }
+
+  // P1.2 配套练习判分：即时反馈 + 解析；答错入错题中心、答对解错题；全部答完记成绩
+  window.readingAnswer = function(qi, oi, el){
+    const obj = _readingCur; if(!obj || !obj.questions || !obj.questions[qi]) return;
+    const qq = obj.questions[qi];
+    const box = $('rdqops_'+qi); if(!box || box.dataset.done) return;
+    box.dataset.done = '1';
+    const correct = (oi === qq.answer);
+    Array.prototype.forEach.call(box.children, function(b, i){
+      b.disabled = true;
+      if (i === qq.answer) b.classList.add('correct');
+    });
+    if (!correct) el.classList.add('wrong');
+    const refId = obj.id + ':q' + qi;
+    const qTitle = obj.title + ' · 第' + (qi+1) + '题';
+    try {
+      logEvent('reading', 'answer', { refId: refId, correct: correct, tag: '阅读理解', cat: '阅读', title: qTitle });
+      if (!correct) recordMistake('reading', refId, { title: qTitle, tag: '阅读理解', cat: '阅读' });
+      else resolveMistake('reading', refId);
+    } catch(e){}
+    const fb = $('rdqfb_'+qi);
+    if (fb) {
+      fb.style.display = '';
+      fb.innerHTML = '<span class="fb-head '+(correct?'is-ok':'is-no')+'">'+(correct ? I.check+' 正确' : I.x+' 正确答案：'+String.fromCharCode(65+qq.answer))+'</span>'
+        + (qq.explain ? '<div style="margin-top:6px;line-height:1.7;">'+escAttr(qq.explain)+'</div>' : '');
+    }
+    const st = window._rdQuiz;
+    if (st && st.id === obj.id) {
+      st.answered++; if (correct) st.correct++;
+      if (st.answered >= st.total) {
+        const r = ensureReading();
+        const pr = r.progress[obj.id] = r.progress[obj.id] || {};
+        pr.quiz = { correct: st.correct, total: st.total, at: todayStr() };
+        save();
+      } else { save(); }
+    } else { save(); }
+  };
 
   function markSavedWordsInDom(){
     let saved={};

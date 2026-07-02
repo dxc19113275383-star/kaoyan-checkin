@@ -16,6 +16,52 @@
     "然而，灵活往往以牺牲保障为代价。零工劳动者通常被归类为独立承包人，这意味着他们没有带薪休假、没有养老金缴纳，一旦需求骤然枯竭也几乎得不到保护。",
     "如今，世界各地的监管者都在艰难地思考该如何对待这类劳动者。核心问题是：消费者所享受的便利，是否应当被允许建立在一支承担了大部分风险的劳动力之上。"
   ],
+  "questions": [
+    {
+      "q": "According to Paragraph 1, the gig economy is a labor market dominated by ___",
+      "options": [
+        "short-term contracts and freelance work",
+        "permanent full-time jobs",
+        "government employment programs",
+        "smartphone manufacturing"
+      ],
+      "answer": 0,
+      "explain": "定义细节题。第 1 段首句：零工经济指以短期合同和自由职业（short-term contracts and freelance work）、而非固定工作为主导的劳动力市场。"
+    },
+    {
+      "q": "According to Paragraph 2, gig work appeals to students, parents and retirees because ___",
+      "options": [
+        "it offers generous pension plans",
+        "they can earn money around their other commitments",
+        "it guarantees long-term contracts",
+        "it requires no skills at all"
+      ],
+      "answer": 1,
+      "explain": "细节题。第 2 段：他们可以在兼顾其他事务之余赚钱（earn money around their other commitments）。A 与第 3 段\"没有养老金缴纳\"矛盾。"
+    },
+    {
+      "q": "Being classified as independent contractors means that gig workers ___",
+      "options": [
+        "enjoy paid leave and pension contributions",
+        "cannot take on tasks whenever they choose",
+        "receive no paid leave, no pension contributions and little protection",
+        "are fully protected when demand dries up"
+      ],
+      "answer": 2,
+      "explain": "细节题。第 3 段：被归类为独立承包人意味着没有带薪休假、没有养老金缴纳，需求骤然枯竭时几乎得不到保护。"
+    },
+    {
+      "q": "The central question for regulators, as stated in the last paragraph, is whether ___",
+      "options": [
+        "consumers should pay more for convenience",
+        "gig platforms should be banned outright",
+        "workers should be forced into permanent jobs",
+        "consumer convenience should be allowed to rest on a workforce bearing most of the risk"
+      ],
+      "answer": 3,
+      "explain": "细节题。末段原句改写：核心问题是消费者享受的便利，是否应当建立在一支承担了大部分风险的劳动力之上。A、B、C 原文均未提出。"
+    }
+  ],
   "glossary": [
     { "w": "gig", "ph": "/ɡɪɡ/", "def": "n. 零工，短期活儿", "ex": "the gig economy", "exCn": "零工经济" },
     { "w": "freelance", "ph": "/ˈfriːlɑːns/", "def": "adj. 自由职业的；n. 自由职业者", "ex": "freelance work", "exCn": "自由职业工作" },

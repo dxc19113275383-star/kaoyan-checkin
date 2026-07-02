@@ -16,6 +16,52 @@
     "批评者认为，自由贸易可能威胁国内就业、加剧不平等，这些担忧值得认真对待。但多数经济学家一致认为，总体而言，开放的市场能加速增长，并把创新传播到世界各地。",
     "政策制定者面临的挑战，不是要不要贸易，而是如何公平地分配贸易带来的收益，并缓解那些被取代者所受的冲击。"
   ],
+  "questions": [
+    {
+      "q": "What is the main idea of the passage?",
+      "options": [
+        "Countries should produce everything domestically to protect jobs.",
+        "Trade benefits nations when they specialize according to comparative advantage.",
+        "Free trade always harms workers in developing countries.",
+        "Economists disagree about whether countries should trade at all."
+      ],
+      "answer": 1,
+      "explain": "主旨题。首段点题：即使一国生产样样更高效，双方仍可通过各自专注相对最擅长的领域并交换剩余产品而获益，全文围绕比较优势展开。A 与原文相反；C 的 always 过于绝对；D 与末段\"不是要不要贸易\"矛盾。"
+    },
+    {
+      "q": "According to Paragraph 2, a country with limited resources should ___",
+      "options": [
+        "import goods in industries where its productivity is highest",
+        "avoid the division of labor to protect consumers",
+        "focus on its most productive industries and import goods others make at lower cost",
+        "lower prices by producing all goods itself"
+      ],
+      "answer": 2,
+      "explain": "细节题。定位第 2 段：应集中发展生产率最高的产业，并进口他国能以更低成本生产的商品。C 是原文同义改写；A 把进出口方向弄反了。"
+    },
+    {
+      "q": "The author mentions critics in Paragraph 3 in order to ___",
+      "options": [
+        "prove that free trade should be abandoned",
+        "show that economists ignore domestic job losses",
+        "argue that inequality has nothing to do with trade",
+        "acknowledge real concerns before presenting the mainstream view"
+      ],
+      "answer": 3,
+      "explain": "写作目的题。第 3 段先让步（批评者的担忧值得认真对待），再用 Yet 转折引出多数经济学家的共识——典型\"让步-转折\"结构，作者立场在转折之后。"
+    },
+    {
+      "q": "It can be inferred from the last paragraph that the author believes ___",
+      "options": [
+        "trade policy should focus on sharing the gains fairly and helping displaced workers",
+        "policymakers still need to decide whether to trade",
+        "the gains of trade can never be distributed fairly",
+        "displaced workers should manage without any help"
+      ],
+      "answer": 0,
+      "explain": "推断题。末段：挑战\"不是要不要贸易，而是如何公平分配收益并缓冲被取代者\"。A 是同义改写；B 与原文直接矛盾。"
+    }
+  ],
   "glossary": [
     { "w": "comparative", "ph": "/kəmˈpærətɪv/", "def": "adj. 比较的，相对的", "ex": "comparative advantage", "exCn": "比较优势" },
     { "w": "efficiently", "ph": "/ɪˈfɪʃntli/", "def": "adv. 高效地", "ex": "to produce goods more efficiently", "exCn": "更高效地生产商品" },

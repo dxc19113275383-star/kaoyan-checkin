@@ -16,6 +16,52 @@
     "跨境电商发展迅猛，却也带来了税收、数据隐私和消费者保护等棘手问题。各国政府仍在努力制定能跟上技术步伐的规则。",
     "随着数字经济走向成熟，能够胜出的企业，将是那些把高效物流与真正的信任结合起来的公司。"
   ],
+  "questions": [
+    {
+      "q": "What is this passage mainly about?",
+      "options": [
+        "the difficulties of exporting goods a decade ago",
+        "how digital marketplaces have transformed cross-border trade and the issues they raise",
+        "why governments should tax online platforms more heavily",
+        "the decline of traditional warehouses and agents"
+      ],
+      "answer": 1,
+      "explain": "主旨题。1-2 段讲数字平台如何改变跨境贸易并惠及买卖双方，第 3 段引出税收/隐私/消保等新问题，末段展望——B 概括最全面。A、D 只是首段引子。"
+    },
+    {
+      "q": "According to Paragraph 2, digital platforms benefit sellers by ___",
+      "options": [
+        "lowering the barriers to entering foreign markets",
+        "protecting them from global competition",
+        "guaranteeing higher prices for their products",
+        "removing the need for customer service"
+      ],
+      "answer": 0,
+      "explain": "细节题。第 2 段：平台降低了卖家进入海外市场的门槛（lowers the barriers to entering foreign markets）。B 与后半句\"直面激烈的全球竞争\"相反。"
+    },
+    {
+      "q": "Which of the following is NOT mentioned as a challenge raised by cross-border e-commerce?",
+      "options": [
+        "taxation",
+        "data privacy",
+        "consumer protection",
+        "environmental pollution"
+      ],
+      "answer": 3,
+      "explain": "细节排除题。第 3 段列举的难题是 taxation（税收）、data privacy（数据隐私）、consumer protection（消费者保护）三项；环境污染原文未提。"
+    },
+    {
+      "q": "According to the last paragraph, the firms that succeed in the digital economy will be those that ___",
+      "options": [
+        "own the most warehouses",
+        "avoid entering foreign markets",
+        "combine efficient logistics with genuine trust",
+        "rely mainly on government support"
+      ],
+      "answer": 2,
+      "explain": "细节题。末段原句：能胜出的企业是把高效物流（efficient logistics）与真正的信任（genuine trust）结合起来的公司。"
+    }
+  ],
   "glossary": [
     { "w": "warehouses", "ph": "/ˈweəhaʊzɪz/", "def": "n. 仓库（warehouse 的复数）", "ex": "to store goods in warehouses", "exCn": "把货物存放在仓库" },
     { "w": "agents", "ph": "/ˈeɪdʒənts/", "def": "n. 代理商，中间人", "ex": "to sell through local agents", "exCn": "通过当地代理销售" },

@@ -16,6 +16,52 @@
     "支持者坚称，平台只是降低了做生意的成本，为任何有一部手机和一些空闲时间的人打开了机会。批评者则回应说，灵活的工作往往意味着不稳定的收入和很少的保障，而消费者享受的便利，有一部分是由底层劳动者补贴的。",
     "随着各国政府开始监管这一领域，核心问题在于平衡：如何在保留平台所带来的效率的同时，确保那些让平台运转的人得到公平对待。这个问题的答案，将塑造未来十年的经济。"
   ],
+  "questions": [
+    {
+      "q": "The phrase \"invisible marketplaces\" in Paragraph 1 suggests that platforms ___",
+      "options": [
+        "operate illegally without government knowledge",
+        "connect buyers and sellers without owning the goods themselves",
+        "hide their profits from the public",
+        "are difficult for ordinary users to find"
+      ],
+      "answer": 1,
+      "explain": "语义理解题。第 1 段解释：平台拥有的是\"连接\"而非商品本身，市场功能隐藏在一个应用背后——invisible 指的是这种\"看不见的中介\"角色，不是违法或隐瞒。"
+    },
+    {
+      "q": "According to Paragraph 2, the question of ownership arises because ___",
+      "options": [
+        "workers and merchants generate most activity while the platform captures much of the profit",
+        "platforms refuse to collect any data",
+        "workers set the rules of the platform",
+        "merchants own most of the platform's shares"
+      ],
+      "answer": 0,
+      "explain": "细节题。第 2 段：送餐工人和商家创造了大部分活动，但制定规则、收集数据、攫取大部分利润的是平台——干活的与得利的不一致，才引出\"归属\"之问。"
+    },
+    {
+      "q": "Critics of the platform economy would most likely agree that ___",
+      "options": [
+        "flexible work guarantees stable income",
+        "anyone with a phone can easily become wealthy",
+        "platforms raise the cost of doing business",
+        "the convenience consumers enjoy is partly subsidized by those at the bottom"
+      ],
+      "answer": 3,
+      "explain": "观点题。第 3 段批评者认为：灵活工作往往意味着不稳定收入和缺乏保障，消费者的便利部分由底层劳动者补贴。A、B 是支持者口吻，C 与支持者\"降低成本\"说法相反。"
+    },
+    {
+      "q": "What does the author see as the central issue as governments begin to regulate platforms?",
+      "options": [
+        "banning platforms to protect workers",
+        "maximizing government revenue from platforms",
+        "balancing platform efficiency with fair treatment of the people who make them work",
+        "slowing down the growth of the digital economy"
+      ],
+      "answer": 2,
+      "explain": "细节题。末段：核心问题在于平衡（balance）——既保留平台带来的效率，又确保让平台运转的人得到公平对待。"
+    }
+  ],
   "glossary": [
     { "w": "platform", "ph": "/ˈplætfɔːm/", "def": "n. 平台", "ex": "a digital platform", "exCn": "数字平台" },
     { "w": "marketplace", "ph": "/ˈmɑːkɪtpleɪs/", "def": "n. 市场，交易场所", "ex": "an online marketplace", "exCn": "线上市场" },
