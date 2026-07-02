@@ -4059,6 +4059,21 @@
     try{ if('speechSynthesis' in window) speechSynthesis.cancel(); }catch(e){}
   }
   window._stopSpeak=stopSpeak;
+  // iOS 音频会话解锁：Safari 只允许"用户手势内"发起的播放，而句子朗读是
+  // 点击→异步合成→再播放，手势上下文已丢失会被静默拦截。首次触摸时播一段
+  // 无声 wav 解锁会话，之后程序化播放（Edge 神经语音/有道发音）即可出声。
+  let _audioUnlocked=false;
+  function _audioUnlock(){
+    if(_audioUnlocked) return; _audioUnlocked=true;
+    try{
+      const a=new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQAAAAA=');
+      a.volume=0.01;
+      const p=a.play(); if(p&&p.catch) p.catch(function(){ _audioUnlocked=false; });
+    }catch(e){ _audioUnlocked=false; }
+    try{ if('speechSynthesis' in window){ const u=new SpeechSynthesisUtterance(' '); u.volume=0; speechSynthesis.speak(u); } }catch(e){}
+  }
+  document.addEventListener('touchend', _audioUnlock, { once:false, passive:true });
+  document.addEventListener('click', _audioUnlock, { once:false });
   /** 统一朗读：单词→有道真人发音优先（更标准、国内稳）；句子→Edge 神经语音；均失败回退系统语音。
       opts={lang,rate,sysRate,onend}；rate=Edge 百分比字符串；sysRate=系统语音倍速乘数。 */
   function speak(text, opts){
@@ -5420,6 +5435,16 @@
     return out;
   }
   function _hash32(s){ let h=0; s=String(s); for(let i=0;i<s.length;i++){ h=(h*31+s.charCodeAt(i))>>>0; } return h.toString(36); }
+  /** 带超时的 fetch：移动网络下 workers.dev / r2.dev 可能长时间挂起（而非快速失败），
+      不加超时会让课程目录白屏干等——6 秒拿不到就跌落下一级兜底。 */
+  function _fetchTimeout(url, ms){
+    return new Promise(function(res, rej){
+      const ctrl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+      const t = setTimeout(function(){ if(ctrl) try{ ctrl.abort(); }catch(e){}; rej(new Error('timeout')); }, ms || 6000);
+      fetch(url, ctrl ? { signal: ctrl.signal } : undefined)
+        .then(function(r){ clearTimeout(t); res(r); }, function(e){ clearTimeout(t); rej(e); });
+    });
+  }
   function loadMcSeed(){
     if(_mcSeed) return Promise.resolve(_mcSeed);
     const useCommitted=function(){
@@ -5427,11 +5452,11 @@
         .then(function(j){ _mcSeed=(j&&Array.isArray(j.lessons))?j.lessons:[]; return _mcSeed; }).catch(function(){ _mcSeed=[]; return _mcSeed; });
     };
     const fromJson=function(j){ const ls=_mcFromCourse(j); if(ls.length){ _mcSeed=ls; return ls; } return useCommitted(); };
-    // 1) 经后端代理拉 R2（配了 Worker 即自动同步，无需 R2 CORS）
-    return fetch(backendBase()+'/r2?key='+encodeURIComponent('index/course.json')).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(fromJson)
-      // 2) 直连 R2（若桶配了 CORS）
-      .catch(function(){ return fetch(R2_COURSE_URL).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(fromJson); })
-      // 3) 仓库内置静态文件
+    // 1) 经后端代理拉 R2（配了 Worker 即自动同步，无需 R2 CORS）——6s 超时
+    return _fetchTimeout(backendBase()+'/r2?key='+encodeURIComponent('index/course.json'), 6000).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(fromJson)
+      // 2) 直连 R2（若桶配了 CORS）——6s 超时
+      .catch(function(){ return _fetchTimeout(R2_COURSE_URL, 6000).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(fromJson); })
+      // 3) 仓库内置静态文件（同源必达）
       .catch(function(){ return useCommitted(); });
   }
   function mcAllLessons(){
@@ -5454,7 +5479,24 @@
   window.openMathCourse = function(){
     ensureMathCourse(); mcStopVideo(); _mcChapter=null;
     $('mcPlayer').style.display='none'; $('mcHome').style.display='';
-    Promise.all([loadMcSeed(), loadMcCoverage()]).then(renderMcHome);
+    // 目录未就绪时先出骨架屏——弱网下 Worker/R2 跌落链最多 12s，不能让用户对着白屏干等
+    if(!_mcSeed){
+      $('mcHome').innerHTML='<div class="card fill-card">'
+        +'<div><button class="btn-sm learn-back" onclick="showLearnView(\'hub\')">← 返回学习</button></div>'
+        +'<div class="skeleton" style="height:22px;width:42%;margin:16px 0 12px;"></div>'
+        +'<div class="skeleton" style="height:68px;margin-bottom:10px;"></div>'
+        +'<div class="skeleton" style="height:68px;margin-bottom:10px;"></div>'
+        +'<div class="skeleton" style="height:68px;"></div>'
+        +'<div class="tiny muted" style="text-align:center;margin-top:14px;">正在加载课程目录…（弱网最多约 12 秒，会自动切换离线目录）</div></div>';
+    }
+    Promise.all([loadMcSeed(), loadMcCoverage()]).then(function(){
+      try { renderMcHome(); }
+      catch(e){
+        $('mcHome').innerHTML='<div class="card"><button class="btn-sm learn-back" onclick="showLearnView(\'hub\')">← 返回学习</button>'
+          +'<div class="learn-soon">课程目录渲染出错<br><span class="tiny muted">'+escAttr(e && e.message || '')+'</span><br>'
+          +'<button class="btn-sm" style="margin-top:12px;" onclick="openMathCourse()">重试</button></div></div>';
+      }
+    });
   };
   window.mcOpenChapter = function(c){
     _mcChapter = c || null; mcStopVideo();
