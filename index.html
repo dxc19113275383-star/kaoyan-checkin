@@ -1891,11 +1891,14 @@
     const L = _ensureSpine();
     const q = L.daily.quests = L.daily.quests || {};
     // 默认 quest：背词+1（任何答题）、阅读+1（标记已读）、数学+1（任何答题）
-    if (mod === 'vocab' && action === 'answer') q.vocab = (q.vocab||0) + 1;
-    if (mod === 'reading' && action === 'mark') q.reading = (q.reading||0) + 1;
-    if (mod === 'math' && action === 'answer') q.math = (q.math||0) + 1;
+    let bumped = null;
+    if (mod === 'vocab' && action === 'answer') { q.vocab = (q.vocab||0) + 1; bumped = 'vocab'; }
+    if (mod === 'reading' && action === 'mark') { q.reading = (q.reading||0) + 1; bumped = 'reading'; }
+    if (mod === 'math' && action === 'answer') { q.math = (q.math||0) + 1; bumped = 'math'; }
     // 检查是否完成今日 quest（任意一项达标即续 streak）
     const goals = QUEST_DEFAULT;
+    // v8.1 打通双轨：quest 达标的瞬间，自动勾选打卡页"今天"对应科目的任务
+    if (bumped && q[bumped] === goals[bumped]) _autoCheckTask(bumped);
     const done = (q.vocab||0) >= goals.vocab || (q.reading||0) >= goals.reading || (q.math||0) >= goals.math;
     if (done) {
       const t = todayStr();
@@ -1905,6 +1908,34 @@
         L.daily.lastDate = t;
       }
     }
+  }
+
+  // ===== v8.1 学习×打卡打通 =====
+  // 学习行为点亮打卡：quest 达标时按科目关键词自动勾选"今天"的打卡任务，
+  // 让热力图/周报/streak 全部吃到学习行为（消除双轨脱节）。
+  const QUEST_TASK_RE = { vocab: /单词|词汇/, reading: /阅读|精读/, math: /数学|高数|线代|概率/ };
+  function _todayPos(){
+    if (state.startDate) { try { return calcPosition(state.startDate); } catch(e){} }
+    return { p: state.p, wk: state.wk, day: state.day };
+  }
+  function _autoCheckTask(mod){
+    try {
+      const re = QUEST_TASK_RE[mod]; if (!re) return;
+      const pos = _todayPos();
+      const tasks = effectiveTasks(pos.p, pos.wk, pos.day);
+      if (!tasks.length) return;
+      const done = getDone(pos.p, pos.wk, pos.day).slice();
+      let changed = false;
+      tasks.forEach(function(t, i){
+        if (t.tag === 't-rev') return; // 回顾/保底类任务留给手动勾选
+        const hit = re.test(t.label || '') || (mod === 'math' && t.tag === 't-math');
+        if (hit && !done[i]) { done[i] = true; changed = true; }
+      });
+      if (!changed) return;
+      setDone(pos.p, pos.wk, pos.day, done);
+      save();
+      try { render(); } catch(e){}
+    } catch(e){}
   }
 
   // 给首页/AI 用：一行摘要 + 进度
@@ -2861,7 +2892,12 @@
   }
 
   function computeStreak() {
-    let s = 0, p = state.p, w = state.wk, d = state.day;
+    // v8.1 统一 streak：从"今天"（起始日期自动定位，未设则取当前视图）回溯；
+    // 今天还没打卡不算断，从昨天起算——不惩罚"今天还没开始"。
+    const pos = _todayPos();
+    let s = 0, p = pos.p, w = pos.wk, d = pos.day;
+    const todayArr = state.data[keyFor(p,w,d)];
+    if (!(todayArr && todayArr.some(v => v))) { d--; if (d<0) { d=6; w--; } }
     while (w >= 1) {
       const a = state.data[keyFor(p,w,d)];
       if (a && a.some(v => v)) { s++; d--; if (d<0) { d=6; w--; } }
@@ -5161,8 +5197,9 @@
       host.innerHTML = html;
       return;
     }
-    // 训练舱模式
-    const flameColor = t.streak>0 ? 'var(--ember)' : 'rgba(255,255,255,.35)';
+    // 训练舱模式（v8.1：streak 统一为打卡 streak——学习达标会自动点亮打卡，全 App 只有一个数字）
+    const streakU = computeStreak();
+    const flameColor = streakU>0 ? 'var(--ember)' : 'rgba(255,255,255,.35)';
     const xpInLevel = t.totalXp % 200;
     const xpPct = Math.round(xpInLevel/200*100);
     const labels = { vocab:'背单词', reading:'精读', math:'数学' };
@@ -5178,7 +5215,7 @@
     html+='</div>';
     // 一行：streak（左）+ XP 进度条（右，含 Lv 标）
     html+='<div class="h-foot">';
-    html+=  '<div class="h-streak-inline"><span class="h-flame" style="color:'+flameColor+'">'+I.flame+'</span><span><div class="hs-n">'+t.streak+'</div><div class="hs-l">连续训练</div></span></div>';
+    html+=  '<div class="h-streak-inline"><span class="h-flame" style="color:'+flameColor+'">'+I.flame+'</span><span><div class="hs-n">'+streakU+'</div><div class="hs-l">连续打卡</div></span></div>';
     html+=  '<div class="h-xp"><div class="xp-top"><span class="xp-lv">Lv '+t.level+'</span><span class="xp-num">+'+t.xp+' XP · '+xpInLevel+'/200</span></div><div class="xp-bar"><i style="width:'+xpPct+'%"></i></div></div>';
     html+='</div>';
     // 教练建议条（点击进 AI 训练舱）
