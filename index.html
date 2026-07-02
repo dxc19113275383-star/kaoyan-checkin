@@ -442,6 +442,7 @@
   .lc-section { grid-column: 1 / -1; font-size: 12px; font-weight: 700; letter-spacing: .06em; color: var(--color-text-tertiary); margin: 14px 2px 0; }
   .lc-section:first-child { margin-top: 2px; }
   .learn-card.lc-soon { opacity: .6; }
+  .learn-card.lc-wide { grid-column: 1 / -1; min-height: 0; }
   /* —— 学习中心 hub 卡：iOS 小组件式 —— */
   .learn-card {
     position: relative; text-align: left;
@@ -1371,14 +1372,9 @@
     <div id="learnGrid" class="learn-grid"></div>
   </div>
 
-  <!-- ====== 学习子模块占位（敬请期待，逐个填充） ====== -->
+  <!-- ====== 今日学习（P1.1 聚合页：今日 quest + 到期复习 + 错题，一键开学） ====== -->
   <div id="pageLearnTodo" style="display:none;">
-    <div class="card">
-      <button class="btn-sm learn-back" onclick="showLearnView('hub')">← 返回学习</button>
-      <h2 id="learnTodoTitle" style="margin:10px 0 4px;"></h2>
-      <p id="learnTodoDesc" class="muted" style="margin:0 0 12px;"></p>
-      <div class="learn-soon">敬请期待</div>
-    </div>
+    <div id="todayBody"></div>
   </div>
 
   <!-- ====== 背单词 ====== -->
@@ -3546,9 +3542,9 @@
 
   // ===== PAGE SWITCHING =====
   // ===== 学习中心 =====
-  // P0.2 占位清理：今日学习/真题题库/AI模拟考三张"敬请期待"卡已撤下（规划见 PLAN.md，
-  // 今日学习将在 P1.1 以真功能回归），学习中心只展示可用模块。
+  // P0.2 撤下占位卡后，学习中心只展示可用模块；P1.1 今日学习以真功能回归（聚合页，置顶通栏）。
   const LEARN_MODULES = [
+    { key:'today',     icon:I.grid,     title:'今日学习', sub:'今日任务 · 到期复习 · 一键开学', group:'今日', ready:true, wide:true, todo:'' },
     { key:'vocab',     icon:I.book,     title:'背单词',   sub:'多词库 · 斩词 · 艾宾浩斯',   group:'英语', ready:true,  todo:'' },
     { key:'reading',   icon:I.bookOpen, title:'阅读',     sub:'精读 · 点词查义 · 加入背单词', group:'英语', ready:true,  todo:'' },
     { key:'syntax',    icon:I.layers,   title:'长难句',   sub:'真题难句 · 成分拆解 · AI讲解', group:'英语', ready:true,  todo:'' },
@@ -3561,13 +3557,13 @@
 
   function renderLearnHub() {
     let html = '';
-    ['英语','数学','综合'].forEach(function(g){
+    ['今日','英语','数学','综合'].forEach(function(g){
       const items = LEARN_MODULES.filter(function(m){ return m.group===g; });
       if(!items.length) return;
       html += '<div class="lc-section">'+g+'</div>';
       items.forEach(function(m){
         const badge = m.ready ? '' : '<span class="lc-badge soon">敬请期待</span>';
-        html += '<button class="learn-card'+(m.ready?' lc-ready':' lc-soon')+'" onclick="showLearnView(\''+m.key+'\')">' +
+        html += '<button class="learn-card'+(m.ready?' lc-ready':' lc-soon')+(m.wide?' lc-wide':'')+'" onclick="showLearnView(\''+m.key+'\')">' +
           badge +
           '<span class="lc-icon">'+m.icon+'</span>' +
           '<span class="lc-title">'+m.title+'</span>' +
@@ -3587,6 +3583,7 @@
     LEARN_PAGES.forEach(function(id){ const el=$(id); if(el) el.style.display='none'; });
     window._learnView = name;
     if (name === 'hub') { $('pageLearn').style.display=''; renderLearnHub(); return; }
+    if (name === 'today') { $('pageLearnTodo').style.display=''; openToday(); return; }
     if (name === 'resources') { $('pageResources').style.display=''; renderResources(); return; }
     if (name === 'vocab') { $('pageLearnVocab').style.display=''; openVocab(); return; }
     if (name === 'reading') { $('pageLearnReading').style.display=''; openReading(); return; }
@@ -3595,10 +3592,58 @@
     if (name === 'syntax') { $('pageLearnSyntax').style.display=''; openSyntax(); return; }
     if (name === 'writing') { $('pageLearnWriting').style.display=''; openWriting(); return; }
     if (name === 'mathcourse') { $('pageLearnMathCourse').style.display=''; openMathCourse(); return; }
-    const m = LEARN_MODULES.find(function(x){ return x.key===name; });
-    $('learnTodoTitle').textContent = m ? m.title : '敬请期待';
-    $('learnTodoDesc').textContent = m ? m.todo : '';
-    $('pageLearnTodo').style.display='';
+    // 未知视图一律回落到学习中心（占位页已随 P1.1 移除）
+    $('pageLearn').style.display=''; renderLearnHub();
+  };
+
+  // ===== P1.1 今日学习聚合页 =====
+  // 一屏回答"今天该干什么"：今日 quest 进度 + 到期复习词 + 错题 + 长难句待复习，
+  // 一键开始 = 按 背单词→精读→数学 顺序直达第一个未达标项。只读脊柱与各模块进度，零新数据结构。
+  window.openToday = function(){
+    const t = window.getDailyTraining();
+    const v = ensureVocab();
+    const syn = ensureSyntax();
+    let unsure = 0;
+    Object.keys(syn.progress || {}).forEach(function(k){ const p = syn.progress[k]; if (p && p.unsure && !p.known) unsure++; });
+    let mist = 0;
+    try { mist = (window.listMistakes({}) || []).length; } catch(e){}
+    const q = {}; t.items.forEach(function(x){ q[x.mod] = x; });
+    const firstTodo = t.items.find(function(x){ return x.cur < x.goal; });
+
+    function row(icon, title, sub, view, done){
+      return '<div class="mc-chap-card" onclick="showLearnView(\''+view+'\')">'
+        + '<div class="mc-chap-ic">'+icon+'</div>'
+        + '<div class="mc-chap-meta"><div class="mc-chap-name" style="font-size:15px;">'+title+'</div><div class="tiny muted">'+sub+'</div></div>'
+        + (done ? '<span class="mc-badge done">已达标</span>' : '<span class="mc-go">'+I.arrowRight+'</span>')
+        + '</div>';
+    }
+
+    let html = '<div class="card">';
+    html += '<button class="btn-sm learn-back" onclick="showLearnView(\'hub\')">'+I.arrowLeft+'返回学习</button>';
+    html += '<h2 style="margin:12px 0 2px;">今日学习</h2>';
+    html += '<div class="tiny muted" style="margin-bottom:14px;">'+(t.allDone ? '今日三项全部达标，下面都是加分项。' : '完成任意一项，今天就不算断线。')+'</div>';
+    if (firstTodo) {
+      const ctaLabel = { vocab:'开始背单词（还差 '+(firstTodo.goal-firstTodo.cur)+' 个）', reading:'去精读一篇', math:'去做数学题（还差 '+(firstTodo.goal-firstTodo.cur)+' 道）' }[firstTodo.mod];
+      html += '<button class="btn-cta" style="margin-bottom:14px;" onclick="showLearnView(\''+firstTodo.mod+'\')">'+ctaLabel+'<span class="cta-ico">'+I.arrowRight+'</span></button>';
+    } else if (mist > 0) {
+      html += '<button class="btn-cta" style="margin-bottom:14px;" onclick="showLearnView(\'mistakes\')">清错题 '+mist+' 条<span class="cta-ico">'+I.arrowRight+'</span></button>';
+    }
+    html += row(I.book,     '背单词',   q.vocab.cur+' / '+q.vocab.goal+' · 到期复习 <span id="todayDueN">…</span> 词', 'vocab',   q.vocab.cur >= q.vocab.goal);
+    html += row(I.bookOpen, '阅读精读', q.reading.cur+' / '+q.reading.goal+' 篇', 'reading', q.reading.cur >= q.reading.goal);
+    html += row(I.sigma,    '数学做题', q.math.cur+' / '+q.math.goal+' 题', 'math', q.math.cur >= q.math.goal);
+    html += row(I.bookmark, '错题清算', mist ? ('未解决 '+mist+' 条') : '错题本是干净的，保持', 'mistakes', mist === 0);
+    html += row(I.layers,   '长难句复习', unsure ? ('标了"不确定"的 '+unsure+' 句') : '暂无待复习句', 'syntax', unsure === 0);
+    html += '</div>';
+    $('todayBody').innerHTML = html;
+
+    // 到期复习词数：需异步加载当前词库后按 SRS due 统计
+    loadVocabWords(v.active).then(function(words){
+      const el = $('todayDueN'); if (!el) return;
+      if (!words) { el.textContent = '0'; return; }
+      const t0 = todayStr(); let n = 0;
+      words.forEach(function(wd){ const p = v.progress[vKey(v.active, wd.w)]; if (p && p.stage < VOCAB_MASTER_STAGE && (p.due || t0) <= t0) n++; });
+      el.textContent = String(n);
+    }).catch(function(){ const el = $('todayDueN'); if (el) el.textContent = '0'; });
   };
 
   // ===== 背单词引擎（百词斩底层逻辑：斩词识别 + 艾宾浩斯间隔 + 每日配额）=====
