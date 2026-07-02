@@ -555,8 +555,14 @@
   /* 语境例句卡（百词斩式：深色卡 + 目标词高亮 + 中译 + 朗读） */
   .vctx-card { margin-top: 12px; padding: 15px 16px 13px; border-radius: var(--radius-sm); background: var(--brand-gradient); color: #fff; text-align: left; box-shadow: var(--shadow-soft); }
   .vctx-card .vc-src { display: flex; justify-content: space-between; align-items: center; font-size: 10.5px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; opacity: .8; margin-bottom: 7px; }
-  .vctx-card .vc-en { font-size: 16.5px; line-height: 1.65; font-weight: 500; }
+  .vctx-card .vc-en { font-size: 16.5px; line-height: 1.75; font-weight: 500; }
   .vctx-card .vc-en b { color: #FFC46B; font-weight: 700; }
+  .vctx-card .vc-word { cursor: pointer; border-radius: 3px; padding: 0 0.5px; }
+  .vctx-card .vc-word:active { background: rgba(255,255,255,.22); }
+  .vctx-card .vc-word.vc-target { color: #FFC46B; font-weight: 700; }
+  /* 口语练习卡 */
+  .spk-en { font-family: var(--font-serif); font-size: 23px; line-height: 1.5; font-weight: 600; color: var(--color-text-primary); text-align: center; letter-spacing: -0.01em; }
+  .spk-cn { font-size: 15px; color: var(--color-text-secondary); text-align: center; margin-top: 10px; line-height: 1.6; }
   .vctx-card .vc-cn { font-size: 13px; opacity: .78; margin-top: 6px; line-height: 1.6; }
   .vctx-card .vc-spk { width: 28px; height: 28px; min-width: 28px; border-radius: 50%; border: 1px solid rgba(255,255,255,.32); background: rgba(255,255,255,.12); color: #fff; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; -webkit-tap-highlight-color: transparent; }
   .vctx-card .vc-spk:active { transform: scale(.9); }
@@ -1567,6 +1573,12 @@
   <div id="pageLearnWriting" style="display:none;">
     <div id="writingHome"></div>
     <div id="writingView" style="display:none;"></div>
+  </div>
+
+  <!-- ====== 口语练习（跟读） ====== -->
+  <div id="pageLearnSpeak" style="display:none;">
+    <div id="speakHome"></div>
+    <div id="speakView" style="display:none;"></div>
   </div>
 
   <!-- ====== 资料/网课页面 ====== -->
@@ -2995,6 +3007,149 @@
   window.renderWritingView = function(){ renderWritingView(); }; // 暴露给模板返回按钮
   window.quitWriting = function(){ const w=ensureWriting(); if(_wrCur && $('wrText')) { w.drafts[_wrCur.id]=$('wrText').value; save(); } _wrCur=null; $('writingView').style.display='none'; $('writingHome').style.display=''; openWriting(); };
 
+  // ===== 口语练习（跟读）：听原声 → 录音 → 回放对比（+ 支持设备的语音识别评分） =====
+  // 内置常用句库（每句 en+cn+场景），离线可用；录音走 MediaRecorder，评分走 Web Speech（部分设备）。
+  const SPEAK_BANK = [
+    { cat:'日常寒暄', items:[
+      { en:"Could you say that again more slowly, please?", cn:"能请你再慢一点说一遍吗？" },
+      { en:"I'm not sure I follow. Could you explain it another way?", cn:"我不太懂，你能换个方式解释吗？" },
+      { en:"It's really nice to finally meet you in person.", cn:"很高兴终于见到你本人。" },
+      { en:"Thanks for waiting. I appreciate your patience.", cn:"谢谢你等我，感谢你的耐心。" },
+      { en:"Sorry, I didn't catch your name. Would you mind repeating it?", cn:"抱歉，我没听清你的名字，能再说一遍吗？" }
+    ]},
+    { cat:'校园学习', items:[
+      { en:"I'd like to ask a question about today's lecture.", cn:"我想问一个关于今天课程的问题。" },
+      { en:"Could you recommend some books on this topic?", cn:"你能推荐几本关于这个主题的书吗？" },
+      { en:"I've been preparing for the exam for three months.", cn:"我已经为这场考试准备了三个月。" },
+      { en:"Working in a group helps me stay motivated.", cn:"小组学习让我保持动力。" },
+      { en:"Let me summarize the main points we just discussed.", cn:"让我总结一下我们刚讨论的要点。" }
+    ]},
+    { cat:'出行与生活', items:[
+      { en:"Excuse me, how can I get to the nearest subway station?", cn:"打扰一下，最近的地铁站怎么走？" },
+      { en:"I'd like a table for two, by the window if possible.", cn:"我想要一张两人桌，可以的话靠窗。" },
+      { en:"Do you accept mobile payment or only cash?", cn:"你们收移动支付还是只收现金？" },
+      { en:"Could I get this to go, please?", cn:"这个可以打包带走吗？" },
+      { en:"I think there's a mistake on the bill.", cn:"我觉得账单上有个错误。" }
+    ]},
+    { cat:'观点表达', items:[
+      { en:"In my opinion, the advantages outweigh the disadvantages.", cn:"在我看来，利大于弊。" },
+      { en:"That's a fair point, but I see it a little differently.", cn:"这话有道理，不过我的看法略有不同。" },
+      { en:"On the one hand it saves time; on the other hand it costs more.", cn:"一方面它省时间，另一方面成本更高。" },
+      { en:"I couldn't agree with you more on that.", cn:"这一点我完全同意你。" },
+      { en:"Let's focus on finding a solution rather than the problem.", cn:"我们把注意力放在找办法上，而不是纠结问题本身。" }
+    ]}
+  ];
+  let _spkSession=null; // {list:[{en,cn}], idx, rec:MediaRecorder, chunks, blobUrl, recording}
+  function ensureSpeak(){ const s=state.learn.speak=state.learn.speak||{}; if(!s.done||typeof s.done!=='object') s.done={}; return s; }
+  const _spkSpeechOK = ('webkitSpeechRecognition' in window) || ('SpeechRecognition' in window);
+
+  window.openSpeak = function(){
+    ensureSpeak(); _spkCleanup();
+    $('speakView').style.display='none'; $('speakHome').style.display='';
+    const sp=ensureSpeak();
+    let html='<div class="card">';
+    html+='<button class="btn-sm learn-back" onclick="showLearnView(\'hub\')" style="margin-bottom:10px;">'+I.arrowLeft+'返回学习</button>';
+    html+='<h2 style="margin:0;">口语练习</h2>';
+    html+='<div class="tiny muted" style="margin-top:4px;line-height:1.6;">跟读练习：听原声 → 录下自己 → 回放对比。'+(_spkSpeechOK?'本机支持语音识别，可给相似度评分。':'（本机不支持语音识别，以录音回放自评为主。）')+'</div>';
+    SPEAK_BANK.forEach(function(g, gi){
+      let dn=0; g.items.forEach(function(_,ii){ if(sp.done[gi+':'+ii]) dn++; });
+      html+='<div class="mc-chap-card" onclick="speakStart('+gi+')">';
+      html+=  '<div class="mc-chap-ic">'+I.sound+'</div>';
+      html+=  '<div class="mc-chap-meta"><div class="mc-chap-name">'+escAttr(g.cat)+'</div><div class="tiny muted">'+g.items.length+' 句 · 已练 '+dn+'/'+g.items.length+'</div></div>';
+      html+=  '<span class="mc-go">'+I.arrowRight+'</span>';
+      html+='</div>';
+    });
+    html+='</div>';
+    $('speakHome').innerHTML=html;
+  };
+  window.speakStart=function(gi){
+    const g=SPEAK_BANK[gi]; if(!g) return;
+    _spkSession={ gi:gi, list:g.items, idx:0, cat:g.cat, recording:false, chunks:[], blobUrl:null, rec:null, score:null, heard:'' };
+    renderSpeakCard();
+  };
+  function renderSpeakCard(){
+    const s=_spkSession; if(!s) return;
+    const it=s.list[s.idx];
+    const sp=ensureSpeak(); const doneKey=s.gi+':'+s.idx;
+    let html='<div class="card fill-card">';
+    html+='<div class="train-meta-bar"><button class="btn-sm learn-back" onclick="speakQuit()">'+I.arrowLeft+'列表</button><span class="tiny muted">'+escAttr(s.cat)+' · '+(s.idx+1)+' / '+s.list.length+'</span></div>';
+    html+='<div class="vocab-card" style="justify-content:flex-start;padding-top:24px;">';
+    html+=  '<div class="spk-en">'+escAttr(it.en)+'</div>';
+    html+=  '<div class="spk-cn">'+escAttr(it.cn)+'</div>';
+    html+=  '<button class="btn-sm" style="margin:16px auto 0;padding:0 18px;" onclick="speak(\''+escAttr(it.en).replace(/\x27/g,"\\\x27")+'\',{lang:\'en-US\'})">'+I.sound+' 听原声</button>';
+    // 录音区
+    html+=  '<div id="spkRecArea" style="margin-top:22px;text-align:center;"></div>';
+    html+='</div>';
+    // 底部导航
+    html+='<div class="fc-foot"><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">';
+    html+=  '<button class="btn-sm" '+(s.idx>0?'':'style="opacity:.4;pointer-events:none;"')+' onclick="speakNav(-1)">'+I.arrowLeft+'上一句</button>';
+    html+=  '<button class="btn-sm" onclick="speakMarkDone()">'+I.check+'练熟了</button>';
+    html+=  '<button class="btn-sm" '+(s.idx<s.list.length-1?'':'style="opacity:.4;pointer-events:none;"')+' onclick="speakNav(1)">下一句 →</button>';
+    html+='</div></div>';
+    html+='</div>';
+    $('speakHome').style.display='none'; $('speakView').style.display=''; $('speakView').innerHTML=html;
+    renderSpeakRec();
+  }
+  function renderSpeakRec(){
+    const s=_spkSession; const area=$('spkRecArea'); if(!s||!area) return;
+    let h='';
+    if(s.recording){
+      h+='<button class="btn-cta" style="max-width:220px;margin:0 auto;background:var(--color-danger);" onclick="speakStopRec()">'+I.stop+' 停止录音</button>';
+      h+='<div class="tiny muted" style="margin-top:8px;">正在录音，读完点停止…</div>';
+    } else {
+      h+='<button class="btn-cta" style="max-width:220px;margin:0 auto;" onclick="speakRecord()">'+I.sound+' 跟读录音</button>';
+      if(s.blobUrl){
+        h+='<div class="row" style="gap:8px;justify-content:center;margin-top:12px;"><button class="btn-sm" onclick="speakPlayback()">'+I.play+' 回放我的</button><button class="btn-sm" onclick="speak(\''+escAttr(s.list[s.idx].en).replace(/\x27/g,"\\\x27")+'\',{lang:\'en-US\'})">'+I.sound+' 再听原声</button></div>';
+      }
+      if(_spkSpeechOK){
+        h+='<button class="btn-sm" style="margin-top:10px;" onclick="speakScore()">'+I.spark+' 语音测评（读一遍打分）</button>';
+      }
+      if(s.score!==null && s.score!==undefined){
+        const col = s.score>=80?'var(--color-success)':(s.score>=55?'var(--color-accent)':'var(--color-danger)');
+        h+='<div style="margin-top:12px;font-weight:600;color:'+col+';">相似度 '+s.score+'%</div>';
+        if(s.heard) h+='<div class="tiny muted" style="margin-top:3px;">识别到：'+escAttr(s.heard)+'</div>';
+      }
+    }
+    area.innerHTML=h;
+  }
+  window.speakRecord=async function(){
+    const s=_spkSession; if(!s) return;
+    if(!navigator.mediaDevices||!window.MediaRecorder){ alert('当前浏览器不支持录音'); return; }
+    try{
+      const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+      s.chunks=[]; s.rec=new MediaRecorder(stream);
+      s.rec.ondataavailable=function(e){ if(e.data&&e.data.size) s.chunks.push(e.data); };
+      s.rec.onstop=function(){ try{ stream.getTracks().forEach(function(t){t.stop();}); }catch(e){} if(s.blobUrl){ try{URL.revokeObjectURL(s.blobUrl);}catch(e){} } const blob=new Blob(s.chunks,{type:s.chunks[0]&&s.chunks[0].type||'audio/webm'}); s.blobUrl=URL.createObjectURL(blob); s.recording=false; renderSpeakRec(); };
+      s.rec.start(); s.recording=true; renderSpeakRec();
+    }catch(e){ alert('无法录音：请在弹窗里允许使用麦克风'); }
+  };
+  window.speakStopRec=function(){ const s=_spkSession; if(s&&s.rec&&s.recording){ try{ s.rec.stop(); }catch(e){} } };
+  window.speakPlayback=function(){ const s=_spkSession; if(s&&s.blobUrl){ try{ stopSpeak(); const a=new Audio(s.blobUrl); _curAudio=a; a.play().catch(function(){}); }catch(e){} } };
+  window.speakScore=function(){
+    const s=_spkSession; if(!s) return;
+    const SR=window.SpeechRecognition||window.webkitSpeechRecognition; if(!SR){ alert('本机不支持语音识别'); return; }
+    const area=$('spkRecArea'); if(area) area.innerHTML='<div class="tiny muted">请对着麦克风读出这句话…</div>';
+    try{
+      const rec=new SR(); rec.lang='en-US'; rec.interimResults=false; rec.maxAlternatives=1;
+      rec.onresult=function(ev){ const said=(ev.results[0][0].transcript||'').trim(); s.heard=said; s.score=_spkSimilarity(s.list[s.idx].en, said); renderSpeakRec(); };
+      rec.onerror=function(){ s.heard=''; s.score=null; renderSpeakRec(); alert('没听清，请再试一次'); };
+      rec.onend=function(){ if(s.score===null||s.score===undefined) renderSpeakRec(); };
+      rec.start();
+    }catch(e){ alert('语音识别启动失败'); renderSpeakRec(); }
+  };
+  // 词重叠相似度（宽松、大小写/标点无关）
+  function _spkSimilarity(target, said){
+    const norm=function(t){ return String(t||'').toLowerCase().match(/[a-z']+/g)||[]; };
+    const a=norm(target), b=norm(said); if(!a.length) return 0;
+    const bag={}; b.forEach(function(w){ bag[w]=(bag[w]||0)+1; });
+    let hit=0; a.forEach(function(w){ if(bag[w]>0){ hit++; bag[w]--; } });
+    return Math.round(hit/a.length*100);
+  }
+  window.speakMarkDone=function(){ const s=_spkSession; if(!s) return; const sp=ensureSpeak(); sp.done[s.gi+':'+s.idx]=true; save(); if(s.idx<s.list.length-1) speakNav(1); else { alert('这组练完啦'); speakQuit(); } };
+  window.speakNav=function(d){ const s=_spkSession; if(!s) return; const n=s.idx+d; if(n<0||n>=s.list.length) return; stopSpeak(); s.idx=n; s.blobUrl&&(function(){try{URL.revokeObjectURL(s.blobUrl);}catch(e){}})(); s.blobUrl=null; s.score=null; s.heard=''; s.recording=false; renderSpeakCard(); };
+  function _spkCleanup(){ const s=_spkSession; if(s){ try{ if(s.rec&&s.recording) s.rec.stop(); }catch(e){} if(s.blobUrl){ try{URL.revokeObjectURL(s.blobUrl);}catch(e){} } } stopSpeak(); }
+  window.speakQuit=function(){ _spkCleanup(); _spkSession=null; $('speakView').style.display='none'; $('speakHome').style.display=''; openSpeak(); };
+
 
 
 
@@ -3896,8 +4051,10 @@
         '<span class="lc-icon">'+I.bookOpen+'</span><span class="lc-title">阅读</span>' + meta('已读 '+readN+' 篇'));
     html += card('lc-s2', 'syntax',
         '<span class="lc-icon">'+I.layers+'</span><span class="lc-title">长难句</span>' + meta(dueSyn ? ('待复习 '+dueSyn) : '成分拆解', dueSyn > 0));
-    html += card('lc-s4 lc-h', 'writing',
-        '<span class="lc-icon">'+I.pen+'</span><span class="lc-htx"><span class="lc-title">作文</span><span class="lc-sub">AI 批改 · 范文 · 默写</span></span><span class="lc-go">'+I.arrowRight+'</span>');
+    html += card('lc-s2', 'writing',
+        '<span class="lc-icon">'+I.pen+'</span><span class="lc-title">作文</span>' + meta('AI 批改 · 默写'));
+    html += card('lc-s2', 'speak',
+        '<span class="lc-icon">'+I.sound+'</span><span class="lc-title">口语练习</span>' + meta('跟读 · 录音对比'));
     // —— 数学：3/3 ——
     html += '<div class="lc-section">数学</div>';
     html += card('lc-s3', 'math',
@@ -3916,7 +4073,7 @@
     setTimeout(function(){ grid.classList.remove('ky-stagger'); }, 600);
   }
 
-  const LEARN_PAGES = ['pageLearn','pageLearnTodo','pageResources','pageLearnVocab','pageLearnReading','pageLearnMath','pageLearnMathCourse','pageLearnMistakes','pageLearnSyntax','pageLearnWriting'];
+  const LEARN_PAGES = ['pageLearn','pageLearnTodo','pageResources','pageLearnVocab','pageLearnReading','pageLearnMath','pageLearnMathCourse','pageLearnMistakes','pageLearnSyntax','pageLearnWriting','pageLearnSpeak'];
   window.showLearnView = function(name) {
     if(window._mcStop) window._mcStop();
     LEARN_PAGES.forEach(function(id){ const el=$(id); if(el) el.style.display='none'; });
@@ -3930,6 +4087,7 @@
     if (name === 'mistakes') { $('pageLearnMistakes').style.display=''; openMistakes(); return; }
     if (name === 'syntax') { $('pageLearnSyntax').style.display=''; openSyntax(); return; }
     if (name === 'writing') { $('pageLearnWriting').style.display=''; openWriting(); return; }
+    if (name === 'speak') { $('pageLearnSpeak').style.display=''; openSpeak(); return; }
     if (name === 'mathcourse') { $('pageLearnMathCourse').style.display=''; openMathCourse(); return; }
     // 未知视图一律回落到学习中心（占位页已随 P1.1 移除）
     $('pageLearn').style.display=''; renderLearnHub();
@@ -4135,23 +4293,35 @@
         _sysSpeak(text, lang, onend, sysRate);
       });
     };
-    // 单个英文单词：有道词典真人发音优先（type 1=英音 2=美音），失败无缝回退合成
+    // 英文单词 + 短句：有道 TTS 优先（真人音库、比系统合成有语气、国内快而稳），失败无缝回退 Edge/系统
     const t=String(text).trim();
-    if(/^[A-Za-z][A-Za-z'-]*$/.test(t) && /^en/i.test(lang)){
+    if(/[A-Za-z]/.test(t) && /^en/i.test(lang) && t.length<=240){
       try{
-        const type=/gb/i.test(lang)?1:2;
-        const a=new Audio('https://dict.youdao.com/dictvoice?audio='+encodeURIComponent(t.toLowerCase())+'&type='+type);
+        const isWord=/^[A-Za-z][A-Za-z'-]*$/.test(t);
+        const a=new Audio(_youdaoUrl(t, lang));
+        if(sysRate && sysRate>0){ try{ a.playbackRate=sysRate; }catch(e){} } // 朗读倍速透传
         _curAudio=a;
         let done=false;
         const fallback=function(){ if(done||myGen!==_speakGen) return; done=true; doSynth(); };
         a.onended=function(){ if(done) return; done=true; if(_curAudio===a)_curAudio=null; if(onend) onend(); };
         a.onerror=fallback;
         a.play().catch(fallback);
-        setTimeout(function(){ if(!done && myGen===_speakGen && (a.readyState<3) && a.paused!==false){ fallback(); } }, 2500); // 加载超时兜底
+        setTimeout(function(){ if(!done && myGen===_speakGen && a.readyState<2 && a.paused){ fallback(); } }, isWord?2500:3800); // 加载超时兜底
         return;
       }catch(e){}
     }
     doSynth();
+  }
+  // 有道 TTS 直链：单词小写更稳，句子保留原样；type 1=英音 2=美音
+  function _youdaoUrl(text, lang){
+    const t=String(text).trim();
+    const isWord=/^[A-Za-z][A-Za-z'-]*$/.test(t);
+    const q=isWord?t.toLowerCase():t;
+    return 'https://dict.youdao.com/dictvoice?audio='+encodeURIComponent(q)+'&type='+(/gb/i.test(lang||'')?1:2);
+  }
+  // 预取下一句到浏览器缓存，减少句间停顿
+  function _youdaoPrefetch(text, lang){
+    try{ if(/[A-Za-z]/.test(String(text)) && String(text).length<=240){ const a=new Audio(); a.preload='auto'; a.src=_youdaoUrl(text, lang); } }catch(e){}
   }
   window._speak=speak;
   window.ttsNeuralSet=function(on){ _neuralOn=!!on; _neuralFails=0; try{ localStorage.setItem('tts_neural', on?'1':'0'); }catch(e){} };
@@ -4253,7 +4423,7 @@
     if(!v.active) v.active='kaoyan';
     if(!v.settings) v.settings={dailyNew:20};
     if(typeof v.settings.dailyNew!=='number') v.settings.dailyNew=20;
-    if(v.settings.mode!=='spell' && v.settings.mode!=='mcq') v.settings.mode='mcq'; // mcq=斩词 / spell=拼写
+    if(['spell','mcq','mix'].indexOf(v.settings.mode)<0) v.settings.mode='mcq'; // mcq=斩词 / spell=拼写 / mix=混合
     if(!v.progress) v.progress={};
     if(!Array.isArray(v.wrongBook)) v.wrongBook=[];
     if(!Array.isArray(v.userLibs)) v.userLibs=[];
@@ -4310,10 +4480,11 @@
       html+='<button class="btn-sm learn-back" onclick="showLearnView(\'hub\')" style="align-self:flex-start;margin-bottom:10px;">'+I.arrowLeft+'返回学习</button>';
       html+='<div class="row" style="justify-content:space-between;align-items:center;gap:8px;"><h2 style="margin:0;">背单词</h2><button class="btn-sm" onclick="vocabOpenImport()">'+I.plus+'导入词库</button></div>';
       html+='<select class="vocab-libsel" style="margin-top:10px;" onchange="vocabSwitchLib(this.value)">'+opts+'</select>';
-      // 模式切换：斩词（MCQ）/ 拼写（看释义默写）
+      // 模式切换：斩词（MCQ）/ 拼写（看释义默写）/ 混合（两者随机交替）
       html+='<div class="seg" id="vocabModeSeg" style="margin-top:10px;">'
-          +   '<button data-mode="mcq"'   +(v.settings.mode==='mcq'  ?' class="on"':'')+' onclick="vocabSetMode(\'mcq\')">斩词（看选义）</button>'
-          +   '<button data-mode="spell"' +(v.settings.mode==='spell'?' class="on"':'')+' onclick="vocabSetMode(\'spell\')">拼写（看释义默写）</button>'
+          +   '<button data-mode="mcq"'   +(v.settings.mode==='mcq'  ?' class="on"':'')+' onclick="vocabSetMode(\'mcq\')">选义</button>'
+          +   '<button data-mode="spell"' +(v.settings.mode==='spell'?' class="on"':'')+' onclick="vocabSetMode(\'spell\')">默写</button>'
+          +   '<button data-mode="mix"'   +(v.settings.mode==='mix'  ?' class="on"':'')+' onclick="vocabSetMode(\'mix\')">混合</button>'
           + '</div>';
       if(!words){
         html+='<div class="learn-soon" style="padding:20px 0;">该词库还没有内容<br><span class="tiny muted">用上方「导入词库」粘贴 JSON，或换一个词库</span></div></div>';
@@ -4343,7 +4514,7 @@
 
   window.vocabSwitchLib=function(id){ const v=ensureVocab(); v.active=id; save(); loadVocabLibs().then(renderVocabHome); };
   window.vocabSetDaily=function(){ const v=ensureVocab(); const n=prompt('每日新词数量', v.settings.dailyNew); if(n===null)return; const num=parseInt(n,10); if(num>0&&num<=200){ v.settings.dailyNew=num; save(); openVocab(); } else alert('请输入 1–200 之间的数字'); };
-  window.vocabSetMode=function(m){ const v=ensureVocab(); if(m!=='spell'&&m!=='mcq') return; v.settings.mode=m; save(); openVocab(); };
+  window.vocabSetMode=function(m){ const v=ensureVocab(); if(['spell','mcq','mix'].indexOf(m)<0) return; v.settings.mode=m; save(); openVocab(); };
 
   function buildVocabQueue(words, mode){
     const v=ensureVocab(), lib=v.active, t=todayStr();
@@ -4401,8 +4572,9 @@
   function renderVocabCard(){
     const s=_vsession; if(!s) return;
     if(s.idx>=s.queue.length){ renderVocabDone(); return; }
-    // 按模式分发：斩词(MCQ) / 拼写(spell)
-    const mode=(ensureVocab().settings.mode)||'mcq';
+    // 按模式分发：斩词(MCQ) / 拼写(spell) / 混合(mix：每张卡随机一种，选择固定到该卡不随重渲变化)
+    let mode=(ensureVocab().settings.mode)||'mcq';
+    if(mode==='mix'){ const it=s.queue[s.idx]; if(it._spell===undefined) it._spell=Math.random()<0.5; mode=it._spell?'spell':'mcq'; }
     if(mode==='spell'){ renderVocabSpellCard(); return; }
     const item=s.queue[s.idx], wd=item.wd;
     const opts=_vshuffle([{def:wd.def, w:wd.w}].concat(vDistractorsW(wd, s.words, 3)));
@@ -4577,22 +4749,36 @@
     save();
   }
 
-  /** 语境例句卡（百词斩式）：深色卡 + 目标词高亮 + 中译 + 朗读。数据来自 5489 词义详解或词库自带例句。 */
+  /** 语境例句卡（百词斩式）：深色卡 + 目标词高亮 + 逐词可点查义 + 中译 + 朗读。 */
   function vCtxHtml(wd){
     const d=(_wordDetail||{})[String(wd.w||'').toLowerCase()]||{};
     const ex=d.ex||wd.ex||'', exCn=d.exCn||wd.exCn||'';
     if(!ex) return '';
-    let en=escAttr(ex);
-    try{
-      const base=String(wd.w).replace(/[^A-Za-z]/g,'');
-      if(base) en=en.replace(new RegExp('\\b('+base.slice(0, Math.max(3, base.length-2))+'[a-z]*)\\b','ig'), '<b>$1</b>');
-    }catch(e){}
+    // 目标词前缀（用于高亮词形变体）
+    let stem=''; try{ const base=String(wd.w).replace(/[^A-Za-z]/g,''); stem=base?base.slice(0, Math.max(3, base.length-2)).toLowerCase():''; }catch(e){}
+    // 逐词切分：字母词→可点 span（命中目标词加 vc-target 高亮），其余原样
+    const en=String(ex).replace(/[A-Za-z][A-Za-z'’-]*|[^A-Za-z]+/g, function(tok){
+      if(/^[A-Za-z]/.test(tok)){
+        const w=tok.toLowerCase().replace(/[’]/g,"'");
+        const isT=stem && w.indexOf(stem)===0;
+        return '<span class="vc-word'+(isT?' vc-target':'')+'" data-w="'+escAttr(w)+'" onclick="vctxTapWord(this)">'+escAttr(tok)+'</span>';
+      }
+      return escAttr(tok);
+    });
     return '<div class="vctx-card">'
-      + '<div class="vc-src"><span>语境例句</span><button class="vc-spk" data-say="'+escAttr(ex)+'" data-lang="en-US" onclick="vSpeakEl(this)" aria-label="朗读例句">'+I.sound+'</button></div>'
+      + '<div class="vc-src"><span>语境例句 · 点词查义</span><button class="vc-spk" data-say="'+escAttr(ex)+'" data-lang="en-US" onclick="vSpeakEl(this)" aria-label="朗读例句">'+I.sound+'</button></div>'
       + '<div class="vc-en">'+en+'</div>'
       + (exCn ? '<div class="vc-cn">'+escAttr(exCn)+'</div>' : '')
       + '</div>';
   }
+  // 例句里点词 → 查词卡（子释义页）。词形还原后查内置详解，未命中走 openWordCard 的 AI 兜底。
+  window.vctxTapWord = function(el){
+    const w=(el&&el.getAttribute('data-w'))||''; if(!w) return;
+    const bare=w.replace(/(ed|ing|es|s|ly)$/,'');
+    let wd=null;
+    if(_vsession && _vsession.words){ wd=_vsession.words.find(function(x){return x.w.toLowerCase()===w||x.w.toLowerCase()===bare;}); }
+    openWordCard(wd || {w:w, def:''}, {showSave:true});
+  };
 
   /** 反馈区渲染后平滑滚进视野——fill-card 满屏后反馈会把卡片撑出屏幕，不滚会被底栏挡住 */
   function _fbIntoView(id){
@@ -4854,8 +5040,8 @@
     const unit=pl.units[pl.idx];
     readingHighlight(unit.id);
     speak(unit.text, { lang:'en-US', rate:rdEdgeRate(), sysRate:rdRate(), onend:function(){ if(_rdPlayer.playing){ _rdPlayer.idx++; readingPlayNext(); } } });
-    // 预取下一句，减少句间停顿
-    const nx=pl.units[pl.idx+1]; if(nx) _edgePrefetch(nx.text, 'en-US', rdEdgeRate());
+    // 预取下一句，减少句间停顿（有道优先 + Edge 兜底缓存）
+    const nx=pl.units[pl.idx+1]; if(nx){ _youdaoPrefetch(nx.text, 'en-US'); _edgePrefetch(nx.text, 'en-US', rdEdgeRate()); }
   }
   window.rdToggle=function(){
     if(_rdPlayer.playing){ _rdPlayer.playing=false; stopSpeak(); rdSyncPlayer(); return; } // 暂停：保留位置与高亮
@@ -5429,7 +5615,7 @@
   window.quitReading = function(){ readingStopPlay(); $('readingPop').style.display='none'; _readingCur=null; openReading(); };
 
 	  // ===== 数学课程（自托管直链视频：章节 + 续播 + 进度）=====
-	  let _mcSeed=null, _mcCur=null, _mcVideoEl=null, _mcChapter=null;
+	  let _mcSeed=null, _mcCur=null, _mcVideoEl=null, _mcChapter=null, _mcVisHandler=null;
 	  // 课程→配套练习映射表：课程章节 → 题集ID + 关键词分类规则
 	  const MC_QUIZ_MAP = {
 	    "高数": { set: "zyx-gaoshu", rules: [
@@ -5609,10 +5795,11 @@
     if(!l.url || mode==='pan' || mode==='link' || mode==='extvideo'){
       html+='<div class="tiny" style="color:var(--color-accent);margin-top:6px;line-height:1.7;">该链接不是可内嵌的直链（百度网盘/外链无法应用内播放）。请改用 .mp4/.m3u8 直链'+(l.url?('，或 <a href="'+escAttr(l.url)+'" target="_blank" rel="noopener" style="color:var(--color-text-info);">新窗口打开</a>'):'')+'。</div>';
     }
-    // 倍速（仅可内嵌播放时显示）
+    // 倍速 + 小窗（仅可内嵌播放时显示）
     if(l.url && (mode==='video'||mode==='hls')){
       const cur=(ensureMathCourse().settings&&ensureMathCourse().settings.rate)||1;
-      html+='<div class="row" style="align-items:center;gap:8px;margin-top:10px;"><span class="tiny muted">倍速</span>'+mcRateSeg(cur)+'</div>';
+      html+='<div class="row" style="align-items:center;gap:8px;margin-top:10px;"><span class="tiny muted">倍速</span>'+mcRateSeg(cur)+'<button class="btn-sm" style="flex-shrink:0;padding:0 12px;" onclick="mcPip()" title="小窗播放（退出到后台继续看）">'+I.layers+'小窗</button></div>';
+      html+='<div class="tiny muted" style="margin-top:5px;line-height:1.5;">小窗：播放中点「小窗」或退到后台可悬浮继续播（需在 iPhone 设置里开启「画中画」）。</div>';
     }
 	    html+='<h2 style="margin:12px 0 2px;font-size:17px;">'+escAttr(l.title)+'</h2>';
 	    html+='<div class="tiny muted">'+escAttr(l.chapter||'')+'</div>';
@@ -5662,12 +5849,22 @@
   function mcMountVideo(l, mode){
     const m=ensureMathCourse(); const stage=$('mcStage'); if(!stage) return;
     const v=document.createElement('video'); v.setAttribute('controls',''); v.setAttribute('playsinline','');
+    v.setAttribute('autopictureinpicture',''); // iOS/Safari：退到后台时自动小窗（需系统开启画中画）
     v.style.cssText='width:100%;max-height:60vh;background:#000;border-radius:10px;';
     stage.appendChild(v); _mcVideoEl=v;
     const p=m.progress[l.id]||{}; const resumeAt=p.time||0;
-    const rate=(m.settings&&m.settings.rate)||1;
-    const applyRate=function(){ try{ v.playbackRate=rate; }catch(e){} };
-    v.addEventListener('loadedmetadata', applyRate); v.addEventListener('play', applyRate);
+    // 倍速：读实时设置（不锁初值）；iOS 从后台返回会把 playbackRate 复位为 1，
+    // 所以在 loadedmetadata/play/playing/可见性恢复 时都重设为期望倍速。
+    const desiredRate=function(){ const mm=ensureMathCourse(); return (mm.settings&&mm.settings.rate)||1; };
+    const applyRate=function(){ try{ if(Math.abs(v.playbackRate-desiredRate())>0.001) v.playbackRate=desiredRate(); }catch(e){} };
+    v.addEventListener('loadedmetadata', applyRate); v.addEventListener('play', applyRate); v.addEventListener('playing', applyRate);
+    _mcVisHandler=function(){
+      if(document.hidden){
+        // 退到后台且正在播放：尽力进入小窗（iOS 系统未开画中画则静默失败）
+        try{ if(!v.paused){ if(typeof v.webkitSetPresentationMode==='function' && v.webkitPresentationMode!=='picture-in-picture'){ v.webkitSetPresentationMode('picture-in-picture'); } else if(v.requestPictureInPicture && !document.pictureInPictureElement){ v.requestPictureInPicture().catch(function(){}); } } }catch(e){}
+      } else { setTimeout(applyRate, 60); }
+    };
+    document.addEventListener('visibilitychange', _mcVisHandler);
     const startPlay=function(){ applyRate(); if(resumeAt>3 && v.duration && resumeAt<v.duration-2) v.currentTime=resumeAt; };
     // 视频加载失败（多为该节尚未上传到 R2 → 404）：替换成清晰提示，避免一片黑无反馈
     const showVidErr=function(){
@@ -5700,10 +5897,21 @@
     if(!silent && typeof event!=='undefined' && event && event.target){ const btn=event.target.closest('button'); if(btn){ btn.innerHTML=I.check+'已学'; btn.style.background='var(--color-success)'; btn.style.color='#fff'; btn.style.borderColor='var(--color-success)'; } }
   };
   function mcStopVideo(){
+    if(_mcVisHandler){ try{ document.removeEventListener('visibilitychange', _mcVisHandler); }catch(e){} _mcVisHandler=null; }
     if(_mcVideoEl){ try{ if(_mcCur) mcSaveProgress(_mcCur.id,_mcVideoEl); _mcVideoEl.pause(); _mcVideoEl.removeAttribute('src'); _mcVideoEl.load(); }catch(e){} }
     if(window._mcHls){ try{ window._mcHls.destroy(); }catch(e){} window._mcHls=null; }
     _mcVideoEl=null;
   }
+  // 画中画：手动小窗（iOS 用 webkit API，标准浏览器用 requestPictureInPicture）
+  window.mcPip = function(){
+    const v=_mcVideoEl; if(!v){ alert('先开始播放视频'); return; }
+    try{
+      if(typeof v.webkitSetPresentationMode==='function'){ v.webkitSetPresentationMode(v.webkitPresentationMode==='picture-in-picture'?'inline':'picture-in-picture'); return; }
+      if(document.pictureInPictureElement){ document.exitPictureInPicture(); return; }
+      if(v.requestPictureInPicture){ v.requestPictureInPicture().catch(function(){ alert('当前环境不支持小窗播放'); }); return; }
+      alert('当前环境不支持小窗播放');
+    }catch(e){ alert('当前环境不支持小窗播放'); }
+  };
   window._mcStop = mcStopVideo;
 	  window.mcBackToList=function(){ const ch=_mcCur&&_mcCur.chapter; mcStopVideo(); _mcCur=null; if(ch) _mcChapter=ch; $('mcPlayer').style.display='none'; $('mcHome').style.display=''; loadMcSeed().then(renderMcHome); };
 	  // 课程→做题联动：为当前课节寻找配套练习题并跳转
@@ -6075,7 +6283,7 @@
     const pt = $('phaseToggle');
     if (pt) pt.style.display = idx === 0 ? '' : 'none';
     // Hide all secondary pages
-    ['pageLearn','pageLearnTodo','pageResources','pageLearnVocab','pageLearnReading','pageLearnMath','pageLearnMathCourse','pageLearnMistakes','pageLearnSyntax','pageLearnWriting','pageAI'].forEach(id => { const el = $(id); if(el) el.style.display = 'none'; });
+    ['pageLearn','pageLearnTodo','pageResources','pageLearnVocab','pageLearnReading','pageLearnMath','pageLearnMathCourse','pageLearnMistakes','pageLearnSyntax','pageLearnWriting','pageLearnSpeak','pageAI'].forEach(id => { const el = $(id); if(el) el.style.display = 'none'; });
     // Update nav
     document.querySelectorAll('.bn-btn').forEach(b => { b.className = 'bn-btn' + (b.dataset.page == idx ? ' on' : ''); });
     // Render target
@@ -7256,6 +7464,10 @@
         state.day = pos.day;
       }
     } catch(e) { console.warn('[auto-position] failed, keeping manual position'); }
+  } else {
+    // 未设起始日期：默认选中「今天」对应的星期，而不是永远停在周一
+    const wd = new Date().getDay();
+    state.day = wd === 0 ? 6 : wd - 1;
   }
 
   // --- data self-check ---
@@ -7263,7 +7475,7 @@
     const issues = [];
     if (!state || typeof state !== 'object') issues.push('state 未加载');
     else {
-      if (typeof state.p !== 'number' || state.p < 0 || state.p > 1) { state.p = 0; issues.push('state.p→0'); }
+      if (typeof state.p !== 'number' || state.p < 0 || state.p >= PHASES.length) { state.p = 0; issues.push('state.p→0'); }
       if (typeof state.wk !== 'number' || state.wk < 1) { state.wk = 1; issues.push('state.wk→1'); }
       if (typeof state.day !== 'number' || state.day < 0 || state.day > 6) { state.day = 0; issues.push('state.day→0'); }
       if (!state.examDate) { state.examDate = '2027-12-25'; issues.push('examDate→default'); }
@@ -7321,7 +7533,7 @@
   }, 100);
 
   // Hide learn/resource/AI pages on startup
-  ['pageLearn','pageLearnTodo','pageResources','pageLearnVocab','pageLearnReading','pageLearnMath','pageLearnMathCourse','pageLearnMistakes','pageLearnSyntax','pageLearnWriting','pageAI'].forEach(function(id) { var el = $(id); if(el) el.style.display = 'none'; });
+  ['pageLearn','pageLearnTodo','pageResources','pageLearnVocab','pageLearnReading','pageLearnMath','pageLearnMathCourse','pageLearnMistakes','pageLearnSyntax','pageLearnWriting','pageLearnSpeak','pageAI'].forEach(function(id) { var el = $(id); if(el) el.style.display = 'none'; });
 })();
 </script>
 <script>
