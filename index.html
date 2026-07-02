@@ -513,6 +513,17 @@
   /* 学习子页：填满视口，避免大片底部留白 */
   .fill-card { min-height: calc(100dvh - var(--safe-top) - var(--bottom-nav-height) - var(--safe-bottom) - 44px); display: flex; flex-direction: column; }
   .fill-card .fc-foot { margin-top: auto; padding-top: 14px; }
+  /* 背单词满屏：单词区吃掉剩余高度并垂直居中，选项/反馈贴近拇指区 */
+  .fill-card > .vocab-card { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+  /* 语境例句卡（百词斩式：深色卡 + 目标词高亮 + 中译 + 朗读） */
+  .vctx-card { margin-top: 12px; padding: 15px 16px 13px; border-radius: var(--radius-sm); background: var(--brand-gradient); color: #fff; text-align: left; box-shadow: var(--shadow-soft); }
+  .vctx-card .vc-src { display: flex; justify-content: space-between; align-items: center; font-size: 10.5px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; opacity: .8; margin-bottom: 7px; }
+  .vctx-card .vc-en { font-size: 16.5px; line-height: 1.65; font-weight: 500; }
+  .vctx-card .vc-en b { color: #FFC46B; font-weight: 700; }
+  .vctx-card .vc-cn { font-size: 13px; opacity: .78; margin-top: 6px; line-height: 1.6; }
+  .vctx-card .vc-spk { width: 28px; height: 28px; min-width: 28px; border-radius: 50%; border: 1px solid rgba(255,255,255,.32); background: rgba(255,255,255,.12); color: #fff; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; -webkit-tap-highlight-color: transparent; }
+  .vctx-card .vc-spk:active { transform: scale(.9); }
+  .vctx-card .vc-spk svg { width: 14px; height: 14px; }
   .vocab-foot { gap: 8px; }
   .vocab-foot .vfoot { flex: 1; min-width: 0; flex-direction: column; gap: 1px; height: auto; padding: 8px 4px; box-shadow: none; }
   .vfoot .vfoot-lbl { font-size: 11px; font-weight: 500; color: var(--color-text-secondary); }
@@ -2502,7 +2513,7 @@
     const st=_synCur; if(!st) return;
     const s=ensureSyntax();
     const p=s.progress[synKey(s.active,st.id)]||{};
-    let html='<div class="card">';
+    let html='<div class="card fill-card">';
     html+='<div class="train-meta-bar"><button class="btn-sm learn-back" onclick="quitSyntax()">← 列表</button><span class="tiny muted">'+escAttr(st.cat||'')+(st.level?' · '+escAttr(st.level):'')+'</span></div>';
     // 原文（展开前纯文本，展开后高亮）
     if(_synExpanded){
@@ -2594,7 +2605,7 @@
   };
   function renderSyntaxReview(){
     const rv = _synReview; if (!rv) return;
-    let html = '<div class="card">';
+    let html = '<div class="card fill-card">';
     if (rv.idx >= rv.items.length) {
       html += '<div style="text-align:center;padding:18px 0 6px;"><span class="fb-done-ic'+(rv.ok===rv.items.length?'':' is-mid')+'">'+I.check+'</span></div>';
       html += '<div style="text-align:center;font-size:16px;font-weight:600;">复习完成</div>';
@@ -3821,8 +3832,8 @@
         + '</div>';
     }
 
-    let html = '<div class="card">';
-    html += '<button class="btn-sm learn-back" onclick="showLearnView(\'hub\')">'+I.arrowLeft+'返回学习</button>';
+    let html = '<div class="card fill-card">';
+    html += '<div><button class="btn-sm learn-back" onclick="showLearnView(\'hub\')">'+I.arrowLeft+'返回学习</button></div>';
     html += '<h2 style="margin:12px 0 2px;">今日学习</h2>';
     html += '<div class="tiny muted" style="margin-bottom:14px;">'+(t.allDone ? '今日三项全部达标，下面都是加分项。' : '完成任意一项，今天就不算断线。')+'</div>';
     if (firstTodo) {
@@ -3955,33 +3966,53 @@
     try{ if('speechSynthesis' in window) speechSynthesis.cancel(); }catch(e){}
   }
   window._stopSpeak=stopSpeak;
-  /** 统一朗读：优先 Edge 神经语音（客户端直连），失败/被封则回退系统语音。opts={lang,rate,sysRate,onend}
-      rate=Edge 百分比字符串（如 '+18%'）；sysRate=系统语音倍速乘数（回退时用）。 */
+  /** 统一朗读：单词→有道真人发音优先（更标准、国内稳）；句子→Edge 神经语音；均失败回退系统语音。
+      opts={lang,rate,sysRate,onend}；rate=Edge 百分比字符串；sysRate=系统语音倍速乘数。 */
   function speak(text, opts){
     opts=opts||{}; const lang=opts.lang||'en-US', onend=opts.onend, sysRate=opts.sysRate;
     if(!text){ if(onend) onend(); return; }
     stopSpeak(); const myGen=_speakGen;
-    const useNeural = _neuralOn && ('WebSocket' in window) && (window.crypto&&crypto.subtle) && /^en/i.test(lang);
-    if(!useNeural){ _sysSpeak(text, lang, onend, sysRate); return; }
-    const voice=_edgeVoice(lang), rate=opts.rate||'+0%', key=voice+'|'+rate+'|'+text;
-    const playBlob=function(blob){
-      if(myGen!==_speakGen) return; // 已被打断
-      try{ const url=URL.createObjectURL(blob); const a=new Audio(url); _curAudio=a;
-        a.onended=function(){ try{URL.revokeObjectURL(url);}catch(e){}; if(_curAudio===a)_curAudio=null; if(onend) onend(); };
-        a.onerror=function(){ _sysSpeak(text, lang, onend, sysRate); };
-        a.play().catch(function(){ if(myGen===_speakGen) _sysSpeak(text, lang, onend, sysRate); });
-      }catch(e){ _sysSpeak(text, lang, onend, sysRate); }
+    const doSynth=function(){
+      if(myGen!==_speakGen) return;
+      const useNeural = _neuralOn && ('WebSocket' in window) && (window.crypto&&crypto.subtle) && /^en/i.test(lang);
+      if(!useNeural){ _sysSpeak(text, lang, onend, sysRate); return; }
+      const voice=_edgeVoice(lang), rate=opts.rate||'+0%', key=voice+'|'+rate+'|'+text;
+      const playBlob=function(blob){
+        if(myGen!==_speakGen) return; // 已被打断
+        try{ const url=URL.createObjectURL(blob); const a=new Audio(url); _curAudio=a;
+          a.onended=function(){ try{URL.revokeObjectURL(url);}catch(e){}; if(_curAudio===a)_curAudio=null; if(onend) onend(); };
+          a.onerror=function(){ _sysSpeak(text, lang, onend, sysRate); };
+          a.play().catch(function(){ if(myGen===_speakGen) _sysSpeak(text, lang, onend, sysRate); });
+        }catch(e){ _sysSpeak(text, lang, onend, sysRate); }
+      };
+      if(_edgeCache[key]){ playBlob(_edgeCache[key]); return; }
+      _edgeSynth(text, voice, rate).then(function(blob){
+        if(myGen!==_speakGen) return;
+        if(blob && blob.size>200){ _neuralFails=0; _edgeCache[key]=blob; playBlob(blob); }
+        else { _sysSpeak(text, lang, onend, sysRate); }
+      }).catch(function(){
+        if(myGen!==_speakGen) return;
+        _neuralFails++; if(_neuralFails>=3) _neuralOn=false; // 连续失败（多半被封 IP）→ 本会话改系统语音
+        _sysSpeak(text, lang, onend, sysRate);
+      });
     };
-    if(_edgeCache[key]){ playBlob(_edgeCache[key]); return; }
-    _edgeSynth(text, voice, rate).then(function(blob){
-      if(myGen!==_speakGen) return;
-      if(blob && blob.size>200){ _neuralFails=0; _edgeCache[key]=blob; playBlob(blob); }
-      else { _sysSpeak(text, lang, onend, sysRate); }
-    }).catch(function(){
-      if(myGen!==_speakGen) return;
-      _neuralFails++; if(_neuralFails>=3) _neuralOn=false; // 连续失败（多半被封 IP）→ 本会话改系统语音
-      _sysSpeak(text, lang, onend, sysRate);
-    });
+    // 单个英文单词：有道词典真人发音优先（type 1=英音 2=美音），失败无缝回退合成
+    const t=String(text).trim();
+    if(/^[A-Za-z][A-Za-z'-]*$/.test(t) && /^en/i.test(lang)){
+      try{
+        const type=/gb/i.test(lang)?1:2;
+        const a=new Audio('https://dict.youdao.com/dictvoice?audio='+encodeURIComponent(t.toLowerCase())+'&type='+type);
+        _curAudio=a;
+        let done=false;
+        const fallback=function(){ if(done||myGen!==_speakGen) return; done=true; doSynth(); };
+        a.onended=function(){ if(done) return; done=true; if(_curAudio===a)_curAudio=null; if(onend) onend(); };
+        a.onerror=fallback;
+        a.play().catch(fallback);
+        setTimeout(function(){ if(!done && myGen===_speakGen && (a.readyState<3) && a.paused!==false){ fallback(); } }, 2500); // 加载超时兜底
+        return;
+      }catch(e){}
+    }
+    doSynth();
   }
   window._speak=speak;
   window.ttsNeuralSet=function(on){ _neuralOn=!!on; _neuralFails=0; try{ localStorage.setItem('tts_neural', on?'1':'0'); }catch(e){} };
@@ -4187,6 +4218,11 @@
     const pool=words.filter(function(x){return x.w!==wd.w && x.def;}); _vshuffle(pool);
     return pool.slice(0,n).map(function(x){return x.def;});
   }
+  /* 干扰项带来源词版本：选项点击即读该选项对应的单词 */
+  function vDistractorsW(wd, words, n){
+    const pool=words.filter(function(x){return x.w!==wd.w && x.def;}); _vshuffle(pool);
+    return pool.slice(0,n).map(function(x){return {def:x.def, w:x.w};});
+  }
 
   function renderVocabCard(){
     const s=_vsession; if(!s) return;
@@ -4195,10 +4231,10 @@
     const mode=(ensureVocab().settings.mode)||'mcq';
     if(mode==='spell'){ renderVocabSpellCard(); return; }
     const item=s.queue[s.idx], wd=item.wd;
-    const opts=_vshuffle([wd.def].concat(vDistractors(wd, s.words, 3)));
+    const opts=_vshuffle([{def:wd.def, w:wd.w}].concat(vDistractorsW(wd, s.words, 3)));
     s._answered=false;
     const wrongCount=vCountWrong();
-    let html='<div class="card">';
+    let html='<div class="card fill-card">';
     html+='<div class="row" style="justify-content:space-between;align-items:center;">'
         + '<button class="btn-sm learn-back" onclick="quitVocab()">← 退出</button>'
         + '<div class="row" style="gap:8px;">'
@@ -4210,7 +4246,7 @@
     if(wd.ph) html+='<div class="vocab-ph">'+escAttr(wd.ph)+'</div>';
     html+='<div class="vocab-speak" onclick="_vSpeak(\''+escAttr(wd.w).replace(/'/g,"\\'")+'\')" title="发音">'+I.sound+'</div></div>';
     html+='<div class="vocab-opts" id="vocabOpts">';
-    opts.forEach(function(d){ html+='<button class="vocab-opt" onclick="vocabPick(this)" data-def="'+escAttr(d)+'">'+escAttr(d)+'</button>'; });
+    opts.forEach(function(o){ html+='<button class="vocab-opt" onclick="vocabPick(this)" data-def="'+escAttr(o.def)+'" data-w="'+escAttr(o.w)+'">'+escAttr(o.def)+'</button>'; });
     html+='</div>';
     html+='<span class="vocab-known" onclick="vocabKnown()">我已认识这个词，标记掌握 →</span>';
     html+='<div id="vocabFb"></div></div>';
@@ -4225,7 +4261,7 @@
     s._answered=false; s._hintIdx=0;
     const wrongCount=vCountWrong();
     const len=(wd.w||'').length;
-    let html='<div class="card">';
+    let html='<div class="card fill-card">';
     html+='<div class="row" style="justify-content:space-between;align-items:center;">'
         + '<button class="btn-sm learn-back" onclick="quitVocab()">← 退出</button>'
         + '<div class="row" style="gap:8px;">'
@@ -4307,6 +4343,7 @@
 
   function showVocabSpellFeedback(correct, userInput, wd){
     let fb='';
+    fb += vCtxHtml(wd); // 语境例句卡
     fb += '<button class="btn-sm" style="width:100%;margin-top:10px;" onclick="vocabWordCard(\''+escAttr(_vsession.lib)+'\',\''+escAttr(wd.w).replace(/\x27/g,"\\\x27")+'\')">'+I.bookOpen+'词义详解</button>';
     fb += '<button class="btn-cta" style="margin-top:8px;" onclick="vocabNext()"><span>下一个 →</span></button>';
     $('vocabFb').innerHTML=fb;
@@ -4316,8 +4353,14 @@
   window.vocabPick=function(btn){
     const s=_vsession; if(!s||s._answered) return;
     s._answered=true;
-    const correct=(btn.getAttribute('data-def')===s.queue[s.idx].wd.def);
-    document.querySelectorAll('#vocabOpts .vocab-opt').forEach(function(b){ b.disabled=true; if(b.getAttribute('data-def')===s.queue[s.idx].wd.def) b.classList.add('correct'); else if(b===btn) b.classList.add('wrong'); });
+    const wd=s.queue[s.idx].wd;
+    const correct=(btn.getAttribute('data-def')===wd.def);
+    document.querySelectorAll('#vocabOpts .vocab-opt').forEach(function(b){ b.disabled=true; if(b.getAttribute('data-def')===wd.def) b.classList.add('correct'); else if(b===btn) b.classList.add('wrong'); });
+    // 点选即读：答对读本词；答错先读所选错误选项对应的词，再读正确的词（听觉对比强化）
+    const pickedW=btn.getAttribute('data-w')||'';
+    if(correct){ vSpeak(wd.w); }
+    else if(pickedW){ speak(pickedW, { lang:'en-US', onend:function(){ setTimeout(function(){ vSpeak(wd.w); }, 220); } }); }
+    else { vSpeak(wd.w); }
     gradeVocab(s.queue[s.idx], correct);
     if(correct) s.correct++;
     // 实时更新顶部错词计数（让用户当场看到"加进去了"）
@@ -4344,9 +4387,27 @@
     save();
   }
 
+  /** 语境例句卡（百词斩式）：深色卡 + 目标词高亮 + 中译 + 朗读。数据来自 5489 词义详解或词库自带例句。 */
+  function vCtxHtml(wd){
+    const d=(_wordDetail||{})[String(wd.w||'').toLowerCase()]||{};
+    const ex=d.ex||wd.ex||'', exCn=d.exCn||wd.exCn||'';
+    if(!ex) return '';
+    let en=escAttr(ex);
+    try{
+      const base=String(wd.w).replace(/[^A-Za-z]/g,'');
+      if(base) en=en.replace(new RegExp('\\b('+base.slice(0, Math.max(3, base.length-2))+'[a-z]*)\\b','ig'), '<b>$1</b>');
+    }catch(e){}
+    return '<div class="vctx-card">'
+      + '<div class="vc-src"><span>语境例句</span><button class="vc-spk" data-say="'+escAttr(ex)+'" data-lang="en-US" onclick="vSpeakEl(this)" aria-label="朗读例句">'+I.sound+'</button></div>'
+      + '<div class="vc-en">'+en+'</div>'
+      + (exCn ? '<div class="vc-cn">'+escAttr(exCn)+'</div>' : '')
+      + '</div>';
+  }
+
   function showVocabFeedback(correct){
     const wd=_vsession.queue[_vsession.idx].wd;
     let fb='';
+    fb+=vCtxHtml(wd); // 语境例句卡（有例句才出现）
     fb+='<button class="btn-sm" style="width:100%;margin-top:10px;" onclick="vocabWordCard(\''+escAttr(_vsession.lib)+'\',\''+escAttr(wd.w).replace(/\x27/g,"\\\x27")+'\')">'+I.bookOpen+'词义详解</button>';
     fb+='<button class="btn-sm" style="width:100%;margin-top:8px;background:var(--color-text-info);color:#fff;border-color:var(--color-text-info);padding:10px;" onclick="vocabNext()">下一个 →</button>';
     $('vocabFb').innerHTML=fb;
@@ -4367,7 +4428,7 @@
 
   function renderVocabDone(){
     const s=_vsession;
-    $('vocabSession').innerHTML='<div class="card" style="text-align:center;"><div class="fb-done-ic">'+I.circleCheck+'</div><h2 style="margin:8px 0;">本组完成</h2><p class="muted">答对 '+s.correct+' / '+s.total+'</p><button class="btn-cta" style="margin-top:14px;" onclick="openVocab()">返回</button></div>';
+    $('vocabSession').innerHTML='<div class="card fill-card" style="text-align:center;justify-content:center;"><div><div class="fb-done-ic">'+I.circleCheck+'</div><h2 style="margin:8px 0;">本组完成</h2><p class="muted">答对 '+s.correct+' / '+s.total+'</p><button class="btn-cta" style="margin-top:14px;" onclick="openVocab()">返回</button></div></div>';
     _vsession=null;
   }
 
@@ -5052,7 +5113,7 @@
 	    if(s.idx>=s.queue.length){ renderMathDone(); return; }
 	    const q=s.queue[s.idx];
 	    s._answered=false;
-	    let html='<div class="card">';
+	    let html='<div class="card fill-card">';
 	    // 来自课程跳转：显示课程上下文 & 返回按钮
 	    if(_mcQuizContext){
 	      html+='<div class="row" style="justify-content:space-between;align-items:center;"><button class="btn-sm learn-back" onclick="mcBackFromQuiz()">'+I.arrowLeft+'返回课程</button><span class="tiny muted">'+escAttr(_mcQuizContext.catLabel||'')+'</span></div>';
@@ -5136,7 +5197,7 @@
 	    const backBtn = _mcQuizContext
 	      ? '<button class="btn-sm" style="margin-top:8px;" onclick="mcBackFromQuiz()">'+I.arrowLeft+'返回课程</button>'
 	      : '';
-	    $('mathSession').innerHTML='<div class="card" style="text-align:center;"><div class="fb-done-ic'+(acc>=80?'':' is-mid')+'">'+I.circleCheck+'</div><h2 style="margin:8px 0;">本组完成</h2><p class="muted">答对 '+s.correct+' / '+s.total+'（'+acc+'%）</p><button class="btn-cta" style="margin-top:14px;" onclick="openMath()">返回</button>'+backBtn+'</div>';
+	    $('mathSession').innerHTML='<div class="card fill-card" style="text-align:center;justify-content:center;"><div><div class="fb-done-ic'+(acc>=80?'':' is-mid')+'">'+I.circleCheck+'</div><h2 style="margin:8px 0;">本组完成</h2><p class="muted">答对 '+s.correct+' / '+s.total+'（'+acc+'%）</p><button class="btn-cta" style="margin-top:14px;" onclick="openMath()">返回</button>'+backBtn+'</div></div>';
 	    _msession=null;
 	  }
 
