@@ -2374,6 +2374,7 @@
   const _synCache = {};         // setId -> sentences[]
   let _synCur = null;           // 当前句子
   let _synExpanded = false;     // 当前是否已展开成分拆解
+  let _synReview = null;        // P1.3 复习会话 {items:[{setId,st}], idx, ok, revealed}
 
   function ensureSyntax(){
     const s = state.learn.syntax = state.learn.syntax || {};
@@ -2423,7 +2424,11 @@
       let known=0; sentences.forEach(function(st){ const p=s.progress[synKey(s.active,st.id)]; if(p&&p.known) known++; });
       const pct = sentences.length ? Math.round(known/sentences.length*100) : 0;
       html+='<div class="vocab-progbar" style="margin-top:12px;"><i style="width:'+pct+'%"></i></div>';
-      html+='<div class="tiny muted" style="margin-top:6px;">已掌握 '+known+' / '+sentences.length+' 句（'+pct+'%）</div></div>';
+      html+='<div class="tiny muted" style="margin-top:6px;">已掌握 '+known+' / '+sentences.length+' 句（'+pct+'%）</div>';
+      // P1.3 复习队列：跨句库聚合"还不懂"的到期句，遮译自测
+      const dueN = syntaxDueKeys().length;
+      if(dueN) html+='<button class="btn-cta" style="margin-top:12px;" onclick="syntaxStartReview()"><span>复习待巩固 · '+dueN+' 句</span><span class="cta-ico">'+I.arrowRight+'</span></button>';
+      html+='</div>';
       // 列表
       html+='<div class="syn-list">';
       sentences.forEach(function(st){
@@ -2523,7 +2528,88 @@
     const inp=$('aiInput'); if(inp){ inp.value=txt; inp.focus(); }
   };
 
-  window.quitSyntax = function(){ _synCur=null; _synExpanded=false; $('syntaxView').style.display='none'; $('syntaxHome').style.display=''; openSyntax(); };
+  window.quitSyntax = function(){ _synCur=null; _synExpanded=false; _synReview=null; $('syntaxView').style.display='none'; $('syntaxHome').style.display=''; openSyntax(); };
+
+  // ===== P1.3 长难句复习队列（遮译自测） =====
+  // 队列 = 全部句库中标了"还不懂"且到期（due<=今天，未设 due 视为今天）的句子。
+  // 自测流程：只看英文 → 心里默拆/默译 → 展开对照 → 自评「记住了」（出队）/「还不熟」（明天再来）。
+  function syntaxDueKeys(){
+    const s = ensureSyntax(), t = todayStr(), out = [];
+    Object.keys(s.progress || {}).forEach(function(k){
+      const p = s.progress[k];
+      if (p && p.unsure && !p.known && (p.due || t) <= t) out.push(k);
+    });
+    return out;
+  }
+  window.syntaxDueCount = function(){ return syntaxDueKeys().length; };
+  window.syntaxStartReview = function(){
+    const keys = syntaxDueKeys();
+    if (!keys.length) return;
+    const bySet = {};
+    keys.forEach(function(k){ const i = k.indexOf(':'); (bySet[k.slice(0,i)] = bySet[k.slice(0,i)] || []).push(k.slice(i+1)); });
+    loadSyntaxSets().then(function(){
+      return Promise.all(Object.keys(bySet).map(function(setId){
+        return loadSyntaxSentences(setId).then(function(sents){
+          return (sents || []).filter(function(st){ return bySet[setId].indexOf(st.id) >= 0; })
+                              .map(function(st){ return { setId: setId, st: st }; });
+        });
+      }));
+    }).then(function(chunks){
+      const items = [].concat.apply([], chunks);
+      if (!items.length) { alert('待复习的句子在句库数据里没找到（句库可能已更换）'); return; }
+      _synReview = { items: items, idx: 0, ok: 0, revealed: false };
+      renderSyntaxReview();
+    });
+  };
+  function renderSyntaxReview(){
+    const rv = _synReview; if (!rv) return;
+    let html = '<div class="card">';
+    if (rv.idx >= rv.items.length) {
+      html += '<div style="text-align:center;padding:18px 0 6px;"><span class="fb-done-ic'+(rv.ok===rv.items.length?'':' is-mid')+'">'+I.check+'</span></div>';
+      html += '<div style="text-align:center;font-size:16px;font-weight:600;">复习完成</div>';
+      html += '<div class="tiny muted" style="text-align:center;margin-top:4px;">记住 '+rv.ok+' / '+rv.items.length+' 句'+(rv.ok<rv.items.length?' · 没记住的明天会再出现':'')+'</div>';
+      html += '<button class="btn-sm" style="width:100%;margin-top:16px;" onclick="quitSyntax()">'+I.arrowLeft+'返回列表</button>';
+      html += '</div>';
+    } else {
+      const it = rv.items[rv.idx], st = it.st;
+      html += '<div class="train-meta-bar"><button class="btn-sm learn-back" onclick="quitSyntax()">← 退出复习</button><span class="tiny muted">复习 '+(rv.idx+1)+' / '+rv.items.length+' · '+escAttr(st.cat||'难句')+'</span></div>';
+      if (rv.revealed) {
+        html += '<div class="syn-en">'+synPartsHtml(st.parts)+'</div>';
+        html += '<div class="syn-cn">'+escAttr(st.cn)+'</div>';
+        if (st.tip) html += '<div class="syn-tip"><b>'+I.target+' 拆解思路</b><br>'+escAttr(st.tip)+'</div>';
+        html += '<div class="syn-actions" style="margin-top:10px;">';
+        html += '<button class="btn-sm" onclick="syntaxReviewGrade(true)">'+I.check+' 记住了</button>';
+        html += '<button class="btn-sm" onclick="syntaxReviewGrade(false)">还不熟，明天再来</button>';
+        html += '</div>';
+      } else {
+        html += '<div class="syn-en-plain">'+escAttr(st.en)+'</div>';
+        html += '<button class="btn-cta" onclick="syntaxReviewReveal()"><span>对照拆解和译文</span><span class="cta-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></span></button>';
+        html += '<div class="tiny muted" style="text-align:center;margin-top:6px;">先在心里拆主干、默译一遍，再点开对照</div>';
+      }
+      html += '</div>';
+    }
+    $('syntaxHome').style.display='none';
+    $('syntaxView').style.display='';
+    $('syntaxView').innerHTML = html;
+  }
+  window.syntaxReviewReveal = function(){ if(_synReview){ _synReview.revealed = true; renderSyntaxReview(); } };
+  window.syntaxReviewGrade = function(ok){
+    const rv = _synReview; if (!rv || rv.idx >= rv.items.length) return;
+    const it = rv.items[rv.idx];
+    const s = ensureSyntax(), k = synKey(it.setId, it.st.id);
+    const p = s.progress[k] = s.progress[k] || {};
+    p.lastAt = new Date().toISOString();
+    if (ok) {
+      p.known = true; p.unsure = false; delete p.due; rv.ok++;
+      try { window.logEvent('syntax','mark',{ refId:k, correct:true, tag:'eng', cat:it.st.cat||'长难句', title:(it.st.en||'').slice(0,40) }); window.resolveMistake('syntax', k); } catch(e){}
+    } else {
+      p.known = false; p.unsure = true; p.due = vAddDays(todayStr(), 1);
+      try { window.logEvent('syntax','mark',{ refId:k, correct:false, tag:'eng', cat:it.st.cat||'长难句', title:(it.st.en||'').slice(0,40) }); } catch(e){}
+    }
+    save();
+    rv.idx++; rv.revealed = false;
+    renderSyntaxReview();
+  };
 
   // ============================================================
   // P5 —— 作文模块（写作 + AI 批改 + 范文 + 模板）
@@ -2600,7 +2686,9 @@
     html+='<textarea class="wr-textarea" id="wrText" placeholder="在这里写你的作文…（写完点下方 AI 批改）" oninput="writingCount()">'+escAttr(draft)+'</textarea>';
     html+='<div class="wr-wc"><span id="wrWordCount">0 词</span><span class="muted">建议 '+escAttr(p.words)+'</span></div>';
     html+='<button class="btn-cta" id="wrGradeBtn" onclick="writingGrade()"><span>'+I.robot+' AI 批改</span><span class="cta-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span></button>';
-    html+='<div class="syn-toggle-row" style="margin-top:8px;"><button class="btn-sm" onclick="writingShowSample()">'+I.book+' 看范文</button><button class="btn-sm" onclick="openWritingTemplates()">'+I.grid+' 模板库</button></div>';
+    html+='<div class="syn-toggle-row" style="margin-top:8px;"><button class="btn-sm" onclick="writingShowSample()">'+I.book+' 看范文</button>'+(p.sample?'<button class="btn-sm" onclick="writingStartDictation()">'+I.pen+' 默写范文</button>':'')+'<button class="btn-sm" onclick="openWritingTemplates()">'+I.grid+' 模板库</button></div>';
+    const dictLast = (w.dict||{})[p.id];
+    if(dictLast) html+='<div class="tiny muted" style="text-align:center;margin-top:6px;">上次默写还原度 '+dictLast.pct+'%（'+dictLast.at+'）</div>';
     html+='<div id="wrGradeResult"></div>';
     html+='</div>';
     $('writingHome').style.display='none';
@@ -2706,6 +2794,91 @@
       $('writingView').innerHTML=html;
     });
   };
+
+  // ===== P1.4 范文背诵默写（本地逐句 diff，零 AI 依赖，离线可用） =====
+  // 流程：范文按句遮挡 → 已默出的句子显示在上方作上下文 → 逐句输入 → LCS 词级对照标错 → 全文还原度%。
+  let _wrDict = null; // {sents:[], idx, hits, total, checked}
+  window.writingStartDictation = function(){
+    const p=_wrCur; if(!p||!p.sample){ alert('该题暂无范文'); return; }
+    const sents = rdSplitEn(p.sample.replace(/\s+/g,' ').trim());
+    if(!sents.length) return;
+    _wrDict = { sents: sents, idx: 0, hits: 0, total: 0, checked: false };
+    renderWrDict();
+  };
+  /** LCS 词级对照：返回原句每个词是否被默出（keep[i]）。 */
+  function wrDiffWords(a, b){
+    const m=a.length, n=b.length, dp=[];
+    for(let i=0;i<=m;i++) dp.push(new Array(n+1).fill(0));
+    for(let i=1;i<=m;i++) for(let j=1;j<=n;j++) dp[i][j] = (a[i-1]===b[j-1]) ? dp[i-1][j-1]+1 : Math.max(dp[i-1][j], dp[i][j-1]);
+    const keep=new Array(m).fill(false); let i=m, j=n;
+    while(i>0&&j>0){ if(a[i-1]===b[j-1]){ keep[i-1]=true; i--; j--; } else if(dp[i-1][j]>=dp[i][j-1]) i--; else j--; }
+    return keep;
+  }
+  function wrWords(t){ return (String(t||'').toLowerCase().match(/[a-z][a-z'’-]*/g)||[]).map(function(w){return w.replace(/[’]/g,"'");}); }
+  /** 原句渲染：默对的词正常，漏/错的词红色下划线。 */
+  function wrRenderDiff(sent, keep){
+    let wi=0;
+    return sent.replace(/[A-Za-z][A-Za-z'’-]*|[^A-Za-z]+/g, function(tok){
+      if(/^[A-Za-z]/.test(tok)){ const ok=keep[wi++]; return ok?escAttr(tok):'<span style="color:var(--color-danger);font-weight:600;text-decoration:underline;">'+escAttr(tok)+'</span>'; }
+      return escAttr(tok);
+    });
+  }
+  function renderWrDict(){
+    const d=_wrDict, p=_wrCur; if(!d||!p) return;
+    let html='<div class="card">';
+    if(d.idx>=d.sents.length){
+      const pct = d.total ? Math.round(d.hits/d.total*100) : 0;
+      const w=ensureWriting(); (w.dict=w.dict||{})[p.id]={pct:pct, at:todayStr()}; save();
+      try{ window.logEvent('writing','submit',{ refId:'dict:'+p.id, correct:pct>=80, tag:'eng', cat:p.cat, title:'默写·'+p.title, xp:6 }); }catch(e){}
+      html+='<div style="text-align:center;padding:18px 0 6px;"><span class="fb-done-ic'+(pct>=80?'':' is-mid')+'">'+I.check+'</span></div>';
+      html+='<div style="text-align:center;font-size:16px;font-weight:600;">默写完成 · 还原度 '+pct+'%</div>';
+      html+='<div class="tiny muted" style="text-align:center;margin-top:4px;">'+(pct>=80?'背得很扎实，可以换下一篇了':'红色的词就是要背的重点，隔天再默一遍')+'</div>';
+      html+='<button class="btn-sm" style="width:100%;margin-top:16px;" onclick="renderWritingView()">'+I.arrowLeft+'返回题目</button>';
+      html+='</div>';
+    } else {
+      html+='<div class="train-meta-bar"><button class="btn-sm learn-back" onclick="renderWritingView()">← 退出默写</button><span class="tiny muted">默写 '+(d.idx+1)+' / '+d.sents.length+' 句</span></div>';
+      if(d.idx>0){
+        html+='<div class="wr-sample-box" style="margin:10px 0;">'+d.sents.slice(0,d.idx).map(escAttr).join(' ')+'</div>';
+      } else {
+        html+='<div class="tiny muted" style="margin:10px 0;">从第一句开始，凭记忆默写整篇范文（'+escAttr(p.title)+'）。</div>';
+      }
+      if(d.checked){
+        html+='<div class="wr-prompt" style="margin:0 0 10px;" id="wrDictDiff"></div>';
+        html+='<button class="btn-cta" onclick="wrDictNext()"><span>'+(d.idx+1>=d.sents.length?'看成绩':'下一句')+'</span><span class="cta-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span></button>';
+      } else {
+        const wc = wrWords(d.sents[d.idx]).length;
+        html+='<div class="tiny muted" style="margin-bottom:6px;">下一句 · 约 '+wc+' 词 <a href="#" onclick="event.preventDefault();wrDictHint(this)" style="margin-left:6px;">提示首词</a></div>';
+        html+='<textarea class="wr-textarea" id="wrDictInput" style="min-height:88px;" placeholder="凭记忆默写这一句…"></textarea>';
+        html+='<button class="btn-cta" style="margin-top:10px;" onclick="wrDictCheck()"><span>对照原句</span><span class="cta-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></span></button>';
+      }
+      html+='</div>';
+    }
+    $('writingHome').style.display='none';
+    $('writingView').style.display='';
+    $('writingView').innerHTML=html;
+    const inp=$('wrDictInput'); if(inp) inp.focus();
+  }
+  window.wrDictHint = function(a){
+    const d=_wrDict; if(!d) return;
+    const first=(d.sents[d.idx].match(/[A-Za-z][A-Za-z'’-]*/g)||['?'])[0];
+    if(a){ a.textContent='首词：'+first; a.onclick=function(ev){ev.preventDefault();}; }
+  };
+  window.wrDictCheck = function(){
+    const d=_wrDict; if(!d||d.checked) return;
+    const orig=d.sents[d.idx];
+    const user=($('wrDictInput')&&$('wrDictInput').value)||'';
+    const ow=wrWords(orig), uw=wrWords(user);
+    const keep=wrDiffWords(ow, uw);
+    const hit=keep.filter(Boolean).length;
+    d.hits+=hit; d.total+=ow.length; d.checked=true;
+    renderWrDict();
+    const box=$('wrDictDiff');
+    if(box){
+      const pct=ow.length?Math.round(hit/ow.length*100):0;
+      box.innerHTML='<div class="tiny muted" style="margin-bottom:6px;">本句还原 '+hit+' / '+ow.length+' 词（'+pct+'%）· 红色=漏写或写错</div>'+wrRenderDiff(orig, keep);
+    }
+  };
+  window.wrDictNext = function(){ const d=_wrDict; if(!d) return; d.idx++; d.checked=false; renderWrDict(); };
 
   window.renderWritingView = function(){ renderWritingView(); }; // 暴露给模板返回按钮
   window.quitWriting = function(){ const w=ensureWriting(); if(_wrCur && $('wrText')) { w.drafts[_wrCur.id]=$('wrText').value; save(); } _wrCur=null; $('writingView').style.display='none'; $('writingHome').style.display=''; openWriting(); };
@@ -3602,9 +3775,8 @@
   window.openToday = function(){
     const t = window.getDailyTraining();
     const v = ensureVocab();
-    const syn = ensureSyntax();
-    let unsure = 0;
-    Object.keys(syn.progress || {}).forEach(function(k){ const p = syn.progress[k]; if (p && p.unsure && !p.known) unsure++; });
+    ensureSyntax();
+    const unsure = window.syntaxDueCount ? window.syntaxDueCount() : 0; // 与复习队列同口径（unsure 且到期）
     let mist = 0;
     try { mist = (window.listMistakes({}) || []).length; } catch(e){}
     const q = {}; t.items.forEach(function(x){ q[x.mod] = x; });
@@ -5925,6 +6097,7 @@
     $('aiInput').disabled = true;
 
     let reply = '';
+    let failed = false; // P1.7：失败时把问题放回输入框，用户点发送即重试
     try {
       const formatHint = '回答分块时，按「结论:」「当前问题:」「今天怎么做:」「别犯的错:」「一句鼓励:」五标题格式组织，让手机阅读更友好。';
       const resp = await fetch(API_ENDPOINT, {
@@ -5936,21 +6109,24 @@
       if (resp.ok) {
         const data = await resp.json();
         if (data.reply) reply = data.reply;
-        else if (data.error) reply = '【错误】' + data.error;
+        else if (data.error) { failed = true; console.error('[AI] backend error:', data.error); }
       } else {
+        failed = true;
         const errText = await resp.text();
-        console.error('[AI] error body:', errText);
-        reply = '【请求失败】HTTP ' + resp.status + ': ' + errText.slice(0, 200);
+        console.error('[AI] error body: HTTP', resp.status, errText.slice(0, 200));
       }
     } catch(e) {
+      failed = true;
       console.error('[AI] fetch error:', e.message);
-      reply = '【网络异常】' + e.message;
+    }
+    if (failed) {
+      reply = 'AI 教练暂时联系不上（网络中断或后端没响应）。\n\n你的问题我已经放回输入框，稍后点发送就能重试；若一直失败，去 设置 → AI 后端 点「测试」看看。\n\n等网络的这会儿，背单词、做数学题、精读都不需要联网，可以先学起来。';
     }
 
     state.aiChats.push({ q: question, a: reply, mode: aiMode, ts: new Date().toISOString() });
     if (state.aiChats.length > 50) state.aiChats = state.aiChats.slice(-50);
     save();
-    input.value = '';
+    input.value = failed ? question : '';
     renderAI();
 
     updateAIStatus();
