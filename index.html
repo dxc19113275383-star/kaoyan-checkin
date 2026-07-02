@@ -366,26 +366,19 @@
   .task-actions { display: flex; gap: 4px; margin-left: auto; }
   .edit-form { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: .8rem; margin-top: 8px; }
   .edit-form input, .edit-form select { width: 100%; padding: 8px 10px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-primary); font-size: 14px; margin-bottom: 6px; font-family: var(--font-sans); }
-  .hm-row { display: flex; gap: 3px; align-items: center; margin-bottom: 2px; }
-  .hm-label { font-size: 11px; color: var(--color-text-tertiary); width: 32px; flex-shrink: 0; text-align: right; margin-right: 2px; }
-  .hm-cell { width: 18px; height: 18px; border-radius: 3px; flex-shrink: 0; }
-  .hm-cell.hm-gray { background: #e5e4df; }
-  .hm-cell.hm-red { background: #f28b82; }
-  .hm-cell.hm-yellow { background: #fdd663; }
-  .hm-cell.hm-green { background: #81c995; }
-  .hm-cell.hm-darkgreen { background: #34a853; }
-  .hm-cell.hm-today { box-shadow: 0 0 0 2px var(--color-text-info); }
-  .hm-cell.hm-future { opacity: .3; }
-  @media (prefers-color-scheme: dark) {
-    .hm-cell.hm-gray { background: #3d3c37; }
-    .hm-cell.hm-red { background: #8b3a35; }
-    .hm-cell.hm-yellow { background: #7d6b1c; }
-    .hm-cell.hm-green { background: #3a6b47; }
-    .hm-cell.hm-darkgreen { background: #1e7a34; }
-  }
-  .hm-legend { display: flex; gap: 8px; align-items: center; font-size: 11px; color: var(--color-text-tertiary); margin-top: 6px; justify-content: center; }
-  .hm-legend span { display: flex; align-items: center; gap: 3px; }
-  .hm-legend .hm-cell { width: 12px; height: 12px; }
+  /* 热力图 v2：品牌蓝浓度色阶（与液态玻璃主题一致），漏卡用极淡暖橙提示不刺眼 */
+  .hm-row { display: flex; gap: 5px; align-items: center; margin-bottom: 5px; }
+  .hm-label { font-size: 11px; color: var(--color-text-tertiary); width: 40px; flex-shrink: 0; text-align: right; margin-right: 4px; font-variant-numeric: tabular-nums; }
+  .hm-cell { width: 16px; height: 16px; border-radius: 5px; flex-shrink: 0; background: var(--color-bg-secondary); }
+  .hm-cell.hm-miss { background: color-mix(in srgb, var(--ember) 20%, transparent); }
+  .hm-cell.hm-l1 { background: color-mix(in srgb, var(--brand) 28%, transparent); }
+  .hm-cell.hm-l2 { background: color-mix(in srgb, var(--brand) 58%, transparent); }
+  .hm-cell.hm-l3 { background: var(--brand); }
+  .hm-cell.hm-today { box-shadow: 0 0 0 2px color-mix(in srgb, var(--brand) 65%, transparent); }
+  .hm-cell.hm-future { opacity: .35; }
+  .hm-legend { display: flex; gap: 9px; align-items: center; font-size: 11px; color: var(--color-text-tertiary); margin-top: 8px; justify-content: center; flex-wrap: wrap; }
+  .hm-legend span { display: flex; align-items: center; gap: 4px; }
+  .hm-legend .hm-cell { width: 11px; height: 11px; border-radius: 3.5px; }
   .note-history-item { padding: 6px 0; border-bottom: 0.5px solid var(--color-border-tertiary); font-size: 13px; }
   .note-history-item:last-child { border-bottom: none; }
   .note-history-item .nh-date { font-size: 11px; color: var(--color-text-tertiary); }
@@ -3267,44 +3260,42 @@
 
   // ===== HEATMAP =====
   function heatmapColor(cnt, total) {
-    if (total === 0) return 'hm-gray';      // No tasks = no record
+    if (total === 0) return '';              // 无任务 = 底色空格
     const pct = cnt / total;
-    if (pct === 0) return 'hm-red';          // 0%
-    if (pct < 0.6) return 'hm-yellow';       // 1-59%
-    if (pct < 0.9) return 'hm-green';        // 60-89%
-    return 'hm-darkgreen';                    // 90-100%
+    if (pct === 0) return 'hm-miss';          // 漏卡（极淡暖橙）
+    if (pct < 0.6) return 'hm-l1';            // 品牌蓝三档浓度
+    if (pct < 0.9) return 'hm-l2';
+    return 'hm-l3';
   }
 
   function renderHeatmap() {
     const container = $('heatmap');
     const weeks = 4;
-    let html = '<div class="tiny muted" style="margin-bottom:4px;">近4周热力图</div>';
+    let html = '<div class="tiny muted" style="margin-bottom:6px;">近 4 周打卡</div>';
     for (let wOffset = weeks - 1; wOffset >= 0; wOffset--) {
       let wk = state.wk - wOffset;
       let p = state.p;
       while (wk < 1 && p > 0) { p--; wk += PHASES[p].weeks; }
       if (wk < 1) continue;
-      const label = (p===0?'在':'全') + wk + 'W';
+      const label = wOffset === 0 ? '本周' : (wOffset === 1 ? '上周' : wOffset + ' 周前');
       const todayP = state.p, todayWk = state.wk, todayDay = state.day;
       html += '<div class="hm-row"><span class="hm-label">'+label+'</span>';
       for (let d = 0; d < 7; d++) {
         const tasks = effectiveTasks(p, wk, d);
         const done = getDone(p, wk, d);
         const cnt = done.filter(Boolean).length;
-        let cls = 'hm-cell ' + heatmapColor(cnt, tasks.length);
+        const isFuture = (p === todayP && wk === todayWk && d > todayDay);
+        let cls = 'hm-cell ' + (isFuture ? 'hm-future' : heatmapColor(cnt, tasks.length));
         if (p === todayP && wk === todayWk && d === todayDay) cls += ' hm-today';
-        if (p === todayP && wk === todayWk && d > todayDay) cls += ' hm-future';
         html += '<div class="'+cls+'" title="'+DAYS[d]+': '+cnt+'/'+tasks.length+'"></div>';
       }
       html += '</div>';
     }
     html += '<div class="hm-legend">'+
-      '<span><div class="hm-cell hm-gray"></div>无记录</span>'+
-      '<span><div class="hm-cell hm-red"></div>0%</span>'+
-      '<span><div class="hm-cell hm-yellow"></div><60%</span>'+
-      '<span><div class="hm-cell hm-green"></div>60%+</span>'+
-      '<span><div class="hm-cell hm-darkgreen"></div>90%+</span>'+
-      '<span><div class="hm-cell hm-today" style="width:12px;height:12px;"></div>今天</span>'+
+      '<span><div class="hm-cell"></div>无记录</span>'+
+      '<span><div class="hm-cell hm-miss"></div>漏卡</span>'+
+      '<span><div class="hm-cell hm-l1"></div><div class="hm-cell hm-l2"></div><div class="hm-cell hm-l3"></div>完成度</span>'+
+      '<span><div class="hm-cell hm-today"></div>今天</span>'+
       '</div>';
     container.innerHTML = html;
   }
