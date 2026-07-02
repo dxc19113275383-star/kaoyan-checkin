@@ -503,10 +503,11 @@
   .vocab-opt.correct { background: #16a34a22; border-color: #16a34a; color: #15803d; }
   .vocab-opt.wrong { background: #dc262622; border-color: #dc2626; color: #b91c1c; }
   .vocab-opt:disabled { cursor: default; }
-  /* 选错后揭示各选项对应的英文单词 */
-  .vocab-opt .vo-word { display: block; font-size: 12.5px; font-weight: 600; letter-spacing: .01em; color: var(--color-text-tertiary); margin-top: 3px; }
-  .vocab-opt.correct .vo-word { color: #15803d; }
-  .vocab-opt.wrong .vo-word { color: #b91c1c; }
+  /* 选错后揭示：英文单词大字在上，中文释义小字在下；正确项的词再大一号 */
+  .vocab-opt .vo-word { display: block; font-size: 17px; font-weight: 700; letter-spacing: .01em; line-height: 1.3; }
+  .vocab-opt .vo-word.vo-big { font-size: 21px; }
+  .vocab-opt .vo-def { display: block; font-size: 12.5px; margin-top: 3px; color: var(--color-text-secondary); line-height: 1.5; }
+  .vocab-opt.correct .vo-def, .vocab-opt.wrong .vo-def { color: inherit; opacity: .8; }
   .vocab-feedback { margin-top: 14px; padding: 12px; border-radius: var(--border-radius-md); background: var(--color-background-secondary); text-align: left; font-size: 13px; line-height: 1.6; }
   .vocab-known { display: block; text-align: center; margin-top: 14px; font-size: 13px; color: var(--color-text-tertiary); cursor: pointer; }
   /* 极简发音按钮（替代 emoji 🔊） */
@@ -4435,11 +4436,14 @@
     const wd=s.queue[s.idx].wd;
     const correct=(btn.getAttribute('data-def')===wd.def);
     document.querySelectorAll('#vocabOpts .vocab-opt').forEach(function(b){ b.disabled=true; if(b.getAttribute('data-def')===wd.def) b.classList.add('correct'); else if(b===btn) b.classList.add('wrong'); });
-    // 选错时揭示所有选项对应的英文单词——看清自己把哪个词的意思记串了
+    // 选错时揭示所有选项对应的英文单词——单词大字在上、释义小字在下，正确项的词再大一号
     if(!correct){
       document.querySelectorAll('#vocabOpts .vocab-opt').forEach(function(b){
-        const w=b.getAttribute('data-w');
-        if(w && !b.querySelector('.vo-word')) b.insertAdjacentHTML('beforeend','<span class="vo-word">'+escAttr(w)+'</span>');
+        const w=b.getAttribute('data-w'), d=b.getAttribute('data-def')||'';
+        if(w && !b.querySelector('.vo-word')){
+          b.innerHTML='<span class="vo-word'+(b.classList.contains('correct')?' vo-big':'')+'">'+escAttr(w)+'</span>'
+                    + '<span class="vo-def">'+escAttr(d)+'</span>';
+        }
       });
     }
     // 点选即读：答对读本词；答错先读所选错误选项对应的词，再读正确的词（听觉对比强化）
