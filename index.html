@@ -4784,8 +4784,9 @@
 	    html+='<button class="btn-sm" style="min-width:0;padding:0 8px;white-space:nowrap;'+(next?'':'opacity:.4;pointer-events:none;')+'" onclick="mcPlay(\''+(next?next.id:'')+'\')">下一节 →</button>';
 	    html+='</div>';
 	    if(hasQuiz){
+	      // 配套练习：与上一节/下一节完全一致的 UI（普通 btn-sm，无蓝色）
 	      html+='<div class="row" style="gap:8px;margin-top:8px;">';
-	      html+='<button class="btn-sm btn-cta" style="flex:1;white-space:nowrap;background:var(--color-text-info);color:#fff;border-color:var(--color-text-info);" onclick="mcQuizForLesson()">'+I.layers+'配套练习</button>';
+	      html+='<button class="btn-sm" style="flex:1;min-width:0;padding:0 8px;white-space:nowrap;" onclick="mcQuizForLesson()">'+I.layers+'配套练习</button>';
 	      html+='</div>';
 	    }
     // 课堂笔记
