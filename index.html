@@ -596,6 +596,37 @@
   .rd-sent .rd-cn { margin: 4px 0 0; }
   .spk.rd-sent-spk { width: 22px; height: 22px; min-width: 22px; vertical-align: middle; margin-left: 2px; }
   .spk.rd-sent-spk svg { width: 12px; height: 12px; }
+  /* —— 沉浸阅读 v2（爱阅读式：大字衬线 + 考研词标注 + 当前句变色 + 底部播放条）—— */
+  .rd2-banner { font-size: 12.5px; color: var(--color-text-secondary); margin: 12px 0 4px; }
+  .rd2-banner b { color: var(--brand); font-weight: 600; }
+  .reading-text.rd2 { font-family: var(--font-serif); margin-top: 14px; }
+  .rd2 .rd-para-block { margin-bottom: 28px; }
+  .rd2 .rd-sent { padding: 2px 0; margin: 0 0 4px; border-radius: 0; }
+  .rd2 .rd-sent-en { font-size: 20px; line-height: 1.95; }
+  .rd2 .rd-sent.rd-playing { background: transparent; }
+  .rd2 .rd-sent.rd-playing .rd-sent-en, .rd2 .rd-sent.rd-playing .rd-word { color: var(--brand); }
+  .rd-word.rd-key { border-bottom: 2px dotted color-mix(in srgb, var(--brand) 60%, transparent); font-weight: 600; }
+  .rd-word.rd-hit { border-bottom: 2px dotted var(--color-border-strong); }
+  .rd-tr-btn { display: inline-flex; align-items: center; justify-content: center; width: 25px; height: 25px; margin-left: 6px; vertical-align: 3px; border-radius: 50%; border: 1px solid var(--hair); background: var(--glass-field); color: var(--color-text-tertiary); font: 500 12px/1 var(--font-sans); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .rd-tr-btn:active { transform: scale(.9); }
+  .rd2 .rd-cn { font-family: var(--font-sans); font-size: 15px; line-height: 1.8; margin: 6px 0 10px; }
+  .rd-player {
+    position: fixed; left: 0; right: 0; bottom: calc(var(--bottom-nav-height) + var(--safe-bottom));
+    display: flex; align-items: center; justify-content: center; gap: 22px;
+    padding: 10px 16px;
+    background: rgba(248, 249, 252, 0.60);
+    -webkit-backdrop-filter: blur(28px) saturate(160%); backdrop-filter: blur(28px) saturate(160%);
+    border-top: 1px solid var(--glass-edge);
+    z-index: 45;
+  }
+  @media (prefers-color-scheme: dark) { .rd-player { background: rgba(18, 20, 25, 0.60); } }
+  @supports not ((backdrop-filter: blur(4px)) or (-webkit-backdrop-filter: blur(4px))) { .rd-player { background: var(--color-surface-solid); } }
+  .rd-player .rp-btn { width: 44px; height: 44px; border-radius: 50%; border: none; background: transparent; color: var(--color-text-primary); display: flex; align-items: center; justify-content: center; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .rd-player .rp-btn:active { transform: scale(.9); }
+  .rd-player .rp-btn svg { width: 22px; height: 22px; }
+  .rd-player .rp-main { width: 54px; height: 54px; background: var(--color-surface-solid); border: 1px solid var(--glass-edge); box-shadow: var(--shadow-card); }
+  .rd-player .rp-main svg { width: 24px; height: 24px; }
+  .rd-player .rp-rate { width: auto; min-width: 56px; height: 36px; padding: 0 12px; border-radius: var(--radius-pill); border: 1px solid var(--hair); background: var(--glass-field); font: 600 13px/1 var(--font-num); color: var(--color-text-primary); }
   /* 查词卡（百词斩式展开解析） */
   .reading-pop { max-height: 74vh; overflow-y: auto; }
   .rw-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
@@ -3861,13 +3892,13 @@
     setTimeout(function(){ _pickVoice('en-US'); }, 300);
   }
   // —— 系统语音（speechSynthesis）：兜底 ——
-  function _sysSpeak(text, lang, onend){
+  function _sysSpeak(text, lang, onend, rateMul){
     try{
       if(!('speechSynthesis' in window)){ if(onend) onend(); return; }
       const u=new SpeechSynthesisUtterance(text);
       u.lang = lang || 'en-US';
       const v=_pickVoice(u.lang); if(v) u.voice=v;
-      u.rate=0.96; u.pitch=1.02;
+      u.rate=0.96*(rateMul||1); u.pitch=1.02;
       if(onend) u.onend=function(){ onend(); };
       speechSynthesis.cancel(); speechSynthesis.speak(u);
     }catch(e){ if(onend) onend(); }
@@ -3924,31 +3955,32 @@
     try{ if('speechSynthesis' in window) speechSynthesis.cancel(); }catch(e){}
   }
   window._stopSpeak=stopSpeak;
-  /** 统一朗读：优先 Edge 神经语音（客户端直连），失败/被封则回退系统语音。opts={lang,rate,onend} */
+  /** 统一朗读：优先 Edge 神经语音（客户端直连），失败/被封则回退系统语音。opts={lang,rate,sysRate,onend}
+      rate=Edge 百分比字符串（如 '+18%'）；sysRate=系统语音倍速乘数（回退时用）。 */
   function speak(text, opts){
-    opts=opts||{}; const lang=opts.lang||'en-US', onend=opts.onend;
+    opts=opts||{}; const lang=opts.lang||'en-US', onend=opts.onend, sysRate=opts.sysRate;
     if(!text){ if(onend) onend(); return; }
     stopSpeak(); const myGen=_speakGen;
     const useNeural = _neuralOn && ('WebSocket' in window) && (window.crypto&&crypto.subtle) && /^en/i.test(lang);
-    if(!useNeural){ _sysSpeak(text, lang, onend); return; }
+    if(!useNeural){ _sysSpeak(text, lang, onend, sysRate); return; }
     const voice=_edgeVoice(lang), rate=opts.rate||'+0%', key=voice+'|'+rate+'|'+text;
     const playBlob=function(blob){
       if(myGen!==_speakGen) return; // 已被打断
       try{ const url=URL.createObjectURL(blob); const a=new Audio(url); _curAudio=a;
         a.onended=function(){ try{URL.revokeObjectURL(url);}catch(e){}; if(_curAudio===a)_curAudio=null; if(onend) onend(); };
-        a.onerror=function(){ _sysSpeak(text, lang, onend); };
-        a.play().catch(function(){ if(myGen===_speakGen) _sysSpeak(text, lang, onend); });
-      }catch(e){ _sysSpeak(text, lang, onend); }
+        a.onerror=function(){ _sysSpeak(text, lang, onend, sysRate); };
+        a.play().catch(function(){ if(myGen===_speakGen) _sysSpeak(text, lang, onend, sysRate); });
+      }catch(e){ _sysSpeak(text, lang, onend, sysRate); }
     };
     if(_edgeCache[key]){ playBlob(_edgeCache[key]); return; }
     _edgeSynth(text, voice, rate).then(function(blob){
       if(myGen!==_speakGen) return;
       if(blob && blob.size>200){ _neuralFails=0; _edgeCache[key]=blob; playBlob(blob); }
-      else { _sysSpeak(text, lang, onend); }
+      else { _sysSpeak(text, lang, onend, sysRate); }
     }).catch(function(){
       if(myGen!==_speakGen) return;
       _neuralFails++; if(_neuralFails>=3) _neuralOn=false; // 连续失败（多半被封 IP）→ 本会话改系统语音
-      _sysSpeak(text, lang, onend);
+      _sysSpeak(text, lang, onend, sysRate);
     });
   }
   window._speak=speak;
@@ -4536,37 +4568,60 @@
     document.querySelectorAll('#rdText .rd-sent').forEach(function(el){ el.classList.remove('rd-playing'); });
     if(id){ const el=$(id); if(el){ el.classList.add('rd-playing'); el.scrollIntoView({block:'center',behavior:'smooth'}); } }
   }
+  // —— 沉浸阅读播放器（爱阅读式底部条：上一句/播放暂停/下一句/倍速）——
+  const RD_RATES=[0.8,1,1.2,1.5];
+  function rdRate(){ const r=ensureReading(); return RD_RATES.indexOf(r.rate)>=0?r.rate:1; }
+  function rdEdgeRate(){ return ({'0.8':'-25%','1':'-3%','1.2':'+18%','1.5':'+45%'})[String(rdRate())]; }
+  const I_PAUSE='<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>';
+  function rdSyncPlayer(){
+    const b=$('rdPlayBtn'); if(b) b.innerHTML=_rdPlayer.playing?I_PAUSE:I.play;
+    const rt=$('rdRateBtn'); if(rt) rt.textContent=rdRate().toFixed(1)+'x';
+  }
   function readingStopPlay(){
     _rdPlayer.playing=false;
     stopSpeak();
-    const btn=$('rdPlayBtn'); if(btn) btn.innerHTML=I.play+'试听全文';
+    rdSyncPlayer();
     readingHighlight(null);
   }
   window.readingStopPlay=readingStopPlay;
   function readingPlayNext(){
     const pl=_rdPlayer;
     if(!pl.playing) return;
-    if(pl.idx>=pl.units.length){ readingStopPlay(); return; }
+    if(pl.idx>=pl.units.length){ pl.idx=0; readingStopPlay(); return; }
     const unit=pl.units[pl.idx];
     readingHighlight(unit.id);
-    speak(unit.text, { lang:'en-US', rate:'-3%', onend:function(){ if(_rdPlayer.playing){ _rdPlayer.idx++; readingPlayNext(); } } });
+    speak(unit.text, { lang:'en-US', rate:rdEdgeRate(), sysRate:rdRate(), onend:function(){ if(_rdPlayer.playing){ _rdPlayer.idx++; readingPlayNext(); } } });
     // 预取下一句，减少句间停顿
-    const nx=pl.units[pl.idx+1]; if(nx) _edgePrefetch(nx.text, 'en-US', '-3%');
+    const nx=pl.units[pl.idx+1]; if(nx) _edgePrefetch(nx.text, 'en-US', rdEdgeRate());
   }
-  window.readingPlayToggle=function(){
-    if(!('speechSynthesis' in window)){ alert('当前浏览器不支持朗读'); return; }
-    if(_rdPlayer.playing){ readingStopPlay(); return; }
-    _rdPlayer.playing=true; _rdPlayer.idx=0;
-    const btn=$('rdPlayBtn'); if(btn) btn.innerHTML=I.stop+'停止';
+  window.rdToggle=function(){
+    if(_rdPlayer.playing){ _rdPlayer.playing=false; stopSpeak(); rdSyncPlayer(); return; } // 暂停：保留位置与高亮
+    if(!_rdPlayer.units.length) return;
+    if(_rdPlayer.idx>=_rdPlayer.units.length) _rdPlayer.idx=0;
+    _rdPlayer.playing=true; rdSyncPlayer();
     readingPlayNext();
   };
+  window.rdStep=function(d){
+    const pl=_rdPlayer; const n=pl.idx+d;
+    if(n<0||n>=pl.units.length) return;
+    pl.idx=n;
+    if(pl.playing) readingPlayNext();
+    else readingHighlight(pl.units[n].id);
+  };
+  window.rdCycleRate=function(){
+    const r=ensureReading();
+    r.rate=RD_RATES[(RD_RATES.indexOf(rdRate())+1)%RD_RATES.length];
+    save(); rdSyncPlayer();
+    if(_rdPlayer.playing) readingPlayNext(); // 立即用新倍速重读当前句
+  };
+  window.readingPlayToggle=window.rdToggle; // 兼容旧入口
   /** 从某句开始连读（gIdx = units 下标）。 */
   window.readingPlayFrom=function(gIdx){
-    if(!('speechSynthesis' in window)){ alert('当前浏览器不支持朗读'); return; }
-    _rdPlayer.playing=true; _rdPlayer.idx=gIdx;
-    const btn=$('rdPlayBtn'); if(btn) btn.innerHTML=I.stop+'停止';
+    _rdPlayer.idx=gIdx; _rdPlayer.playing=true; rdSyncPlayer();
     readingPlayNext();
   };
+  /** 单句译文开关（爱阅读式每句「译」按钮）。 */
+  window.rdToggleSentCn=function(id){ const el=$(id); if(el) el.style.display = el.style.display==='none' ? '' : 'none'; };
   window.readingToggleCn=function(){
     _rdShowCn=!_rdShowCn;
     const btn=$('rdCnBtn'); if(btn) btn.textContent=_rdShowCn?'隐藏译文':'显示译文';
@@ -4588,15 +4643,12 @@
     const r=ensureReading(); const pr=r.progress[obj.id]||{};
     readingStopPlay();
     const units=[]; // 逐句朗读单元
-    let html='<div class="card">';
-    html+='<div class="row" style="justify-content:space-between;align-items:center;"><button class="btn-sm learn-back" onclick="quitReading()">'+I.arrowLeft+'列表</button><span class="tiny muted">点单词查义</span></div>';
+    let html='<div class="card" style="padding-bottom:88px;">'; // 底部留出播放条高度
+    html+='<div class="row" style="justify-content:space-between;align-items:center;"><button class="btn-sm learn-back" onclick="quitReading()">'+I.arrowLeft+'列表</button><button class="btn-sm" id="rdCnBtn" style="height:34px;font-size:12.5px;padding:0 12px;" onclick="readingToggleCn()">'+(_rdShowCn?'隐藏译文':'显示译文')+'</button></div>';
     html+='<h2 style="margin:10px 0 2px;">'+escAttr(obj.title)+'</h2>';
-    if(obj.intro) html+='<p class="tiny muted" style="margin:0 0 12px;">'+escAttr(obj.intro)+'</p>';
-    html+='<div class="row" style="gap:8px;margin:0 0 12px;">';
-    html+='<button class="btn-sm" id="rdPlayBtn" style="flex:1;" onclick="readingPlayToggle()">'+I.play+'试听全文</button>';
-    html+='<button class="btn-sm" id="rdCnBtn" style="flex:1;" onclick="readingToggleCn()">'+(_rdShowCn?'隐藏译文':'显示译文')+'</button>';
-    html+='</div>';
-    html+='<div class="reading-text" id="rdText">';
+    if(obj.intro) html+='<p class="tiny muted" style="margin:0 0 4px;">'+escAttr(obj.intro)+'</p>';
+    html+='<div class="rd2-banner" id="rdMarkBanner">点单词可查义 · 点句尾「译」看单句译文</div>';
+    html+='<div class="reading-text rd2" id="rdText">';
     (obj.paragraphs||[]).forEach(function(para,i){
       const enSents=rdSplitEn(para);
       const cn=readingResolveCn(obj,i);
@@ -4605,12 +4657,13 @@
       html+='<div class="rd-para-block">';
       enSents.forEach(function(sent, j){
         const gid='rds_'+units.length;
-        const playIdx=units.length;
         units.push({ text: sent, id: gid });
         html+='<div class="rd-sent" id="'+gid+'">';
-        html+='<span class="rd-sent-en">'+rdTokenize(sent)+'</span> ';
-        html+='<button class="spk rd-sent-spk" onclick="readingPlayFrom('+playIdx+')" title="朗读本句" aria-label="朗读本句">'+I.sound+'</button>';
-        if(aligned){ html+='<div class="rd-cn" style="display:'+(_rdShowCn?'':'none')+';">'+escAttr(cnSents[j])+'</div>'; }
+        html+='<span class="rd-sent-en">'+rdTokenize(sent)+'</span>';
+        if(aligned){
+          html+='<button class="rd-tr-btn" onclick="rdToggleSentCn(\''+gid+'_cn\')" aria-label="看这句译文">译</button>';
+          html+='<div class="rd-cn" id="'+gid+'_cn" style="display:'+(_rdShowCn?'':'none')+';">'+escAttr(cnSents[j])+'</div>';
+        }
         html+='</div>';
       });
       if(cn && !aligned){ html+='<div class="rd-cn" style="display:'+(_rdShowCn?'':'none')+';">'+escAttr(cn)+'</div>'; }
@@ -4634,9 +4687,50 @@
       });
     }
     html+='<button class="btn-sm" style="width:100%;margin-top:8px;background:'+(pr.read?'var(--color-background-secondary)':'var(--color-text-info)')+';color:'+(pr.read?'var(--color-text-secondary)':'#fff')+';border-color:var(--color-text-info);padding:10px;" onclick="markPassageRead(\''+obj.id+'\')">'+(pr.read?'已读 ✓（点可取消）':'标记已读')+'</button></div>';
-    _rdPlayer.units=units;
+    // 底部固定播放条（随 readingView 显隐）
+    html+='<div class="rd-player">';
+    html+='<button class="rp-btn" onclick="rdStep(-1)" aria-label="上一句"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h2v14H6z"/><path d="M20 5v14l-10-7z"/></svg></button>';
+    html+='<button class="rp-btn rp-main" id="rdPlayBtn" onclick="rdToggle()" aria-label="播放/暂停">'+I.play+'</button>';
+    html+='<button class="rp-btn" onclick="rdStep(1)" aria-label="下一句"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 5h2v14h-2z"/><path d="M4 5v14l10-7z"/></svg></button>';
+    html+='<button class="rp-btn rp-rate" id="rdRateBtn" onclick="rdCycleRate()" aria-label="倍速">'+rdRate().toFixed(1)+'x</button>';
+    html+='</div>';
+    _rdPlayer.units=units; _rdPlayer.idx=0; _rdPlayer.playing=false;
     $('readingHome').style.display='none'; $('readingView').style.display=''; $('readingView').innerHTML=html;
+    rdSyncPlayer();
     setTimeout(markSavedWordsInDom, 0);
+    rdMarkVocab(obj);
+  }
+
+  // 考研词自动标注：文中生词表词条（重点，rd-key）+ 命中考研5500大纲词（rd-hit），
+  // 顶部横幅显示标注数——爱阅读式"已为你标注「考研」词汇 N 个"。
+  const RD_STOP=new Set(('the,a,an,and,or,but,of,to,in,on,at,is,are,was,were,be,been,being,it,its,he,she,they,them,we,you,i,'+
+    'his,her,their,our,your,my,me,him,us,that,this,these,those,as,for,with,by,from,not,no,so,if,then,than,there,here,'+
+    'what,who,whom,which,when,where,how,why,all,any,some,one,two,do,does,did,done,have,has,had,can,could,will,would,'+
+    'shall,should,may,might,must,about,into,over,under,after,before,up,out,down,off,more,most,much,many,few,little,'+
+    'other,another,such,same,own,just,only,also,too,very,still,even,now,new,old,go,goes,went,gone,get,gets,got,make,'+
+    'makes,made,say,says,said,see,sees,saw,seen,know,knows,knew,known,take,takes,took,taken,come,comes,came,way,ways,'+
+    'day,days,year,years,people,thing,things,because,while,during,between,both,each,let,lets,time,times,man,men,use,used').split(','));
+  function rdMarkVocab(obj){
+    const key={}; (obj.glossary||[]).forEach(function(g){ if(g&&g.w) key[String(g.w).toLowerCase()]=1; });
+    const marked={};
+    const spans=document.querySelectorAll('#rdText .rd-word');
+    spans.forEach(function(el){ const w=el.getAttribute('data-w'); if(key[w]){ el.classList.add('rd-key'); marked[w]=1; } });
+    const upd=function(){
+      const el=$('rdMarkBanner'); if(!el) return;
+      const n=Object.keys(marked).length;
+      if(n) el.innerHTML='已为你标注 <b>「考研」</b>词汇 '+n+' 个 · 点单词查义 · 句尾「译」看译文';
+    };
+    upd();
+    loadVocabLibs().then(function(){ return loadVocabWords('kaoyan-5500'); }).then(function(words){
+      if(!words) return;
+      if(!window._rd5500){ window._rd5500=new Set(); words.forEach(function(x){ if(x&&x.w) window._rd5500.add(String(x.w).toLowerCase()); }); }
+      spans.forEach(function(el){
+        if(el.classList.contains('rd-key')) return;
+        const w=el.getAttribute('data-w');
+        if(w && w.length>=3 && !RD_STOP.has(w) && window._rd5500.has(w)){ el.classList.add('rd-hit'); marked[w]=1; }
+      });
+      upd();
+    }).catch(function(){});
   }
 
   // P1.2 配套练习判分：即时反馈 + 解析；答错入错题中心、答对解错题；全部答完记成绩
